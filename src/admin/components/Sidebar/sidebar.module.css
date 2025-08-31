@@ -1,0 +1,267 @@
+.sidebarTop {
+	height: 32px;
+	margin: 16px;
+}
+
+.sidebar {
+	border-radius: 12px;
+	position: relative;
+}
+
+.accSettings {
+	display: inline-block;
+	position: relative;
+}
+
+.accWrapper {
+	display: inline-flex;
+	flex-direction: row;
+	align-items: center;
+	padding: 1px 7px 0px 4px;
+	border-radius: 20px;
+	max-width: 208px;
+	transition: background-color 200ms ease-in-out 0s;
+	cursor: pointer;
+	--icon-margin-top: 4px;
+	background-color: #f1f1f1;
+}
+
+.accIconWrapper {
+	border-radius: 50%;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	width: 32px;
+	height: 32px;
+	background-color: #ffffff;
+}
+
+.accIcon {
+	box-sizing: border-box;
+	--icon-size: 32px;
+	border-radius: 50%;
+	padding: 8px;
+	font-size: 14px;
+	color: #0092ff;
+	font-weight: bold;
+}
+
+.accText {
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+	white-space: nowrap;
+	text-overflow: ellipsis;
+	overflow: hidden;
+	line-height: normal;
+	padding: 10px;
+	font-size: 12px;
+}
+
+.dropDownBody {
+	position: absolute;
+	width: 100%;
+	left: 0;
+	background-color: #fff;
+	border-radius: 4px;
+	box-shadow: 0px 3px 6px 0px rgba(0, 0, 0, 0.2);
+	transition: all 0.3s;
+	-webkit-transition: all 0.3s;
+	-moz-transition: all 0.3s;
+	-ms-transition: all 0.3s;
+	-o-transition: all 0.3s;
+	visibility: hidden;
+	opacity: 0;
+	margin-top: 5px;
+}
+
+.dropDownContainer {
+	margin: 0;
+	padding: 0 13px;
+	list-style: none;
+}
+
+.dropDownBody:before {
+	content: '';
+	background-color: transparent;
+	border-right: 8px solid transparent;
+	position: absolute;
+	border-left: 8px solid transparent;
+	border-bottom: 8px solid #fff;
+	border-top: 8px solid transparent;
+	top: -15px;
+	right: 18px;
+}
+
+.dropDownBody:after {
+	content: '';
+	background-color: transparent;
+}
+
+.dropDownListItem {
+	font-size: 13px;
+	padding: 13px 0;
+	text-align: left;
+	font-weight: 500;
+	color: #909dc2;
+	cursor: pointer;
+	position: relative;
+	border-bottom: 1px solid #e0e2e9;
+	line-height: normal;
+}
+
+.dropDownListItem:before {
+	content: '';
+	position: absolute;
+	width: 3px;
+	height: 28px;
+	background-color: #3d6def;
+	left: -13px;
+	top: 50%;
+	transform: translateY(-50%);
+	display: none;
+}
+
+.dropDownListItem:hover:before {
+	display: block;
+}
+
+.dropDownListItem a {
+	color: inherit;
+}
+
+.dropDownListItem:hover {
+	color: #3d6def;
+}
+
+.dropDownIcon {
+	width: 18px;
+	vertical-align: middle;
+	margin-left: 14px;
+	height: 18px;
+	border-radius: 50%;
+	transition: all 0.4s;
+	-webkit-transition: all 0.4s;
+	-moz-transition: all 0.4s;
+	-ms-transition: all 0.4s;
+	-o-transition: all 0.4s;
+}
+
+.logo {
+	margin-left: 20px;
+	font-weight: bold;
+	color: #4a70ff;
+	font-size: 1.5em;
+}
+
+.langsBar {
+	margin-right: 20px;
+}
+
+.burgerMenu {
+	cursor: pointer;
+	margin: 28px 12px 0 6px;
+	font-size: 24px;
+}
+
+ul {
+	list-style: none;
+}
+
+.dropDownActive {
+	opacity: 1;
+	visibility: visible;
+	transform: translateY(0);
+	transition-timing-function: ease;
+	transition-delay: 0.3s;
+}
+
+.inactive {
+	opacity: 0;
+	visibility: hidden;
+	transform: translateY(-20px);
+	transition-property: all;
+	transition-timing-function: ease;
+	transition-delay: 0.3s;
+}
+.sidebarUserWrapper {
+	display: flex;
+	margin: 24px 18px;
+	padding-bottom: 24px;
+	border-bottom: 1px solid #f5f4f7;
+	color: #5f6a75;
+}
+
+.sidebarUsername {
+	background-color: #167bf2;
+	width: 44px;
+	height: 44px;
+	text-align: center;
+	line-height: 44px;
+	border-radius: 100%;
+	color: #ffffff;
+	background-image: url("../../images/daytona-logo.jpg");
+	background-size: cover;
+	background-repeat: no-repeat;
+	background-position: center;
+}
+
+.sidebarUserInfo {
+	margin: 0 12px;
+	line-height: 20px;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+
+.sidebarBell {
+	font-size: 22px;
+	color: #5f6a75;
+	margin: 10px 2px;
+}
+
+.collapseArrow {
+	box-sizing: border-box;
+	display: flex;
+	flex-direction: row;
+	align-items: flex-start;
+	padding: 6px;
+	gap: 8px;
+	position: absolute;
+	width: 28px;
+	height: 28px;
+	right: -14px;
+	top: 34px;
+	background: #ffffff;
+	border: 1px solid #f5f4f7;
+	border-radius: 8px;
+	transition: all 0.2s;
+	cursor: pointer;
+}
+
+.sidebarSectionTitle {
+	margin: 24px 0 5px 28px;
+	font-size: 12px;
+	color: #9da3aa;
+}
+
+.divider {
+	margin-bottom: 16px;
+	background-color: #f5f4f7;
+	height: 1px;
+}
+
+
+.menuFixedSection {
+	width: 100%;
+	height: 80px;
+	position: absolute;
+	bottom: 0;
+}
+
+@media only screen and (max-width: 560px) {
+	.sidebarUserWrapper {
+		margin: 0;
+		padding-bottom: 12px;
+	}
+}

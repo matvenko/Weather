@@ -1,0 +1,63 @@
+.loginContainer {
+}
+
+#particle-background {
+	-webkit-transform: translate3d(0, 0, 0);
+	transform: translate3d(0, 0, 0);
+	-webkit-backface-visibility: hidden;
+	backface-visibility: hidden;
+	top: 0;
+	bottom: 0;
+	right: 0;
+	left: 0;
+	position: absolute;
+	z-index: 0;
+	overflow: hidden;
+}
+
+.title {
+	color: #1677ff !important;
+	margin-bottom: 30px !important;
+}
+
+.loginForm {
+	background-color: rgb(237 237 237 / 50%);
+	box-shadow: 0px 8px 32px 0 rgba(0, 0, 0, 0.33);
+	backdrop-filter: blur(3px);
+	padding: 16px;
+	border-radius: 16px;
+	width: 400px;
+	position: absolute;
+	z-index: 1;
+	top: 33%;
+	left: 40%;
+}
+
+input {
+	width: 250px;
+	height: 45px;
+	text-indent: 10px;
+	margin: 10px 0;
+}
+
+input[type='checkbox'] {
+	width: 29px;
+	height: 20px;
+}
+
+.login-form-button {
+	width: 100%;
+}
+
+.errorMessage{
+	color: red;
+}
+
+@media only screen and (max-width: 568px) {
+	.loginForm {
+		width: 90%;
+		position: absolute;
+		left: 5%;
+		top: 20%;
+	}
+}

@@ -1,0 +1,106 @@
+.footer{
+    margin-top: 40px;
+    background: 16% 0 url(src/images/rolex_watermark.png) no-repeat #272526;
+    padding: 3em 0 ;
+}
+
+.footerBlock{
+    
+}
+
+.footerNav{
+    padding-top: 25px;
+    padding-bottom: 25px;
+}
+
+.footerMenu{
+    float: left;
+    width: 100%;
+    text-align: left;
+}
+
+.footer h4, .footer h5 {
+    font-size: 14px;
+    font-weight: 500;
+    font-stretch: normal;
+    font-style: normal;
+    line-height: 5.08;
+    letter-spacing: 0.96px;
+    text-align: left;
+    color: #ffea70;
+}
+
+.footer h4.collapsed + ul, .footer h5.collapsed + ul {
+    transform: rotateX(90deg);
+    transform-origin: top;
+    height: 0;
+    opacity: 0;
+    margin-bottom: 0;
+}
+
+.footer ul {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    overflow: hidden;
+    -webkit-transition: all .3s ease-out;
+    -moz-transition: all .3s ease-out;
+    -o-transition: all .3s ease-out;
+    transition: all .3s ease-out;
+    transform: rotateX(0);
+    transform-origin: top;
+    margin-bottom: 20px;
+}
+
+.footer li a {
+    color: #ffffff;
+}
+
+.address {
+    opacity: 0.8;
+    font-family: 'PoppinsMedium', serif;
+    font-size: 14px;
+    font-weight: 500;
+    font-stretch: normal;
+    font-style: normal;
+    line-height: 2.36;
+    letter-spacing: 0.35px;
+    text-align: left;
+    color: #ffffff;
+}
+
+@media (min-width: 768px){
+    .footer {
+        margin-top: 40px;
+    }
+    .footerNav {
+        padding-top: 45px;
+        padding-bottom: 45px;
+    }
+    .footerMenu {
+        width: 33.33%;
+    }
+
+    .footer h4.collapsed + ul, .footer h5.collapsed + ul {
+        transform: rotateX(0deg);
+        transform-origin: top;
+        height: auto;
+        opacity: 1;
+        margin-bottom: 0;
+    }
+    .footer ul {
+        -webkit-transition: none;
+        -moz-transition: none;
+        -o-transition: none;
+        transition: none;
+        transform: rotateX(0);
+        transform-origin: top;
+        margin-bottom: 0;
+    }
+}
+
+@media (min-width: 992px){
+    .footerMenu {
+        width: 25%;
+    }
+}
