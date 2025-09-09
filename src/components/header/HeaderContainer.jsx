@@ -1,11 +1,9 @@
-import React, { useEffect } from "react";
+import React from "react";
 import { useTranslation } from "react-i18next";
 import LanguageSelector from "./languageSelector/LanguageSelector.jsx";
 import { Form } from "antd";
 import DaytonaLogo from "../../images/img.png";
 import { useLocation } from "react-router-dom";
-import HeaderToggleMenu from "./HeaderToggleMenu.jsx";
-import { AiOutlineSearch } from "react-icons/ai";
 
 const HeaderContainer = ({
 }) => {
@@ -47,6 +45,7 @@ const HeaderContainer = ({
             {t("text.contact")}
           </a>
         </nav>
+        <LanguageSelector />
       </div>
     </>
   );

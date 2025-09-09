@@ -21,7 +21,7 @@
 }
 
 .loginForm {
-	background-color: rgb(237 237 237 / 50%);
+	background-color: rgb(237 237 237 / 80%);
 	box-shadow: 0px 8px 32px 0 rgba(0, 0, 0, 0.33);
 	backdrop-filter: blur(3px);
 	padding: 16px;

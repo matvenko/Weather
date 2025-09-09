@@ -19,6 +19,7 @@ i18n
     },
     react: { useSuspense: false },
   })
-  .then();
+    .then(() => console.log("i18n initialized"))
+    .catch(err => console.error("i18n init failed", err));
 
 export default i18n;
