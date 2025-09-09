@@ -22,15 +22,15 @@ const SidebarContainer = ({
   const [lastName, setLastName] = useState("");
   const [firstName, setFirstName] = useState("");
 
-  const currentLanguage = Cookies.get("i18next") || "ge";
+  const currentLanguage = Cookies.get("i18next") || "ka";
   useEffect(() => {
     setLastName(
-      currentLanguage === "ge"
+      currentLanguage === "ka"
         ? authUserData.lastNameGe[0]
         : authUserData.lastNameEn[0],
     );
     setFirstName(
-      currentLanguage === "ge"
+      currentLanguage === "ka"
         ? authUserData.firstNameGe[0]
         : authUserData.firstNameEn[0],
     );

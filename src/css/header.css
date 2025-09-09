@@ -1,69 +1,46 @@
+/* src/css/header.css */
+.header-container {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: #f7f7f7;
+    height: auto;
+    line-height: normal;
+    padding: 0;
+    box-shadow: 0 1px 0 rgba(0,0,0,0.06);
+}
 
-.header-container{
-    height: 98px;
-    position: fixed;
-    width: 100%;
-    background-color: #FFFFFF;
-    padding: 0 5%;
-    border-bottom: 2px solid #dbe8db;
-    z-index: 999;
+.header-inner {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 10px 16px;
     display: flex;
-    justify-content: space-between;
+    align-items: center;
+    gap: 24px;
 }
 
-.header-container .navbar {
-    position: static;
-    background-color: #FFFFFF;
+.header-logo {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    user-select: none;
+}
+.header-logo img { width: 28px; height: 28px; object-fit: contain; }
+.header-logo span { font-weight: 600; font-size: 18px; color: #111; }
+
+.header-menu {
+    flex: 1;
+    min-width: 0;
+    border-bottom: none;
 }
 
-.navbar-toggler{
-    border: none;
-    font-size: 1.25rem;
+.header-right {
+    display: flex;
+    align-items: center;
+    gap: 12px;
 }
 
-.navbar-toggler:focus, .btn-close:focus {
-    box-shadow: none;
-    outline: none;
-}
-
-.header-container .nav-link {
-    color: #666777;
-    font-weight: 500;
-    font-size: 1.25em;
-}
-
-.nav-link {
-    position: relative;
-}
-
-.navbar-toggler-icon{
-    display: block;
-}
-
-.nav-item{
-    margin: 15px;
-}
-
-.nav-link:hover .nav-link:active a {
-    color: #f80808 !important;
-}
-
-@media (min-width: 991px) {
-    .header-ul .nav-link:before {
-        content: "";
-        position: absolute;
-        bottom: 0;
-        left: 50%;
-        transform: translateX(-50%);
-        width: 0;
-        height: 2px;
-        background-color: #4cae4c;
-        visibility: hidden;
-        transition: 0.3s ease-in-out;
-    }
-
-    .header-ul .nav-link:hover::before, .nav-link.active::before{
-        width: 100%;
-        visibility: visible;
-    }
+@media (max-width: 768px) {
+    .header-menu { display: none; }
 }

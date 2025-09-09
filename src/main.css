@@ -1,0 +1,184 @@
+/* ===========================
+   Global base (main.css)
+   =========================== */
+
+/* 1) CSS Variables — შეგეძლება ერთ წერტილში ფერების/ზომების მართვა */
+:root{
+    --max-w: 1500px;
+    --radius: 12px;
+
+    --bg: #f7f8fa;
+    --panel: #ffffff;
+    --text: #1f1f1f;
+    --muted: #595959;
+    --border: #eaeaea;
+    --primary: #1677ff;
+
+    --space-1: 4px;
+    --space-2: 8px;
+    --space-3: 12px;
+    --space-4: 16px;
+    --space-5: 24px;
+    --space-6: 32px;
+}
+
+/* 2) Reset / Normalize */
+*,
+*::before,
+*::after { box-sizing: border-box; }
+
+html, body, #root { height: 100%; }
+
+html { scroll-behavior: smooth; }
+
+body {
+    margin: 0;
+    color: var(--text);
+    background: var(--bg);
+    font: 14px/1.6 system-ui, -apple-system, "Segoe UI", Roboto, "Noto Sans Georgian", "Noto Sans", Arial, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+img, svg, video { display: block; max-width: 100%; height: auto; }
+button { font: inherit; }
+a { color: var(--primary); text-decoration: none; }
+a:hover { text-decoration: underline; }
+
+/* 3) App shell — შენი Page.jsx-ში გამოყენებული კლასები */
+.st-container { min-height: 100%; }
+.app { min-height: 100vh;  }
+
+/* 4) საკონტენტო კონტეინერი */
+.container {
+    width: 100%;
+    max-width: var(--max-w);
+    margin-inline: auto;
+    padding-inline: var(--space-4);
+}
+
+/* 5) ტიპოგრაფია */
+h1,h2,h3,h4,h5,h6 { margin: 0 0 var(--space-3); line-height: 1.25; }
+h1 { font-size: clamp(24px, 3vw, 32px); }
+h2 { font-size: clamp(20px, 2.5vw, 28px); }
+h3 { font-size: clamp(18px, 2vw, 22px); }
+p { margin: 0 0 var(--space-3); color: #262626; }
+.small { font-size: 12px; color: var(--muted); }
+
+/* 6) Utility კლასები (გადამხმარე) */
+.flex { display: flex; }
+.center { display: grid; place-items: center; }
+.row { display: flex; gap: var(--space-3); }
+.col { display: flex; flex-direction: column; gap: var(--space-3); }
+.gap-2 { gap: var(--space-2); }
+.gap-3 { gap: var(--space-3); }
+.mt-2 { margin-top: var(--space-2); }
+.mt-3 { margin-top: var(--space-3); }
+.mt-4 { margin-top: var(--space-4); }
+.mb-4 { margin-bottom: var(--space-4); }
+.p-4 { padding: var(--space-4); }
+.rounded { border-radius: var(--radius); }
+.card {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: var(--space-4);
+}
+
+/* 7) ფორმები */
+input, select, textarea {
+    font: inherit;
+}
+label { display: inline-block; margin-bottom: 6px; color: #434343; }
+
+/* 8) AntD მცირე გასწორებები (დიზაინ-ხელსაწყო) */
+.ant-btn { border-radius: 8px; }
+.ant-input, .ant-select-selector, .ant-picker, .ant-input-affix-wrapper {
+    border-radius: 8px !important;
+}
+.ant-card { border-radius: var(--radius); }
+.ant-card-head-title { font-weight: 600; }
+.ant-layout { background: transparent; } /* რომ body-ს ფონი დარჩეს */
+
+/* მენიუს ქვედა ხაზის მოშორება თუ გინდა */
+.ant-menu-horizontal { border-bottom: none !important; }
+
+/* Spin ცენტრში დასანახად helper კლასით .center გამოიყენე */
+
+/* სექციები (هوم/ქარდები/რუკა) */
+.section {
+    padding: var(--space-6) 0;
+}
+.section-title {
+    margin-bottom: var(--space-4);
+    font-weight: 700;
+}
+
+/* Responsive */
+@media (max-width: 768px){
+    .app { padding: var(--space-4) 0; }
+    .row { flex-direction: column; }
+}
+
+/* (არასავალდებულო) Dark mode — თუ სისტემაში ბნელ თემას გამოიყენებენ */
+@media (prefers-color-scheme: dark){
+    :root{
+        --bg: #0f1115;
+        --panel: #161a22;
+        --text: #e6e6e6;
+        --muted: #bfbfbf;
+        --border: #262a33;
+        --primary: #3b82f6; /* ოდნავ სხვა ელფერი ბნელში */
+    }
+    a { color: var(--primary); }
+}
+
+/* ===========================
+   Fonts
+   =========================== */
+
+/* Georgian — Noto Sans Georgian (Regular) */
+@font-face {
+    font-family: 'NotoSansGeorgian';
+    src:
+            url('./fonts/NotoSansGeorgian-Regular.ttf') format('woff2'),
+            url('./fonts/NotoSansGeorgian-Regular.ttf') format('truetype');
+    font-weight: 400;
+    font-style: normal;
+    font-display: swap;
+    /* Georgian unicode ranges */
+    unicode-range:
+            U+10A0-10FF,   /* Georgian */
+            U+2D00-2D2F,   /* Georgian Supplement */
+            U+1C90-1CBF;   /* Georgian Extended */
+}
+
+/* English/Latin — Calibri (Normal)
+   რეკომენდაცია: გამოიყენე ლოკალურად შენახული .woff2/.ttf, რადგან გარე URL-ები ხშირად ბლოკირდება CORS-ით. */
+@font-face {
+    font-family: 'Calibri Normal';
+    src:
+            local('Calibri'),
+            local('Calibri Regular'),
+            url('./fonts/calibri.ttf') format('truetype');
+    font-weight: 400;
+    font-style: normal;
+    font-display: swap;
+}
+
+/* Base fonts */
+:root{
+    --font-latin: 'Calibri Normal', system-ui, -apple-system, 'Segoe UI', Roboto, 'Noto Sans', Arial, sans-serif;
+    --font-georgian: 'NotoSansGeorgian', system-ui, 'Noto Sans Georgian', 'Noto Sans', Arial, sans-serif;
+}
+
+/* Default (latin/en) */
+html { font-family: var(--font-latin); }
+
+/* Georgian override */
+html[lang="ka"],
+html[lang="ge"],
+:lang(ka),
+:lang(ge) {
+    font-family: var(--font-georgian);
+}

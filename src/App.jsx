@@ -1,4 +1,5 @@
-import { Spin } from "antd";
+// Page.jsx
+import { Result, Spin } from "antd";
 import { Route, Routes, useLocation } from "react-router-dom";
 import AppLayout from "./components/AppLayout.jsx";
 import RequireAuth from "./features/auth/RequireAuth.jsx";
@@ -6,78 +7,60 @@ import { lazy, Suspense, useEffect, useState } from "react";
 import i18next from "i18next";
 
 import HeaderContainer from "./components/header/HeaderContainer.jsx";
-import DashboardContainer from "./admin/components/Dashboard/DashboardContainer.jsx";
 
-
-const Homepage = lazy(
-  () => import("./components/HomePage/HomePage.jsx"),
-);
-
-const ContactPage = lazy(
-  () => import("./admin/components/Contact/contactContainer.jsx"),
-);
-
+const DashboardContainer = lazy(() => import("./admin/components/Dashboard/DashboardContainer.jsx"));
 const Login = lazy(() => import("./components/LoginForm/Login"));
+const Registration    = lazy(() => import("./components/Registration/Registration.jsx"));
 
-const NonDashboardRoutes = [
-  "/login",
-  "/admin",
-  "/brands",
-  "/contact",
-];
+const Homepage = lazy(() => import("./pages/HomePage/HomePage.jsx"));
+const AboutUsPage   = lazy(() => import("./pages/AboutUs/AboutUs.jsx"));
+const AccountPage   = lazy(() => import("./pages/Account/AccountOverview.jsx"));
+const MapsPage    = lazy(() => import("./pages/WeatherMaps/WeatherMaps.jsx"));
+const ContactPage = lazy(() => import("./pages/Contacts/Contacts.jsx"));
 
-const HideBannersRoutes = ["/about", "/contact"];
 
 const Page = () => {
-  let location = useLocation();
-  const [i18nLoaded, setI18nLoaded] = useState(false);
-  const isNotDashboard = NonDashboardRoutes.includes(location.pathname);
+  const HIDE_HEADER = [/^\/login$/, /^\/register$/, /^\/admin(?:\/.*)?$/];
+  const location = useLocation();
+  const hideHeader = HIDE_HEADER.some(rx => rx.test(location.pathname));
 
+  const [i18nLoaded, setI18nLoaded] = useState(false);
   useEffect(() => {
-    i18next.on("loaded", function () {
-      setI18nLoaded(true);
-    });
+    const ready = () => setI18nLoaded(true);
+    if (i18next.isInitialized) setI18nLoaded(true);
+    else i18next.on("initialized", ready);
+    return () => i18next.off("initialized", ready);
   }, []);
 
-
   return (
-    <>
       <div className="st-container">
-        <div className={"app"} style={!isNotDashboard ? {} : { padding: 0 }}>
-          <>
-            {i18nLoaded && !isNotDashboard && (
-              <>
-                <HeaderContainer />
-              </>
-            )}
-            <Suspense fallback={<Spin size="large" spinning={true} />}>
-              <Routes>
-                <Route path="/" element={<AppLayout />}>
-                  {/* public routs */}
-                  <Route
-                    exact
-                    index
-                    element={
-                      <Homepage />
-                    }
-                  />
-                  <Route exact index path="/login" element={<Login />} />
-                  {/* protected routes */}
-                  <Route element={<RequireAuth />}>
-                    <Route
-                      exact
-                      path="/admin"
-                      element={<DashboardContainer />}
-                    />
-                  </Route>
+        <div className="app" style={!hideHeader ? {} : { padding: 0 }}>
+          {i18nLoaded && !hideHeader && <HeaderContainer />}
+          <Suspense
+              fallback={
+                <div style={{ minHeight: "40vh", display: "grid", placeItems: "center" }}>
+                  <Spin size="large" />
+                </div>
+              }
+          >
+            <Routes>
+              <Route path="/" element={<AppLayout />}>
+                <Route index element={<Homepage />} />
+                <Route path="about" element={<AboutUsPage />} />
+                <Route path="account" element={<AccountPage />} />
+                <Route path="maps" element={<MapsPage />} />
+                <Route path="contact" element={<ContactPage />} />
+                <Route path="register" element={<Registration />} />
+                <Route path="login" element={<Login />} />
+                <Route element={<RequireAuth />}>
+                  <Route path="admin" element={<DashboardContainer />} />
                 </Route>
-              </Routes>
-            </Suspense>
-          </>
-          {/*<DaytonaFooter setBrandName={setBrandName} />*/}
+                <Route path="*" element={<Result status="404" title="Not Found" />} />
+              </Route>
+            </Routes>
+          </Suspense>
         </div>
       </div>
-    </>
   );
 };
 
