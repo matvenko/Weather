@@ -1,41 +1,28 @@
-// Page.jsx
+// App.jsx (former Page.jsx)
 import { Result, Spin } from "antd";
-import { Route, Routes, useLocation } from "react-router-dom";
+import { Route, Routes } from "react-router-dom";
 import AppLayout from "./components/AppLayout.jsx";
 import RequireAuth from "./features/auth/RequireAuth.jsx";
-import { lazy, Suspense, useEffect, useState } from "react";
-import i18next from "i18next";
+import { lazy, Suspense } from "react";
 
-import HeaderContainer from "./components/header/HeaderContainer.jsx";
+// Layout that wraps meteoblue-style pages
+import WeatherLayout from "./components/layout/WeatherLayout.jsx";
 
+// Lazy pages
 const DashboardContainer = lazy(() => import("./admin/components/Dashboard/DashboardContainer.jsx"));
-const Login = lazy(() => import("./components/LoginForm/Login"));
-const Registration    = lazy(() => import("./components/Registration/Registration.jsx"));
+const Login         = lazy(() => import("./components/LoginForm/Login"));
+const Registration  = lazy(() => import("./components/Registration/Registration.jsx"));
 
-const Homepage = lazy(() => import("./pages/HomePage/HomePage.jsx"));
+const Homepage      = lazy(() => import("./pages/HomePage/HomePage.jsx"));
 const AboutUsPage   = lazy(() => import("./pages/AboutUs/AboutUs.jsx"));
 const AccountPage   = lazy(() => import("./pages/Account/AccountOverview.jsx"));
-const MapsPage    = lazy(() => import("./pages/WeatherMaps/WeatherMaps.jsx"));
-const ContactPage = lazy(() => import("./pages/Contacts/Contacts.jsx"));
+const MapsPage      = lazy(() => import("./pages/WeatherMaps/WeatherMaps.jsx"));
+const ContactPage   = lazy(() => import("./pages/Contacts/Contacts.jsx"));
 
-
-const Page = () => {
-  const HIDE_HEADER = [/^\/login$/, /^\/register$/, /^\/admin(?:\/.*)?$/];
-  const location = useLocation();
-  const hideHeader = HIDE_HEADER.some(rx => rx.test(location.pathname));
-
-  const [i18nLoaded, setI18nLoaded] = useState(false);
-  useEffect(() => {
-    const ready = () => setI18nLoaded(true);
-    if (i18next.isInitialized) setI18nLoaded(true);
-    else i18next.on("initialized", ready);
-    return () => i18next.off("initialized", ready);
-  }, []);
-
+export default function App() {
   return (
       <div className="st-container">
-        <div className="app" style={!hideHeader ? {} : { padding: 0 }}>
-          {i18nLoaded && !hideHeader && <HeaderContainer />}
+        <div className="app">
           <Suspense
               fallback={
                 <div style={{ minHeight: "40vh", display: "grid", placeItems: "center" }}>
@@ -45,16 +32,24 @@ const Page = () => {
           >
             <Routes>
               <Route path="/" element={<AppLayout />}>
-                <Route index element={<Homepage />} />
-                <Route path="about" element={<AboutUsPage />} />
-                <Route path="account" element={<AccountPage />} />
+                {/* meteoblue-style layout */}
+                <Route element={<WeatherLayout />}>
+                  <Route index element={<Homepage />} />
+                  <Route path="about" element={<AboutUsPage />} />
+                  <Route path="account" element={<AccountPage />} />
+                  <Route path="contact" element={<ContactPage />} />
+                  <Route path="login" element={<Login />} />
+                  <Route path="register" element={<Registration />} />
+                </Route>
+
+                {/* Maps — own layout/fullscreen */}
                 <Route path="maps" element={<MapsPage />} />
-                <Route path="contact" element={<ContactPage />} />
-                <Route path="register" element={<Registration />} />
-                <Route path="login" element={<Login />} />
+
                 <Route element={<RequireAuth />}>
                   <Route path="admin" element={<DashboardContainer />} />
                 </Route>
+
+                {/* 404 */}
                 <Route path="*" element={<Result status="404" title="Not Found" />} />
               </Route>
             </Routes>
@@ -62,6 +57,4 @@ const Page = () => {
         </div>
       </div>
   );
-};
-
-export default Page;
+}
