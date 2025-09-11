@@ -1,4 +1,4 @@
 {
-  "nav": { "about": "About", "maps": "Maps", "service": "Service", "contact": "Contact" },
+  "nav": { "home": "Home", "about": "About", "maps": "Maps", "service": "Service", "contact": "Contact" },
   "auth": { "login": "Log in", "register": "Sign up" }
 }

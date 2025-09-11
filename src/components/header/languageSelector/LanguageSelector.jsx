@@ -1,4 +1,4 @@
-import { Button } from "antd";
+import { Switch } from "antd";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 
@@ -14,23 +14,23 @@ export default function LanguageSelector() {
       localStorage.setItem("lng", lang);
     };
 
-    onLang(i18n.language);                // ინიციალური მნიშვნელობა
-    i18n.on("languageChanged", onLang);   // subscribe
-    return () => i18n.off("languageChanged", onLang); // cleanup
+    onLang(i18n.language);
+    i18n.on("languageChanged", onLang);
+    return () => i18n.off("languageChanged", onLang);
   }, [i18n]);
 
-  const toggle = async () => {
-    await i18n.changeLanguage(lng === "en" ? "ka" : "en");
+  const toggle = async (checked) => {
+    await i18n.changeLanguage(checked ? "en" : "ka");
   };
 
   return (
-      <Button
-          type="text"
-          className="language-btn"
-          onClick={toggle}
-          aria-label={lng === "en" ? "Switch language to Georgian" : "ენის შეცვლა ინგლისურზე"}
-      >
-        {lng === "en" ? "Eng" : "Geo"}
-      </Button>
+      <Switch
+          checked={lng === "en"}
+          onChange={toggle}
+          checkedChildren="Eng"
+          unCheckedChildren="Geo"
+          className="language-switch"
+          aria-label={lng === "en" ? "Switch language to Georgian" : "Switch language to English"}
+      />
   );
 }

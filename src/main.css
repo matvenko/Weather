@@ -2,6 +2,8 @@
    Global base (main.css)
    =========================== */
 
+@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap');
+
 /* 1) CSS Variables — შეგეძლება ერთ წერტილში ფერების/ზომების მართვა */
 :root{
     --max-w: 1500px;
@@ -43,7 +45,7 @@ body {
 img, svg, video { display: block; max-width: 100%; height: auto; }
 button { font: inherit; }
 a { color: var(--primary); text-decoration: none; }
-a:hover { text-decoration: underline; }
+a:hover { text-decoration: none; }
 
 /* 3) App shell — შენი Page.jsx-ში გამოყენებული კლასები */
 .st-container { min-height: 100%; }
@@ -156,7 +158,7 @@ label { display: inline-block; margin-bottom: 6px; color: #434343; }
 /* English/Latin — Calibri (Normal)
    რეკომენდაცია: გამოიყენე ლოკალურად შენახული .woff2/.ttf, რადგან გარე URL-ები ხშირად ბლოკირდება CORS-ით. */
 @font-face {
-    font-family: 'Calibri Normal';
+    font-family: 'Nunito', sans-serif;
     src:
             local('Calibri'),
             local('Calibri Regular'),

@@ -1,6 +1,7 @@
 import React, { useMemo, useState } from "react";
 import ForecastStrip from "../../components/weather/ForecastStrip";
 import DayDetails from "../../components/weather/DayDetails";
+import "./css/Homepage.css"
 
 export default function HomePage() {
     const days = useMemo(() => ([
@@ -28,11 +29,11 @@ export default function HomePage() {
     return (
         <>
             <h1 style={{ marginBottom: 12 }}>Weather Tbilisi</h1>
-            <ForecastStrip
-                days={days.map(d => ({ ...d, selected: d.label === active.label }))}
-                onSelect={(d) => setActive(d)}
-            />
-            <DayDetails title={active?.label || "Today"} hours={hours} />
+            {/*<ForecastStrip*/}
+            {/*    days={days.map(d => ({ ...d, selected: d.label === active.label }))}*/}
+            {/*    onSelect={(d) => setActive(d)}*/}
+            {/*/>*/}
+            {/*<DayDetails title={active?.label || "Today"} hours={hours} />*/}
         </>
     );
 }
