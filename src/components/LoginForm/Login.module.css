@@ -1,63 +1,171 @@
-.loginContainer {
+:root{
+	--card-radius: 18px;
+	--shadow: 0 18px 60px rgba(0,0,0,.35);
+	--right-bg: #ffffff;
+	--brand: #1677ff;
 }
 
-#particle-background {
-	-webkit-transform: translate3d(0, 0, 0);
-	transform: translate3d(0, 0, 0);
-	-webkit-backface-visibility: hidden;
+.shell{
+	position: relative;
+	min-height: 100vh;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	padding-top: 110px;   /* header-ის ზომაზე ცოტა მეტი */
+	box-sizing: border-box;
+}
+
+#particle-background{
+	position:absolute; inset:0; z-index:0;
+	transform: translate3d(0,0,0);
 	backface-visibility: hidden;
-	top: 0;
-	bottom: 0;
-	right: 0;
-	left: 0;
-	position: absolute;
-	z-index: 0;
-	overflow: hidden;
 }
 
-.title {
-	color: #1677ff !important;
-	margin-bottom: 30px !important;
+.card{
+	position:relative;
+	z-index:1;
+	width:min(1040px, 91vw);
+	min-height:560px;
+	border-radius: var(--card-radius);
+	box-shadow: var(--shadow);
+	background: #fff0; /* split პანელები არიან */
+	display:grid;
+	grid-template-columns: 1.05fr 1fr; /* მარცხენა/მარჯვენა */
+	overflow:hidden;
 }
 
-.loginForm {
-	background-color: rgb(237 237 237 / 80%);
-	box-shadow: 0px 8px 32px 0 rgba(0, 0, 0, 0.33);
-	backdrop-filter: blur(3px);
-	padding: 16px;
-	border-radius: 16px;
-	width: 400px;
-	position: absolute;
-	z-index: 1;
-	top: 33%;
-	left: 40%;
+/* LEFT PANEL */
+.left{
+	position:relative;
+	background:
+			linear-gradient(
+					307deg, rgb(0 0 0 / 60%), rgb(0 0 0 / 60%)), url(/login-illustration.jpg) center / cover no-repeat
+}
+.left::after{
+	content:"";
+	position:absolute; inset:0;
+	box-shadow: inset 0 0 0 1px rgba(255,255,255,.08);
+	border-top-left-radius: var(--card-radius);
+	border-bottom-left-radius: var(--card-radius);
+}
+.leftInner{
+	height:100%;
+	padding:48px 40px;
+	color:#fff;
+	display:flex;
+	flex-direction:column;
+	justify-content:space-between;
+}
+.leftTitle{
+	color:#fff !important;
+	margin:0 0 10px 0 !important;
+}
+.leftText{
+	color: var(--text);
+	opacity:.9;
+	font-size:14px;
 }
 
-input {
-	width: 250px;
-	height: 45px;
-	text-indent: 10px;
-	margin: 10px 0;
+.socialBlock{
+	display:flex;
+	flex-direction:column;
+	gap:12px;
+	order: 0;
+}
+.socialLabel{
+	font-size:12px;
+	opacity:.9;
+}
+.socialRow{
+	display:flex;
+	gap:12px;
 }
 
-input[type='checkbox'] {
-	width: 29px;
-	height: 20px;
+/* RIGHT PANEL */
+.right{
+	background: var(--right-bg);
+	backdrop-filter: blur(4px);
+	padding: 24px 28px 28px;
+	display:flex;
+	align-items:stretch;
+}
+.tabsWrap{
+	width:100%;
+	margin:auto;
+	max-width: 520px;
+}
+.tabs :global(.ant-tabs-nav){
+	margin-bottom: 8px;
+}
+.tabs :global(.ant-tabs-tab.ant-tabs-tab-active .ant-tabs-tab-btn){
+	color: var(--brand) !important;
+	font-weight:600;
 }
 
-.login-form-button {
-	width: 100%;
+.form :global(.ant-form-item){
+	margin-bottom: 16px;
 }
 
-.errorMessage{
-	color: red;
+.primaryBtn{
+	height:46px;
+	font-weight:600;
+	border-radius: 10px;
 }
 
-@media only screen and (max-width: 568px) {
-	.loginForm {
-		width: 90%;
-		position: absolute;
-		left: 5%;
-		top: 20%;
+.googleBtn{
+	height:46px;
+	border-radius:10px;
+	background:#fff;
+	border:1px solid #e5e7eb;
+}
+.googleBtn:hover{ border-color:#d0d7de; }
+
+.divider{ margin:14px 0; }
+
+.error{
+	color:#e11d48;
+	font-size:13px;
+	margin-top:8px;
+}
+
+.prefixIcon{
+	color: yellow !important;
+}
+
+/* RESPONSIVE */
+@media (max-width: 960px){
+	.card{
+		grid-template-columns: 1fr;
+		min-height: unset;
 	}
+	/* Welcome ბლოკი ქვევით */
+	.left{
+		order: 2;
+		height: 260px;            /* ან რაც გინდა */
+		border-top-left-radius: 0;
+		border-top-right-radius: 0;
+		border-bottom-left-radius: var(--card-radius);
+		border-bottom-right-radius: var(--card-radius);
+	}
+	.left::after{
+		border-radius: 0 0 var(--card-radius) var(--card-radius);
+	}
+	/* გამოიტანე ფორმა ზემოთ */
+	.right{
+		order: 1;
+		padding: 18px;
+		border-top-left-radius: var(--card-radius);
+		border-top-right-radius: var(--card-radius);
+		border-bottom-left-radius: 0;
+		border-bottom-right-radius: 0;
+	}
+	.tabsWrap{
+		max-width: 92%;
+	}
+	/* header-ის გადაფარების საწინააღმდეგოდ */
+	.shell{
+		align-items: flex-start;
+		padding-top: 100px; /* header-ის სიმაღლეზე მოარგე */
+	}
+
 }

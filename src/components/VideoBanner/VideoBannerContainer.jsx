@@ -29,7 +29,7 @@ const VideoBannerContainer = () => {
         }
     }, []);
     return (
-        <div className={"banner-layer"}>
+        <div className="banner-layer">
             <video
                 ref={videoRef}
                 autoPlay
@@ -40,8 +40,7 @@ const VideoBannerContainer = () => {
                 className="w-full h-[60vh] object-cover rounded-2xl myVideo"
                 poster="/video-poster.jpg"
             >
-                <source src={mainVideo} type="video/mp4"/>
-                Your browser does not support HTML5 video.
+                <source src={mainVideo} type="video/mp4" />
             </video>
             <div className="main-content-top"></div>
         </div>

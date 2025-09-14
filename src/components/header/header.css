@@ -164,7 +164,8 @@
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    gap: 3px;
+    flex-direction: column;
+    gap: 4px;
     padding: 0;
 }
 
@@ -174,6 +175,12 @@
     background: var(--text);
     display: block;
 }
+
+.wx-burger.is-open .wx-burger-bar:nth-child(1) { transform: translateY(6px) rotate(45deg); }
+.wx-burger.is-open .wx-burger-bar:nth-child(2) { opacity: 0; }
+.wx-burger.is-open .wx-burger-bar:nth-child(3) { transform: translateY(-6px) rotate(-45deg); }
+
+.wx-burger-bar { transition: transform .2s ease, opacity .2s ease; }
 
 /* Drawer */
 .wx-drawer .ant-drawer-body {

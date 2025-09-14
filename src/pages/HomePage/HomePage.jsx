@@ -28,7 +28,7 @@ export default function HomePage() {
 
     return (
         <>
-            <h1 style={{ marginBottom: 12 }}>Weather Tbilisi</h1>
+            {/*<h1 style={{ marginBottom: 12 }}>Weather Tbilisi</h1>*/}
             {/*<ForecastStrip*/}
             {/*    days={days.map(d => ({ ...d, selected: d.label === active.label }))}*/}
             {/*    onSelect={(d) => setActive(d)}*/}
