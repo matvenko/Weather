@@ -2,7 +2,7 @@
 
 /* Root theme tokens (light/dark via [data-theme]) */
 :root {
-    --bg-elev: rgba(255, 255, 255, 0.04);
+    --bg-elev: rgba(255, 255, 255, 1);
     --text: #ffffff;
     --muted: rgba(255, 255, 255, 0.7);
     --primary: #fa9f1e;
@@ -42,6 +42,10 @@
     backdrop-filter: saturate(1.2) blur(10px);
     box-shadow: var(--shadow);
     border-bottom: 1px solid var(--border);
+}
+
+.wx-topbar.nav-fixed .wx-brand-main, .wx-topbar.nav-fixed .wx-menu .ant-menu-item a{
+    color: black;
 }
 
 .wx-bar {
@@ -110,7 +114,7 @@
 
 .wx-menu .ant-menu-item-selected a,
 .wx-menu .ant-menu-item:hover a {
-    color: var(--secondary-color);
+    color: var(--secondary-color) !important;
 }
 
 .wx-menu .ant-menu-item:hover::after {

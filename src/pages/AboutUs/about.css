@@ -1,0 +1,537 @@
+/* ---- About Page ---- */
+
+.AboutPageAbout {
+    --about-text: #111827; /* მუქი სათაური */
+    --about-muted: #e5e7eb; /* ღია ტექსტი მუქ ფონზე */
+    --about-muted-dark: #4b5563; /* პარაგრაფი ღია ფონზე */
+    --about-surface: #ffffff;
+    --about-border: #e5e7eb;
+}
+
+/* inner-banner */
+.inner-banner {
+    background-size: cover;
+    -webkit-background-size: cover;
+    -moz-background-size: cover;
+    -o-background-size: cover;
+    -ms-background-size: cover;
+    position: relative;
+    z-index: 0;
+}
+
+.inner-banner::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    min-height: 100%;
+    left: 0;
+    right: 0;
+    z-index: -1;
+    background: rgb(12 12 12 / 48%);
+}
+
+.w3l-breadcrumb {
+    display: block;
+    z-index: 100;
+    max-width: 1240px;
+    margin: 0 auto;
+    padding: 150px 0 14px 0px;
+    grid-template-columns: auto 1fr auto;
+    align-items: center;
+    gap: 12px;
+}
+
+.secondary-breadcrumbs-name {
+    color: #fa9f1e !important;
+}
+
+.breadcrumbs-custom-path {
+    text-align: center;
+    display: inline-block;
+}
+
+h4.inner-text-title {
+    color: #fff;
+    font-size: 18px;
+}
+
+.breadcrumbs-custom-path li {
+    position: relative;
+    display: inline-block;
+    vertical-align: middle;
+    font-size: 15px;
+    text-transform: capitalize;
+    color: #eee;
+}
+
+.breadcrumbs-custom-path li span.fa {
+    font-size: 12px;
+}
+
+.breadcrumbs-custom-path a,
+.breadcrumbs-custom-path a:active {
+    color: #fff;
+    font-weight: bold;
+}
+
+.breadcrumbs-custom-path a:hover {
+    color: var(--primary-color);
+}
+
+@media (max-width: 800px) {
+    .w3l-breadcrumb {
+        padding-top: 130px;
+    }
+
+    .breadcrumbs-custom-path li {
+        font-size: 16px;
+    }
+}
+
+@media (max-width: 568px) {
+    .breadcrumbs-custom-path li {
+        font-size: 15px;
+    }
+
+    h4.inner-text-title {
+        font-size: 30px;
+    }
+}
+
+/* //inner-banner */
+
+/* container fallback */
+.AboutPageAbout.container {
+    max-width: 1200px;
+    margin: 110px auto 0;
+    padding: 24px;
+    background: #FFF;
+}
+
+/* ====== HERO IMAGE OVERLAY ====== */
+.about-img-top {
+    position: relative;
+    overflow: hidden
+}
+
+.about-img-top.has-overlay::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    /* ზევიდან ჩამომსვლელი გრადიენტი + მსუბუქი დამუქება */
+    background: linear-gradient(to bottom, rgba(0, 0, 0, .55), rgba(0, 0, 0, .25) 45%, rgba(0, 0, 0, .1) 80%), rgba(0, 0, 0, .15);
+    pointer-events: none;
+    border-radius: 14px;
+}
+
+.radius-image {
+    border-radius: 14px;
+    display: block;
+    width: 100%;
+    height: auto
+}
+
+.img-fluid {
+    width: 100%;
+    height: auto
+}
+
+/* ====== LAYOUT ====== */
+.about-row {
+    display: grid;
+    grid-template-columns:1fr;
+    gap: 28px
+}
+
+@media (min-width: 992px) {
+    .about-row {
+        grid-template-columns:1fr 1fr;
+        gap: 42px
+    }
+}
+
+/* ====== PANEL FOR TEXT (readable over strong bgs) ====== */
+.about-panel {
+    margin: 45px auto;
+}
+
+@media (min-width: 992px) {
+    .about-panel {
+        padding: 28px 28px
+    }
+}
+
+/* ====== TYPOGRAPHY (light on dark panel) ====== */
+.title-subw3hny {
+    font-size: 16px;
+    font-weight: 700;
+    text-transform: uppercase;
+    line-height: 30px;
+    color: #FFFFFF;
+}
+
+.title-w3l {
+    color: #000000;
+    font-size: 22px;
+    line-height: 1.15;
+    font-weight: normal;
+    margin: 0 0 12px;
+}
+
+.title-w3l span {
+    font-weight: bold;
+    color: var(--primary-color)
+}
+
+.about-lead {
+    color: var(--about-text);
+    font-size: 16px;
+    line-height: 1.75;
+    margin: 8px 0 0
+}
+
+/* მარჯვენა კოლონის ტექსტი (ღია ფონზე) */
+.about-text {
+    color: var(--about-text);
+    font-size: 16px;
+    line-height: 1.85
+}
+
+/* ====== BUTTONS ====== */
+.w3banner-content-btns {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-top: 18px
+}
+
+.btn.about-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    height: 44px;
+    padding: 0 18px;
+    border-radius: 10px;
+    font-weight: 600;
+    text-decoration: none;
+    border: 1px solid transparent;
+    transition: .2s;
+    will-change: transform, box-shadow
+}
+
+.btn-primary {
+    background: var(--primary-color);
+    color: #fff;
+    box-shadow: 0 8px 18px rgba(15, 118, 110, .28)
+}
+
+.btn-outline-light {
+    background: transparent;
+    color: #fff;
+    border-color: rgba(255, 255, 255, .45)
+}
+
+.w3banner-content-btns a:hover {
+    color: black
+}
+
+.arrow {
+    font-size: 18px;
+    line-height: 1
+}
+
+/* ====== UTILITIES ====== */
+.mb-4 {
+    margin-bottom: 1.25rem
+}
+
+.mb-lg-5 {
+    margin-bottom: 3rem
+}
+
+.mt-lg-0 {
+    margin-top: 0
+}
+
+.mt-md-5 {
+    margin-top: 3rem
+}
+
+.ps-lg-5 {
+    padding-left: 3rem
+}
+
+@media (max-width: 575.98px) {
+    .ps-lg-5 {
+        padding-left: 0
+    }
+
+    .about-panel {
+        padding: 18px
+    }
+
+    .title-w3l {
+        font-size: 26px
+    }
+}
+
+/* მაღალი კონტრასტი ძალიან მუქ ფოტოზე */
+@media (prefers-color-scheme: dark) {
+    .about-text {
+        color: #111111
+    }
+}
+
+/* ===== WHY SECTION ===== */
+.AboutWhy {
+    margin-bottom: 8px;
+}
+
+.AboutWhy .container,
+.AboutWhy {
+    max-width: 1200px;
+    padding: 50px 24px
+}
+
+.AboutWhy-grid {
+    display: grid;
+    grid-template-columns: 1.1fr 1fr 1fr;
+    gap: 32px;
+    background: #f5f9f7; /* ნაზი ღია ფონზე, როგორც მაგალითში */
+    border-radius: 14px;
+    padding: clamp(18px, 3vw, 26px);
+}
+
+.why-left {
+    align-self: start;
+}
+
+.why-kicker {
+    display: inline-block;
+    color: var(--primary-color);
+    font-weight: 800;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+    font-size: 12px;
+    margin-bottom: 8px;
+}
+
+.why-title {
+    font-size: clamp(16px, 3vw, 26px);
+    line-height: 1.15;
+    font-weight: 800;
+    margin: 0 0 10px;
+}
+
+.why-text {
+    color: #415058;
+    line-height: 1.8;
+    margin-bottom: 16px;
+}
+
+.why-call-btn {
+    background: var(--primary-color);
+    color: #fff;
+    height: 44px;
+    padding: 0 18px;
+    border-radius: 10px;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: 700;
+    text-decoration: none;
+}
+
+.why-call-btn:hover {
+    color: black;
+}
+
+/* ბარათები */
+.why-card {
+    align-self: start;
+}
+
+.why-img {
+    width: 100%;
+    height: auto;
+    display: block;
+    border-radius: 10px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, .07);
+    margin-bottom: 14px;
+    object-fit: cover;
+}
+
+.why-card-title {
+    font-size: 20px;
+    font-weight: 800;
+    color: var(--about-text);
+    margin: 6px 0 6px;
+}
+
+.why-card-text {
+    color: #5a6a73;
+    line-height: 1.85;
+}
+
+.transparent-container {
+    display: block;
+    z-index: 100;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 80px 24px 100px;
+    grid-template-columns: auto 1fr auto;
+    align-items: center;
+    gap: 12px;
+}
+
+
+/* კონტენტის ფენა იყოს ოვერლეიზე მაღლა */
+.hero-band .title-content,
+.hero-band .hero-copy {
+    position: relative;
+    z-index: 1;
+    color: #fff;
+}
+
+/* kicker */
+.hero-kicker {
+    display: inline-block;
+    color: #fa9f1e; /* შენი ბრენდის ფერი */
+    font-weight: 800;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+}
+
+/* სათაური */
+.hero-title {
+    font-size: clamp(14px, 3.6vw, 24px);
+    font-weight: 800;
+    margin: 0 0 14px;
+}
+
+.btn-style {
+    padding: 24px 32px;
+    font-size: 14px;
+    font-weight: 700;
+    transition: 0.3s ease-in;
+    border-radius: 8px;
+    text-transform: capitalize;
+    color: #FFFFFF;
+    border: 1px solid #FFF
+}
+
+.btn-style:hover {
+    color: #FFFFFF;
+}
+
+/* Palette (შენი ფერები) */
+.MapsIncluded {
+    --mh-primary: #fa9f1e; /* ნარინჯისფერი */
+    --mh-accent: #c76262; /* გამაგრილებელი მწვანე */
+    --mh-card-bg: #f5fbf9; /* თეთრზე მსუბუქად მწვანე */
+    --mh-ink: #0b1f18;
+}
+
+.MapsIncluded.container {
+    max-width: 1200px;
+    padding: 110px 24px;
+}
+
+.mi-head {
+    text-align: center;
+    margin-bottom: 18px;
+}
+
+.mi-kicker {
+    display: inline-block;
+    text-transform: uppercase;
+    font-weight: 800;
+    letter-spacing: .08em;
+    color: var(--mh-primary);
+    font-size: 12px;
+    margin-bottom: 6px;
+}
+
+.mi-title {
+    font-size: clamp(18px, 3vw, 26px);
+    font-weight: 800;
+    color: var(--mh-ink);
+    margin: 12px auto 40px;
+}
+
+/* Card */
+.mi-card {
+    display: block;
+    background: var(--mh-card-bg);
+    border: 1px solid rgba(15, 118, 110, .12);
+    border-radius: 4px;
+    padding: 32px 22px;
+    box-shadow: 0 10px 24px rgba(0, 0, 0, .06);
+    text-decoration: none;
+    transition: transform .12s ease, box-shadow .2s ease, background .2s ease, border-color .2s ease;
+    min-height: 150px;
+}
+
+.mi-icon {
+    font-size: 34px;
+    color: var(--mh-accent);
+    margin-bottom: 10px;
+    line-height: 1;
+}
+
+.mi-card-title {
+    margin: 20px 0 8px;
+    font-size: 18px;
+    font-weight: normal;
+    color: var(--mh-ink);
+}
+
+.mi-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-weight: 700;
+    color: #14483f;
+}
+
+.mi-link .arrow {
+    font-size: 16px
+}
+
+/* პატარა ეკრანზე მეტად „ჰაეროვანი“ */
+@media (max-width: 575.98px) {
+    .MapsIncluded.container {
+        margin: 32px auto;
+    }
+
+    .mi-card {
+        padding: 18px
+    }
+}
+
+
+/* რესპონსივი */
+@media (max-width: 992px) {
+
+    .transparent-container{
+        padding: 40px 12px;
+    }
+
+    .AboutWhy-grid {
+        grid-template-columns: 1fr;
+        gap: 22px
+    }
+
+    .why-left {
+        order: -1
+    }
+
+    .mi-icon {
+        margin: auto 14px;
+    }
+
+    /* მობაილზე მარცხენა ტექსტი ზემოთ */
+}
+
+
