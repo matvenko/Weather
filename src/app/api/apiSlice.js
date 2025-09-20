@@ -1,12 +1,11 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
-import { setCredentials, logOut } from "../../features/auth/authSlice";
+import { logOut } from "../../features/auth/authSlice";
 import { Modal } from "antd";
 const devMode = true;
-// baseUrl: 'https://middleware-dev.spacecargo.ge/', test
-// baseUrl: 'https://middleware.spacecargo.ge/', prod
+
 const _baseUrl = devMode
-  ? "https://middleware.daytona.ge/"
-  : "https://middleware.daytona.ge/";
+  ? "https://weather-api.webmania.ge/"
+  : "https://weather-api.webmania.ge/";
 
 const baseQuery = fetchBaseQuery({
   baseUrl: _baseUrl,

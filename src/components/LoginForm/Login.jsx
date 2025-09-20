@@ -11,6 +11,7 @@ import { useLoginMutation } from "../../features/auth/authApiSlice";
 // import { useRegisterMutation } from "../../features/auth/authApiSlice";
 
 import s from "./Login.module.css";
+import GoogleLoginButton from "./GoogleButton.jsx";
 
 const { Title, Text } = Typography;
 const API_BASE = import.meta?.env?.VITE_API_URL || "";
@@ -25,6 +26,14 @@ export default function LoginRegister() {
 
   const [login, { isLoading: logLoading }] = useLoginMutation();
   // const [register, { isLoading: regLoading }] = useRegisterMutation?.() ?? [{}];
+
+    const handleGoogleLogin = () => {
+        window.open(
+            "https://weather-api.webmania.ge/api/v1/auth/google/redirect",
+
+            "width=500,height=600,scrollbars=yes"
+        )
+    };
 
   useEffect(() => userRef.current?.focus(), []);
 
@@ -53,11 +62,6 @@ export default function LoginRegister() {
     }
   };
 
-  // Google OAuth redirect flow
-  const handleGoogleLogin = () => {
-    const redirect = encodeURIComponent(window.location.origin + "/admin");
-    window.location.href = `${API_BASE}/auth/google?redirect_uri=${redirect}`;
-  };
 
   const SignInForm = (
       <Form layout="vertical" size="large" onFinish={onFinishLogin} className={s.form}>
@@ -104,9 +108,9 @@ export default function LoginRegister() {
         </Button>
 
         <Divider className={s.divider}>or continue with</Divider>
-        <Button block icon={<GoogleOutlined />} className={s.googleBtn} onClick={handleGoogleLogin}>
-          Sign up with Google
-        </Button>
+
+
+          <GoogleLoginButton />
 
         {errMsg && <p className={s.error}>{errMsg}</p>}
       </Form>
