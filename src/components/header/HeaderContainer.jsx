@@ -19,8 +19,7 @@ export default function HeaderContainer() {
     const [scrolled, setScrolled] = useState(false);
     const [open, setOpen] = useState(false);
 
-    const [themeDark, setThemeDark] = useState(
-        () => (typeof document !== "undefined" && document.documentElement.dataset.theme === "dark")
+    const [themeDark, setThemeDark] = useState(false
     );
 
     // Sticky / shadow on scroll

@@ -1,6 +1,5 @@
 import React from "react";
 import { Layout } from "antd";
-import SiderNav from "./SiderNav";
 import "../../css/weather.css";
 import VideoBannerContainer from "../VideoBanner/VideoBannerContainer.jsx";
 import HeaderContainer from "../header/HeaderContainer.jsx";

@@ -1,42 +1,10 @@
-import { Outlet, useLocation, useNavigate } from "react-router-dom";
-import { useDispatch, useSelector } from "react-redux";
-import { logOut, selectCurrentUser, setAuthUser } from "./authSlice";
-import { useAuthUserMutation } from "./authApiSlice";
-import { useEffect } from "react";
+import { Navigate, Outlet, useLocation } from "react-router-dom";
+import { useSelector } from "react-redux";
+import { selectCurrentToken } from "./authSlice";
 
-const RequireAuth = () => {
-  const location = useLocation();
-  const [authUser] = useAuthUserMutation();
-  const dispatch = useDispatch();
-  const navigate = useNavigate();
-
-  const handleLogout = (e) => {
-    dispatch(logOut());
-    navigate("/login");
-  };
-
-  const getAuthUserData = () => {
-    try {
-      const authUserData = authUser().unwrap();
-      if (authUserData.type === "success") {
-        dispatch(setAuthUser({ user: authUserData }));
-      }
-    } catch (err) {
-      handleLogout();
-    }
-  };
-
-  const AuthorizedUser = () => {
-    const token = window.localStorage.getItem("token");
-    const userName = window.localStorage.getItem("userName");
-    return token !== null && userName !== null;
-  };
-
-  useEffect(() => {
-    !AuthorizedUser() && handleLogout();
-  }, []);
-
+export default function RequireAuth() {
+  const token = useSelector(selectCurrentToken);
+  const loc = useLocation();
+  if (!token) return <Navigate to="/login" replace state={{ from: loc }} />;
   return <Outlet />;
-};
-
-export default RequireAuth;
+}

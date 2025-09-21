@@ -1,67 +1,69 @@
-import React, {useEffect, useRef, useState} from 'react';
+import React, { useEffect, useRef, useState } from "react";
 import s from "./Login.module.css";
-import {Button, Divider, Form, Input} from "antd";
-import {GoogleOutlined, LockOutlined, UserOutlined} from "@ant-design/icons";
-import {setCredentials} from "../../features/auth/authSlice.js";
-import {useDispatch} from "react-redux";
-import {useNavigate} from "react-router-dom";
-import {useLoginMutation} from "../../features/auth/authApiSlice.js";
+import { Button, Divider, Form, Input } from "antd";
+import { GoogleOutlined, LockOutlined, UserOutlined } from "@ant-design/icons";
+import {useTranslation} from "react-i18next";
+import {useGlobalProvider} from "@src/providers/public/GlobalProvider/index.js";
+import {useLoginUser} from "@src/components/LoginForm/hooks/useLoginUser.js";
 
-const LoginForm = () => {
-    const [errMsg, setErrMsg] = useState("");
-    const dispatch = useDispatch();
-    const navigate = useNavigate();
-
-    const [login, {isLoading: logLoading}] = useLoginMutation();
+export default function LoginForm() {
     const userRef = useRef(null);
+    const { t } = useTranslation();
+    const { notificationApi } = useGlobalProvider();
 
-
-    const handleGoogleLogin = () => {
-        window.open(
-            "https://weather-api.webmania.ge/api/v1/auth/google/redirect",
-
-            "width=500,height=600,scrollbars=yes"
-        )
-    };
+    const loginUserMutation = useLoginUser()
 
     useEffect(() => userRef.current?.focus(), []);
 
     const onFinishLogin = async (values) => {
-        setErrMsg("");
-        try {
-            const userData = await login({...values, channel: "ADMIN"}).unwrap();
-            const authUser = userData.message.userName;
-            const token = userData.message.token;
-            dispatch(setCredentials({userName: authUser, accessToken: token}));
-            navigate("/admin");
-        } catch (err) {
-            setErrMsg(err?.data?.message || "Login failed");
-        }
+        loginUserMutation.mutate({...values}, {
+            onSuccess: (response) => {
+                notificationApi?.success({
+                    message: response?.message
+                });
+            },
+            onError: (error) => {
+                notificationApi?.error({
+                    message: error?.response?.data?.message
+                });
+            }
+        })
     };
+
+    const handleGoogleLogin = () => {
+        window.open(
+            "https://weather-api.webmania.ge/api/v1/auth/google/redirect",
+            "google_oauth",
+            "width=500,height=600,scrollbars=yes"
+        );
+    };
+
     return (
         <Form layout="vertical" size="large" onFinish={onFinishLogin} className={s.form}>
-            <Form.Item label="Email or Username" name="userName"
-                       rules={[{required: true, message: "Please input your username or email"}]}>
-                <Input ref={userRef} prefix={<UserOutlined/>} placeholder="username@email.com"/>
+            <Form.Item
+                label="Email or Username"
+                name="email"
+                rules={[{ required: true, message: "Please input your username or email" }]}
+            >
+                <Input ref={userRef} prefix={<UserOutlined />} placeholder="username@email.com" />
             </Form.Item>
-            <Form.Item label="Password" name="password"
-                       rules={[{required: true, message: "Please input your password"}]}>
-                <Input.Password prefix={<LockOutlined/>} placeholder="••••••••"/>
+            <Form.Item
+                label="Password"
+                name="password"
+                rules={[{ required: true, message: "Please input your password" }]}
+            >
+                <Input.Password prefix={<LockOutlined />} placeholder="••••••••" />
             </Form.Item>
 
-            <Button type="primary" htmlType="submit" block className={s.primaryBtn} loading={logLoading}>
+            <Button type="primary" htmlType="submit" block className={s.primaryBtn}>
                 Sign In
             </Button>
 
             <Divider className={s.divider}>or continue with</Divider>
-
-            <Button block icon={<GoogleOutlined/>} className={s.googleBtn} onClick={handleGoogleLogin}>
+            <Button block icon={<GoogleOutlined />} className={s.googleBtn} onClick={handleGoogleLogin}>
                 Sign in with Google
             </Button>
 
-            {errMsg && <p className={s.error}>{errMsg}</p>}
         </Form>
     );
-};
-
-export default LoginForm;
+}

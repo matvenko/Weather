@@ -1,36 +1,33 @@
 import { createSlice } from "@reduxjs/toolkit";
 
+const initialToken = window.localStorage.getItem("token");
+const initialUser = window.localStorage.getItem("userName");
+
 const authSlice = createSlice({
   name: "auth",
   initialState: {
-    userName: null,
-    token: null,
+    userName: initialUser || null,
+    token: initialToken || null,
   },
   reducers: {
     setCredentials: (state, action) => {
-      const { userName, accessToken } = action.payload;
-      state.userName = userName;
-      state.token = accessToken;
-      window.localStorage.setItem("token", accessToken);
-      window.localStorage.setItem("userName", userName);
-      document.cookie = `token=${accessToken}; Secure; HttpOnly`;
+      const { userName, accessToken } = action.payload || {};
+      state.userName = userName ?? null;
+      state.token = accessToken ?? null;
+      if (accessToken) window.localStorage.setItem("token", accessToken);
+      if (userName) window.localStorage.setItem("userName", userName);
     },
-    setAuthUser: (state, action) => {
-      const { user } = action.payload;
-      state.userName = user.userName;
-    },
-    logOut: (state, action) => {
+    logOut: (state) => {
       state.userName = null;
       state.token = null;
       window.localStorage.removeItem("token");
-      window.localStorage.removeItem("user");
+      window.localStorage.removeItem("userName");
     },
   },
 });
 
-export const { setCredentials, setAuthUser, logOut } = authSlice.actions;
-
+export const { setCredentials, logOut } = authSlice.actions;
 export default authSlice.reducer;
 
-export const selectCurrentUser = (state) => state.auth.userName;
-export const selectCurrentToken = (state) => state.auth.token;
+export const selectCurrentUser = (s) => s.auth.userName;
+export const selectCurrentToken = (s) => s.auth.token;

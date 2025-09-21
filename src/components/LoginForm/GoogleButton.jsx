@@ -6,9 +6,8 @@ const BACKEND_REDIRECT = "https://weather-api.webmania.ge/api/v1/auth/google/red
 
 export default function GoogleLoginButton() {
     const handleClick = () => {
-        // გადავდივართ backend redirect endpoint-ზე იმავე tab-ში
-        const origin = window.location.origin; // გამოიყენება რომ ბექმა იცოდეს საიდან მოვიდა
-        window.location.href = `${BACKEND_REDIRECT}?origin=${encodeURIComponent(origin)}`;
+        const origin = window.location.origin;
+        window.location.replace = `${BACKEND_REDIRECT}?origin=${encodeURIComponent(origin)}`;
     };
 
     return (
