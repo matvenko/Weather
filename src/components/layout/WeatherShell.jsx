@@ -1,19 +1,18 @@
 import React from "react";
-import { Layout } from "antd";
+import {Layout} from "antd";
 import "../../css/weather.css";
 import VideoBannerContainer from "../VideoBanner/VideoBannerContainer.jsx";
 import HeaderContainer from "../header/HeaderContainer.jsx";
+import SiderNav from "@src/components/layout/SiderNav.jsx";
 
-export default function WeatherShell({ children }) {
+export default function WeatherShell({children}) {
     return (
         <Layout className="wx-shell">
-            {/*<SiderNav />*/}
+            <SiderNav/>
             <Layout>
-                <HeaderContainer />
+                <HeaderContainer/>
                 <Layout.Content className="wx-content">
-
-                    <VideoBannerContainer />
-
+                    <VideoBannerContainer/>
                     {children}
                 </Layout.Content>
             </Layout>

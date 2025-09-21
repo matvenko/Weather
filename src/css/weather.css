@@ -25,6 +25,21 @@
     width: 100%;
 }
 
+.ant-layout-sider {
+    min-width: 0;
+    background: rgba(33, 33, 33, .57) !important;
+}
+
+.ant-menu-dark {
+    background: none !important;
+}
+
+@media only screen and (min-width: 1921px) {
+    .wx-sider {
+        width: 300px !important;
+    }
+}
+
 
 
 

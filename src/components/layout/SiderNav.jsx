@@ -26,12 +26,11 @@ export default function SiderNav() {
     return (
         <Layout.Sider
             className="wx-sider"
-            width={220}
             breakpoint="lg"
             collapsedWidth={0}
+            width={300}
             theme="dark"
         >
-            <div className="wx-sider-brand">MeteoHub</div>
             <Menu
                 theme="dark"
                 mode="inline"
