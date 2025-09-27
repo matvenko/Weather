@@ -63,7 +63,7 @@ export default function HeaderContainer() {
     const Brand = (
         <NavLink to="/" className="wx-brand">
             <span className="wx-brand-main">Meteo</span>
-            <span className="wx-brand-sub">Hub</span>
+            <span className="wx-brand-sub">360</span>
         </NavLink>
     );
 

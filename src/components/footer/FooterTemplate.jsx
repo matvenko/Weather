@@ -18,7 +18,7 @@ const FooterTemplate = () => {
           {/* Column 1 - Logo & Address */}
           <div className="footer-col">
             <h2 className="footer-logo">
-              Meteo<span>hub</span>
+              Meteo<span>360</span>
             </h2>
             <p className="footer-address">
               <strong>10009 Agrofam st, 5th Avenue, 436 Honey London.</strong>
@@ -34,7 +34,7 @@ const FooterTemplate = () => {
               <a href="tel:+1211127368">+(995) 597 333109</a>
             </p>
             <p><strong>E-mail</strong><br />
-              <a href="mailto:Meteohub@gmail.com">Meteohub@gmail.com</a>
+              <a href="mailto:Meteo360@gmail.com">Meteo360@gmail.com</a>
             </p>
           </div>
 

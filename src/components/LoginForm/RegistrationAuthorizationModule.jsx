@@ -20,7 +20,7 @@ export default function LoginRegister() {
                 <div className={s.leftInner}>
                     <Title level={2} className={s.leftTitle}>Welcome Page</Title>
                     <Text className={s.leftText}>
-                        MeteoHub — precise forecasts and beautiful maps at your fingertips.
+                        Meteo360 — precise forecasts and beautiful maps at your fingertips.
                         Our platform delivers real-time weather insights, detailed maps,
                         and personalized alerts so you’re always prepared.
                         Explore climate trends, track storms, and enjoy a modern interface

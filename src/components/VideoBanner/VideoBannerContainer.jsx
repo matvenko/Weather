@@ -1,7 +1,7 @@
 import React, {useEffect, useRef} from 'react';
 import "./VideoBanner.css";
 
-import mainVideo from "./Mp4/main.mp4";
+import mainVideo from "./Mp4/vazi.mp4";
 
 const VideoBannerContainer = () => {
     const videoRef = useRef(null);

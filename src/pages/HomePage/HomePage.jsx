@@ -37,16 +37,11 @@ export default function HomePage() {
 
             {responseDailyForecast && (
                 <MetroWeatherWidget
-                    locationName="Tbilisi"
-                    backgroundImage="https://imengine.public.prod.cmg.infomaker.io/?uuid=84860344-c8d8-51ee-b191-943a4ff8b68d&function=cropresize&type=preview&source=false&q=75&crop_w=0.99999&crop_h=0.9997&x=0&y=0&width=1500&height=844" /* სურვილისამებრ */
-                    current={{
-                        temperature: Math.round(responseDailyForecast?.[0]?.temperature_instant ?? 16),
-                        description: "Overcast",
-                        precipitation_probability: responseDailyForecast?.[0]?.precipitation_probability ?? 0,
-                        relativehumidity: responseDailyForecast?.[0]?.relativehumidity_mean ?? 0,
-                        windspeed: responseDailyForecast?.[0]?.windspeed_mean ?? 0,
-                        winddirection: responseDailyForecast?.[0]?.winddirection ?? 0,
-                    }}
+                    location="Tbilisi, Georgia"
+                    headline="Overcast cloudy"
+                    subline={`The low temperature will reach ${Math.round(
+                        (responseDailyForecast?.[0]?.temperature_min ?? 25)
+                    )}° on this gloomy day`}
                     daily={responseDailyForecast || []}
                 />
             )}
