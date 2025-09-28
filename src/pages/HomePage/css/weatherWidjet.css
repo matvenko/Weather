@@ -422,3 +422,45 @@
         grid-template-columns: 1fr;
     }
 }
+
+/* --- Motion-friendly tweaks & prefers-reduced-motion --- */
+@media (prefers-reduced-motion: reduce) {
+    * {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+    }
+}
+
+/* სპარკლაინის ხაზი currentColor-ზეა მიბმული; ავიღოთ var(--accent) ფერი */
+.sparkline .line {
+    stroke: var(--accent);
+}
+
+/* ჰეროს “მინის” ლეიერის მსუბუქი არმატურა */
+.gw-hero-inner::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(1200px 400px at 80% 120%, rgba(255,255,255,.10), transparent 60%);
+    pointer-events: none;
+}
+
+/* სტაგერის დროს მცირე hover lift */
+.stat-item {
+    transition: transform .2s ease, background .2s ease, border-color .2s ease;
+}
+.stat-item:hover {
+    transform: translateY(-2px);
+    background: rgba(255,255,255,.10);
+    border-color: rgba(255,255,255,.18);
+}
+
+/* right list hover */
+.side-list li {
+    transition: background .2s ease, outline-color .2s ease, transform .2s ease;
+}
+.side-list li:hover {
+    transform: translateX(2px);
+}
