@@ -21,7 +21,7 @@ export function useWeatherDaily(queryObj: any) {
         data: responseDailyForecast,
         refetch: refetchDailyWeather
     } = useQuery({
-        queryKey: ['weather', queryObj],
+        queryKey: ['weather-day', queryObj],
         queryFn: () => getForecastApi(queryObj),
         enabled: true
     });

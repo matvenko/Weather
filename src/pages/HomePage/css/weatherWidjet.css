@@ -1,41 +1,53 @@
-:root{
-    --glass: rgba(255,255,255,.12);
-    --glass-soft: rgba(255,255,255,.08);
-    --stroke: rgba(255,255,255,.25);
+/* ===============================
+   Theme variables
+================================*/
+:root {
+    --glass: rgba(255, 255, 255, .12);
+    --glass-soft: rgba(255, 255, 255, .08);
+    --stroke: rgba(255, 255, 255, .25);
     --text: #E9EEF3;
     --muted: #C6D0D6;
-    --accent: #FFB21E;
+    --accent: #f5bd52;
 }
 
-.gw-wrap{
+/* ===============================
+   Layout
+================================*/
+.gw-wrap {
     display: grid;
     grid-template-columns: 19fr 4.3fr;
     color: var(--text);
     font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
 }
 
-/* glass helpers */
- .glass{
+/* ===============================
+   Glass helpers
+================================*/
+.glass {
     backdrop-filter: blur(14px) saturate(110%);
-    background: linear-gradient( to bottom right, rgba(255,255,255,.14), rgba(255,255,255,.06) );
+    background: linear-gradient(to bottom right, rgba(255, 255, 255, .14), rgba(255, 255, 255, .06));
 }
-.glass-soft{
+
+.glass-soft {
     backdrop-filter: blur(12px);
     background: rgb(0 0 0 / 31%);
-    border: 1px solid rgba(255,255,255,.14);
+    border: 1px solid rgba(255, 255, 255, .14);
     border-radius: 16px;
 }
 
-/* HERO */
-.gw-hero{
+/* ===============================
+   Hero
+================================*/
+.gw-hero {
     min-height: 430px;
     position: relative;
     overflow: hidden;
     display: flex;
     flex-direction: column;
-    margin: 24px ;
+    margin: 24px;
 }
-.gw-hero-inner{
+
+.gw-hero-inner {
     flex: 1;
     display: grid;
     grid-template-columns: 1.1fr .4fr;
@@ -45,121 +57,271 @@
     border-radius: 20px;
     overflow: hidden;
     padding: 12px;
-    min-height: 400px;
 }
-.gw-badge{
+
+.gw-badge {
     align-self: start;
     display: inline-flex;
     gap: 8px;
     padding: 6px 10px;
-    background: rgba(0,0,0,.35);
-    border: 1px solid rgba(255,255,255,.2);
+    background: rgba(0, 0, 0, .35);
+    border: 1px solid rgba(255, 255, 255, .2);
     border-radius: 999px;
     font-size: 13px;
 }
-.gw-hero-text{
+
+.gw-hero-text {
     grid-column: 1 / 2;
     align-self: end;
     padding: 10px 4px 18px 6px;
 }
-.gw-hero-text .kicker{
+
+.gw-hero-text .kicker {
     font-size: 14px;
     color: var(--muted);
     margin-bottom: 4px;
 }
-.gw-hero-text h1{
+
+.gw-hero-text h1 {
     font-size: clamp(28px, 5vw, 52px);
     font-weight: 700;
     letter-spacing: .3px;
     margin: 0 0 6px;
     color: #F2F5F9;
-    text-shadow: 0 2px 18px rgba(0,0,0,.35);
+    text-shadow: 0 2px 18px rgba(0, 0, 0, .35);
 }
-.gw-hero-text .sub{
+
+.gw-hero-text .sub {
     color: #dbe6ee;
     opacity: .9;
 }
-.gw-hero-icon{
+
+.gw-hero-icon {
     grid-column: 2 / 3;
     justify-self: end;
     align-self: end;
     font-size: clamp(48px, 8vw, 84px);
-    filter: drop-shadow(0 6px 18px rgba(0,0,0,.35));
+    filter: drop-shadow(0 6px 18px rgba(0, 0, 0, .35));
 }
 
-/* stats band */
-.gw-stats{
+/* ===============================
+   Stats band
+================================*/
+.gw-stats {
     padding: 14px;
     margin-top: 14px;
+    min-height: 333px;
 }
-.gw-stats .stats-title{
-    color: var(--muted);
+
+.hourly-wrapper {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
     margin-bottom: 8px;
+}
+
+.gw-stats .stats-title {
+    color: var(--muted);
     font-weight: 600;
 }
-.sparkline{
+
+/* sparkline */
+.sparkline {
     height: 40px;
     border-radius: 12px;
     overflow: hidden;
 }
-.sparkline svg{ width: 100%; height: 100%; display: block; }
-.sparkline .line{
+
+.sparkline svg {
+    width: 100%;
+    height: 100%;
+    display: block;
+}
+
+.sparkline .line {
     fill: none;
     stroke: var(--accent);
     stroke-width: 4;
     stroke-linecap: round;
 }
-.sparkline .fill{
-    fill: linear-gradient(180deg, var(--accent), transparent);
-    fill: url(#gw-gradient); /* optional, მაგრამ ბრაუზერის გარეშე იმუშავებს თანაბარ ფერად */
+
+.sparkline .fill {
+    fill: url(#gw-gradient);
     fill-opacity: .15;
 }
 
-/* სათითაო ბლოკები ხაზის ქვემოთ */
-.stat-cards{
+/* ===============================
+   Horizontal hourly cards
+================================*/
+.stat-cards--scroll {
     display: grid;
-    grid-template-columns: repeat(7, 1fr);
-    gap: 10px;
-    margin-top: 8px;
+    grid-auto-flow: column;
+    overflow-x: auto;
+    gap: 12px;
+    padding: 20px 0 20px;
+    scroll-snap-type: x proximity;
+    -webkit-overflow-scrolling: touch;
+    /* Firefox scrollbar */
+    scrollbar-width: thin;
+    scrollbar-color: rgba(255, 255, 255, .35) transparent;
 }
-.stat-item{
+
+.stat-cards--scroll .stat-item {
+    scroll-snap-align: start;
+}
+
+/* ერთი ბარათი */
+.stat-item {
+    width: 124px;
+    min-height: 210px;
+    display: grid;
+    grid-template-rows: 35px 40px repeat(4, 18px) 34px; /* icon, temp, 4 rows, time */
+    align-content: start;
     text-align: center;
-    padding: 8px;
+    padding: 6px 8px;
+    border-radius: 10px;
+    background: rgba(255, 255, 255, .06);
+    border: 1px solid rgba(255, 255, 255, .12);
 }
-.stat-item .val{ font-size: 22px; font-weight: 700; color: #FDE3A7; }
-.stat-item .time{ font-size: 12px; color: var(--muted); }
-.stat-item .desc{ font-size: 12px; color: #D2DCE3; }
 
-/* SIDE panel */
-.gw-side{
-    padding: 18px;
-    display: flex;
-    flex-direction: column;
-    gap: 14px;
+/* შიგთავსი */
+.s-icon {
+    font-size: 38px;
 }
-.side-top{
+
+.s-temp-strip {
+    margin: 4px 0 6px;
+    border-radius: 6px;
+    background: linear-gradient(90deg, #bff064, #7bd33a);
     display: grid;
-    gap: 6px;
+    place-items: center;
 }
-.side-date{ color: var(--muted); }
-.side-temp{
-    font-size: 64px;
-    font-weight: 700;
-    line-height: .95;
-    letter-spacing: -1px;
-}
-.side-wind{ color: #d7e2ea; }
 
-.side-next-title{ margin-top: 6px; font-weight: 600; color: #e9eef5; }
-.range-toggle{
+.s-temp {
+    font-weight: 800;
+    color: #223;
+}
+
+.s-row {
+    align-items: center;
+    font-size: 12px;
+    padding: 1px 0;
+}
+
+.s-label {
+    color: #b9c7d1;
+}
+
+.s-val {
+    color: #eaf1f6;
+    font-weight: 600;
+}
+
+.s-time {
+    margin-top: 12px;
+    font-size: 16px;
+    font-weight: bold;
+}
+
+.s-temp-val {
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--accent);
+}
+
+/* Drag UX */
+.drag-scroll {
+    cursor: grab;
+    user-select: none;
+    -webkit-user-drag: none;
+    touch-action: pan-y; /* ვერტიკალი ბრაუზერს, ჰორიზონტალი ჩვენ */
+}
+
+.drag-scroll.is-dragging {
+    cursor: grabbing;
+}
+
+.stat-cards--scroll {
+    display: grid;
+    grid-auto-flow: column;
+    overflow-x: auto;
+    gap: 12px;
+    padding: 10px 0 20px;
+    scroll-snap-type: x proximity;
+    -webkit-overflow-scrolling: touch;
+}
+
+.stat-cards--scroll .stat-item {
+    scroll-snap-align: start;
+}
+
+/* --- GLASS scrollbar მხოლოდ ამ ტრეკზე --- */
+.stat-cards--scroll { /* Firefox */
+    scrollbar-width: thin; /* ზომა */
+    scrollbar-color: rgba(255, 255, 255, .35) transparent; /* thumb / track */
+}
+
+/* დეფოლტად თითქმის უხილავი; hover/drag-ზე ჩანს */
+.stat-cards--scroll::-webkit-scrollbar {
+    height: 10px; /* ჰორიზონტალური სკროლის სიმაღლე */
+}
+
+.stat-cards--scroll::-webkit-scrollbar-track {
+    background: transparent; /* გამჭვირვალე ტრეკი */
+    border-radius: 999px;
+    margin: 0 6px; /* კიდეებიდან ოდნავი დაშორება */
+}
+
+.stat-cards--scroll::-webkit-scrollbar-thumb {
+    background: transparent; /* დეფოლტად უხილავი */
+    border-radius: 999px;
+    border: 2px solid transparent; /* რომ ტრეკთან არ “მიეწებოს” */
+}
+
+/* hover/drag-ზე ჩაირთოს "მინის" thumb */
+.stat-cards--scroll:hover::-webkit-scrollbar-thumb, .drag-scroll.is-dragging::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, .25); /* ნახევრად გამჭვირვალე */
+    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .25), 0 0 8px rgba(0, 0, 0, .25); /* მსუბუქი relief */
+    border-radius: 999px;
+}
+
+/* hover-ზე ოდნავ გამუქდეს */
+.stat-cards--scroll:hover::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, .35);
+}
+
+/* სურვილისამებრ: ქვედა “სეიფ-ფონი” როგორც range-toggle-ს */
+.stat-cards--scroll::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, .08); /* მსუბუქი მუქი შრე */
+    border-radius: 999px;
+}
+
+.stat-cards--scroll:hover::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, .10);
+}
+
+/* Firefox-ში hover/drag-ზე უფრო შესამჩნევი ფერები */
+.stat-cards--scroll:hover {
+    scrollbar-color: rgba(255, 255, 255, .45) rgba(255, 255, 255, .10);
+}
+
+.drag-scroll.is-dragging {
+    scrollbar-color: rgba(255, 255, 255, .55) rgba(255, 255, 255, .12);
+}
+
+/* ===============================
+   Range toggle
+================================*/
+.range-toggle {
     display: inline-flex;
-    background: rgba(255,255,255,.08);
-    border: 1px solid rgba(255,255,255,.12);
+    background: rgba(255, 255, 255, .08);
+    border: 1px solid rgba(255, 255, 255, .12);
     border-radius: 999px;
     padding: 4px;
     gap: 4px;
 }
-.range-toggle button{
+
+.range-toggle button {
     border: 0;
     background: transparent;
     color: var(--muted);
@@ -167,36 +329,96 @@
     border-radius: 999px;
     cursor: pointer;
 }
-.range-toggle button.active{
-    background: rgba(255,255,255,.18);
+
+.range-toggle button.active {
+    background: rgba(255, 255, 255, .18);
     color: #fff;
 }
 
-.side-list{
-    list-style: none;
-    margin: 0; padding: 0;
-    display: grid; gap: 10px;
+/* ===============================
+   Side panel (right)
+================================*/
+.gw-side {
+    padding: 18px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
 }
-.side-list li{
+
+.side-top {
+    display: grid;
+    gap: 6px;
+}
+
+.side-date {
+    color: var(--muted);
+}
+
+.side-temp {
+    font-size: 64px;
+    font-weight: 700;
+    line-height: .95;
+    letter-spacing: -1px;
+}
+
+.side-wind {
+    color: #d7e2ea;
+}
+
+.side-next-title {
+    margin-top: 6px;
+    font-weight: 600;
+    color: #e9eef5;
+}
+
+.side-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 10px;
+    cursor: pointer;
+}
+
+.side-list li {
     display: grid;
     grid-template-columns: 36px 1fr auto;
     align-items: center;
-    gap: 10px;
-    padding: 10px 12px;
-    border-radius: 12px;
-    background: rgba(255,255,255,.06);
-    border: 1px solid rgba(255,255,255,.1);
+    gap: 4px;
+    padding: 8px 6px;
+    border-radius: 6px;
+    background: rgba(255, 255, 255, .06);
+    border: 1px solid rgba(255, 255, 255, .1);
 }
-.side-list .ico{ font-size: 22px; }
-.side-list .meta .day{ font-weight: 600; }
-.side-list .meta .desc{ color: var(--muted); font-size: 13px; }
-.side-list .t{ font-size: 22px; font-weight: 700; }
 
-/* Responsive */
-@media (max-width: 980px){
-    .gw-wrap{ grid-template-columns: 1fr; }
-    .stat-cards{ grid-template-columns: repeat(3, 1fr); }
+.side-list li.is-active {
+    outline: 2px solid rgba(255, 255, 255, .35);
+    background: rgba(255, 255, 255, .12);
 }
-@media (max-width: 560px){
-    .stat-cards{ grid-template-columns: repeat(2, 1fr); }
+
+.side-list .ico {
+    font-size: 26px;
+}
+
+.side-list .meta .day {
+    font-weight: 600;
+}
+
+.side-list .meta .desc {
+    color: var(--muted);
+    font-size: 13px;
+}
+
+.side-list .t {
+    font-size: 22px;
+    font-weight: 700;
+}
+
+/* ===============================
+   Responsive
+================================*/
+@media (max-width: 980px) {
+    .gw-wrap {
+        grid-template-columns: 1fr;
+    }
 }
