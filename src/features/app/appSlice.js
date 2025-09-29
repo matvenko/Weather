@@ -10,7 +10,8 @@ const setAppState = () => {
 		optionDrawer: false,
 		mobileDrawer: false,
 		fullscreen: false,
-		deviceViewPort: ''
+		deviceViewPort: '',
+		backgroundFile: ''
 	}
 	let localState = window.localStorage.getItem('settings')
 	return localState ? JSON.parse(localState) : initState
@@ -48,11 +49,15 @@ const appSlice = createSlice({
 		setDeviceViewPort: (state, action) => {
 			const { deviceViewPort } = action.payload
 			state.deviceViewPort = deviceViewPort
+		},
+		setBackgroundFile: (state, action) => {
+			state.backgroundFile = action.payload
+			saveToLocal(state)
 		}
 	}
 })
 
-export const { setCollapsed, setTheme, setDarkSidebar, setDeviceViewPort } =
+export const { setCollapsed, setTheme, setDarkSidebar, setDeviceViewPort, setBackgroundFile } =
 	appSlice.actions
 
 export default appSlice.reducer
@@ -61,3 +66,4 @@ export const selectCurrentCollapse = state => state.app.collapsed
 export const selectCurrentTheme = state => state.app.theme
 export const selectCurrentState = state => state.app
 export const selectCurrentDeviceViewPort = state => state.app.deviceViewPort
+export const selectCurrentBackgroundFile = (state) => state.app.backgroundFile

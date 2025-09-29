@@ -110,7 +110,7 @@ const drawLine = {
 };
 
 export default function WeatherWidget({
-                                          background = "https://t4.ftcdn.net/jpg/00/86/32/97/360_F_86329731_InK4rAy9AEUZfv5ntuXa1YwZETHn3giB.jpg",
+                                          background = "",
                                           location = "Tbilisi, Georgia",
                                           headline = "Overcast cloudy",
                                           subline = "The low temperature will reach 25° on this gloomy day",
@@ -124,6 +124,8 @@ export default function WeatherWidget({
     const [selectedDay, setSelectedDay] = useState(defaultDay);
 
     const hourlyByDate = useMemo(() => groupHourlyByDate(hourly), [hourly]);
+
+    console.log("hourly", hourly)
 
     const selectedHourly = useMemo(() => {
         if (hourlyByDate.size && selectedDay && hourlyByDate.get(selectedDay)?.length) {
