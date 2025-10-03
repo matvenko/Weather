@@ -45,8 +45,6 @@ export default function SiderNav() {
 
     const deviceViewPort = useSelector(selectCurrentDeviceViewPort)
 
-    console.log("deviceViewPort", deviceViewPort)
-
     return (
         <Layout.Sider
             className="wx-sider"

@@ -16,7 +16,6 @@ export default function RegisterForm() {
     const onFinishRegister = async (values) => {
         registerUserMutation.mutate({...values}, {
             onSuccess: (response) => {
-                console.log("response", response);
                 debugger;
                 notificationApi?.success({
                     message: response?.message

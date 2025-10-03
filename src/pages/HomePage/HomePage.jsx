@@ -3,10 +3,8 @@ import "./css/Homepage.css";
 import {useTranslation} from "react-i18next";
 import {useWeatherDaily} from "@src/pages/HomePage/hooks/useWeatherDaily.js";
 import {Skeleton, Alert, Typography} from "antd";
-import MetroWeatherWidget from "@src/pages/HomePage/components/WeatherWidget.jsx";
+import MetroWeatherWidget from "@src/pages/HomePage/components/Forecast.jsx";
 import {useWeatherHourly} from "@src/pages/HomePage/hooks/useWeatherHourly.js";
-
-const {Title, Text} = Typography;
 
 export default function HomePage() {
     const {t} = useTranslation();
@@ -48,7 +46,7 @@ export default function HomePage() {
             {responseDailyForecast && (
                 <MetroWeatherWidget
                     location="Tbilisi, Georgia"
-                    headline="Overcast cloudy"
+                    headline="Weather Tbilisi"
                     subline={`The low temperature will reach ${Math.round(
                         (responseDailyForecast?.[0]?.temperature_min ?? 25)
                     )}° on this gloomy day`}

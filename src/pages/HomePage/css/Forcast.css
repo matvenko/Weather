@@ -92,16 +92,12 @@
 }
 
 .gw-hero-text .sub {
-    color: #dbe6ee;
+    color: var(--accent);
     opacity: .9;
 }
 
-.gw-hero-icon {
-    grid-column: 2 / 3;
-    justify-self: end;
-    align-self: end;
-    font-size: clamp(48px, 8vw, 84px);
-    filter: drop-shadow(0 6px 18px rgba(0, 0, 0, .35));
+.today-forcast {
+
 }
 
 /* ===============================
@@ -175,7 +171,7 @@
     width: 124px;
     min-height: 210px;
     display: grid;
-    grid-template-rows: 35px 40px repeat(4, 18px) 34px; /* icon, temp, 4 rows, time */
+    grid-template-rows: 45px 40px repeat(4, 18px) 34px; /* icon, temp, 4 rows, time */
     align-content: start;
     text-align: center;
     padding: 6px 8px;
@@ -226,7 +222,6 @@
 .s-temp-val {
     font-size: 22px;
     font-weight: 700;
-    color: var(--accent);
 }
 
 /* Drag UX */
@@ -345,9 +340,14 @@
     gap: 14px;
 }
 
-.side-top {
+.today-forcast-details-wrapper {
     display: grid;
     gap: 6px;
+    text-align: right;
+}
+
+.today-forcast-details-info {
+    margin-top: 10px;
 }
 
 .side-date {
@@ -358,12 +358,10 @@
     font-size: 64px;
     font-weight: 700;
     line-height: .95;
+    line-height: .95;
     letter-spacing: -1px;
 }
 
-.side-wind {
-    color: #d7e2ea;
-}
 
 .side-next-title {
     margin-top: 6px;
@@ -463,4 +461,24 @@
 }
 .side-list li:hover {
     transform: translateX(2px);
+}
+
+.rainspot-box {
+    display: flex;
+    align-items: center;   /* ვერტიკალურად ცენტრში */
+    justify-content: right; /* ჰორიზონტალურად ცენტრში */
+    gap: 8px;              /* შორის დაშორება */
+    margin-top: 5px;
+}
+
+.rainspot-label {
+    font-size: 14px;
+    font-weight: 600;
+    color: #fff;   /* ან var(--text) */
+}
+
+.rainspot-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
