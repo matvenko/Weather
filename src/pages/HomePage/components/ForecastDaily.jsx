@@ -3,7 +3,7 @@ import React from "react";
 import { motion } from "framer-motion";
 import { listItem, stagger } from "@src/ui/motion/variants.js";
 
-export default function ForcastSide({
+export default function ForecastDaily({
                                         items = [],
                                         isActive = () => false,
                                         onSelect = () => {},

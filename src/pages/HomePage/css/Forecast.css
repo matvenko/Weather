@@ -96,7 +96,7 @@
     opacity: .9;
 }
 
-.today-forcast {
+.today-forecast {
 
 }
 
@@ -340,13 +340,13 @@
     gap: 14px;
 }
 
-.today-forcast-details-wrapper {
+.today-forecast-details-wrapper {
     display: grid;
     gap: 6px;
     text-align: right;
 }
 
-.today-forcast-details-info {
+.today-forecast-details-info {
     margin-top: 10px;
 }
 
@@ -481,4 +481,60 @@
     display: flex;
     align-items: center;
     justify-content: center;
+}
+
+.gw-search-option {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 4px 12px;
+    align-items: center;
+}
+.gw-search-option .left { font-weight: 500; }
+.gw-search-option .right { opacity: 0.7; }
+.gw-search-option .muted {
+    grid-column: 1 / -1;
+    font-size: 12px;
+    opacity: 0.6;
+}
+.gw-badge.gw-search { width: 100% }
+
+.gw-badge.gw-search .ant-select-single {
+    width: 100%;
+}
+
+
+.ant-select-single .ant-input-outlined {
+    background: none;
+    border: none;
+    color: #FFFFFF;
+}
+
+    /* Dropdown menu background transparent */
+.ant-select-dropdown {
+    background: rgba(0, 0, 0, 0.3) !important; /* გამჭვირვალე შავი ფონი */
+    backdrop-filter: blur(8px); /* optional — უფრო ლამაზი გამჭვირვალობა */
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+/* Dropdown option hover */
+.ant-select-item-option-active {
+    background: rgba(255, 255, 255, 0.15) !important;
+}
+
+/* Dropdown text color */
+.ant-select-item {
+    color: #fff !important;
+}
+
+/* Input თავადაც გამჭვირვალე */
+.gw-search .ant-input {
+    outline: none
+}
+
+.gw-search .ant-input::placeholder {
+    color: rgba(255, 255, 255, 0.6);
+}
+
+.gw-search .ant-input-prefix {
+    margin-inline-end: 10px;
 }

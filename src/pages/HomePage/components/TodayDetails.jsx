@@ -14,7 +14,7 @@ export default function TodayDetails({ day }) {
     return (
         <motion.div
             key={day.time}
-            className="today-forcast-details-info"
+            className="today-forecast-details-info"
             variants={asideEnter}
         >
             <div className="s-row">

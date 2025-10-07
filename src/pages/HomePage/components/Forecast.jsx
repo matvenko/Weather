@@ -3,7 +3,7 @@ import React, { useEffect, useMemo, useState } from "react";
 import { Row } from "antd";
 import { motion } from "framer-motion";
 import useDragScroll from "@src/utils/useDragScroll.js";
-import "../css/Forcast.css";
+import "../css/Forecast.css";
 
 import {
     buildPseudoHourlyForDay,
@@ -12,15 +12,14 @@ import {
 } from "@src/pages/HomePage/utils/homepage-utils.js";
 
 import { staggerCol } from "@src/ui/motion/variants.js";
-import ForcastSide from "@src/pages/HomePage/components/ForecastDaily.jsx";
+import ForecastDaily from "@src/pages/HomePage/components/ForecastDaily.jsx";
 import ForecastHero from "@src/pages/HomePage/components/ForecastHero.jsx";
 import ForecastHourly from "@src/pages/HomePage/components/ForecastHourly.jsx";
 import {iconByCode} from "@src/pages/HomePage/utils/weather-icons.js";
 
 export default function Forecast({
-                                     background = "",
-                                     location = "Tbilisi, Georgia",
-                                     headline = "Overcast cloudy",
+                                     selectedLocation,
+                                     setSelectedLocation,
                                      subline = "The low temperature will reach 25° on this gloomy day",
                                      daily = [],
                                      hourly = [],
@@ -77,9 +76,8 @@ export default function Forecast({
                 <div className="gw-hero">
                     {/* Hero card */}
                     <ForecastHero
-                        background={background}
-                        location={location}
-                        headline={headline}
+                        selectedLocation={selectedLocation}
+                        setSelectedLocation={setSelectedLocation}
                         subline={subline}
                         selectedDay={selectedDay}
                     />
@@ -93,7 +91,7 @@ export default function Forecast({
                 </div>
 
                 {/* RIGHT column (aside) */}
-                <ForcastSide
+                <ForecastDaily
                     items={rightDays}
                     isActive={(d) => d.time === selectedDayTime}
                     onSelect={(d) => {
