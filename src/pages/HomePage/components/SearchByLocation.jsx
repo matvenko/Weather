@@ -125,7 +125,6 @@ export default function SearchByLocation({ selectedLocation, setSelectedLocation
     const notFound = useMemo(() => {
         if (debouncedQuery && debouncedQuery.length < 3) return "აკრიფეთ მინ. 3 სიმბოლო…";
         if (isErrorSearchLocations) return String(errorSearchLocations?.message || "Search failed");
-        return "ვერ მოიძებნა";
     }, [debouncedQuery, isErrorSearchLocations, errorSearchLocations]);
 
     const handleSelect = (_value, option) => {
@@ -149,8 +148,6 @@ export default function SearchByLocation({ selectedLocation, setSelectedLocation
                 options={options}
                 filterOption={false}
                 notFoundContent={isFetchingSearchLocations ? <Spin size="small" /> : notFound}
-                // dropdownMatchSelectWidth შეგიძლია გამორთო, თუ გინდა input-ზე ვიწრო იყოს
-                // dropdownMatchSelectWidth={false}
                 style={{ minWidth: 320 }}
             >
                 <Input

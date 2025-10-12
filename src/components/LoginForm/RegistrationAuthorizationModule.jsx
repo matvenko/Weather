@@ -8,11 +8,13 @@ import {selectCurrentToken,} from "../../features/auth/authSlice";
 import s from "./Login.module.css";
 import RegisterForm from "./RegisterForm.jsx";
 import LoginForm from "./LoginForm.jsx";
+import {useTranslation} from "react-i18next";
 
 const {Title, Text} = Typography;
 
 export default function LoginRegister() {
     const token = useSelector(selectCurrentToken);
+    const {t} = useTranslation();
 
     const card = (
         <div className={s.card}>
@@ -35,8 +37,8 @@ export default function LoginRegister() {
                     <Tabs
                         className={s.tabs}
                         items={[
-                            {key: "signin", label: "Sign in", children: <LoginForm />},
-                            {key: "register", label: "Register", children: <RegisterForm/>},
+                            {key: "signin", label: t("auth.sign_in"), children: <LoginForm />},
+                            {key: "register", label: t("auth.register"), children: <RegisterForm/>},
                         ]}
                         defaultActiveKey="signin"
                         centered

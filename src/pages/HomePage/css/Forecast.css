@@ -502,6 +502,10 @@
     width: 100%;
 }
 
+.ant-select-item-empty{
+    color: #FFFFFF !important;
+}
+
 
 .ant-select-single .ant-input-outlined {
     background: none;
