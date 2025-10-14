@@ -1,4 +1,4 @@
-/* ფერები meteoblue-ish */
+/* weather.css */
 :root {
     --wx-blue: #0b4f72;
     --wx-blue-2: #0f6a9d;
@@ -7,12 +7,15 @@
     --wx-border: #e5e7ef;
     --wx-green: #c5f36b;
     --wx-yellow: #ffc24b;
+    --wx-header-h: 4px;
+    --sider-w: 240px; /* default */
 }
 
 /* CONTENT */
 .wx-content {
     position: relative;
     min-height: 100vh;
+    padding-top: var(--wx-header-h);
 }
 
 .myVideo {
@@ -34,13 +37,28 @@
     background: none !important;
 }
 
+.wx-sider {
+    position: sticky;
+    top: 0;
+    height: 100vh;
+}
+
 .wx-sider-menu {
     margin-top: 30px
 }
 
-@media only screen and (min-width: 1921px) {
+
+
+@media (min-width: 1921px) {
+    :root { --sider-w: 300px; }
     .wx-sider {
         width: 300px !important;
+    }
+}
+
+@media (max-width: 1921px) {
+    .wx-content{
+        padding: 0 24px;
     }
 }
 

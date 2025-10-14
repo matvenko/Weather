@@ -1,5 +1,5 @@
 @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap');
-
+/* header.css */
 /* Root theme tokens (light/dark via [data-theme]) */
 :root {
     --bg-elev: rgba(255, 255, 255, 1);
@@ -12,13 +12,13 @@
 }
 
 /* Header container */
-.wx-topbar {
+.header {
     background-color: transparent;
-    height: auto;
+    height: var(--wx-header-h);
     padding: 0;
     border-bottom: none;
     transition: background .25s ease, box-shadow .25s ease, border-color .25s ease;
-    position: fixed;
+    position: sticky;
     top: 0;
     right: 0;
     left: 0;
@@ -33,23 +33,19 @@
     z-index: 1030;
 }
 
-.wx-topbar.main-header {
+.header.main-header {
     box-shadow: none;
 }
 
-.wx-topbar.nav-fixed {
-    background: var(--bg-elev);
-    backdrop-filter: saturate(1.2) blur(10px);
-    box-shadow: var(--shadow);
-    border-bottom: 1px solid var(--border);
+.header.nav-fixed {
+    position: sticky;
+    top: 0;
+    left: var(--sider-w);
+    z-index: 10;
 }
 
-.wx-topbar.nav-fixed .wx-brand-main, .wx-topbar.nav-fixed .wx-menu .ant-menu-item a{
-    color: black;
-}
 
 .wx-bar {
-    max-width: 1240px;
     margin: 0 auto;
     padding: 14px 16px;
     display: grid;

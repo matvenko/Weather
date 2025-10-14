@@ -10,8 +10,8 @@ export default function WeatherShell({children}) {
         <Layout className="wx-shell">
             <SiderNav/>
             <Layout>
-                <HeaderContainer/>
                 <Layout.Content className="wx-content">
+                    <HeaderContainer/>
                     <VideoBannerContainer/>
                     {children}
                 </Layout.Content>

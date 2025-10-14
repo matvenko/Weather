@@ -1,4 +1,5 @@
 {
   "nav": { "home": "Home", "about": "About", "maps": "Maps", "service": "Service", "contact": "Contact" },
-  "auth": { "login": "Log in", "google_sign_in": "Sign in with Google", "email_or_username": "Email or Username", "password": "password", "sign_in": "Sign in", "register": "Register"   }
+  "auth": { "login": "Log in", "google_sign_in": "Sign in with Google", "email_or_username": "Email or Username", "password": "password", "sign_in": "Sign in", "register": "Register"   },
+  "my_account": "My Account"
 }
