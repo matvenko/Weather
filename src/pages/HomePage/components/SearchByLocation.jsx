@@ -59,7 +59,7 @@ function labelRightOf(loc) {
     const name = String(loc?.name || "");
     const district = String(loc?.district || "").trim();
     const country = String(loc?.country || "").trim();
-    if (!district) return country || "";
+    if (!district || district === "აფხაზეთი") return country || "";
     return name === district ? country : district;
 }
 
