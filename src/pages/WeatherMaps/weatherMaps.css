@@ -1,0 +1,40 @@
+/* რუკის wrapper რომ ჰქონდეს ნორმალური სიმაღლე */
+.wx-map-wrap {
+    position: relative;
+    width: 100%;
+    height: 100vh; /* სურვილისამებრ შეცვალე */
+    max-height: 900px;
+    border-radius: 16px;
+    box-shadow: 0 10px 30px rgba(0,0,0,.1);
+}
+
+/* mapbox container უნდა იყოს აბსოლუტურად გაწელილი */
+.wx-map-container {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100vh;
+    z-index: 99;
+}
+
+/* weatherMaps.css */
+.mb-content, .mb-content-top, .mb-content-wrapper {
+    pointer-events: none;
+}
+.mb-content .logo-link,
+.mb-content-top .logo-link,
+.mb-content-wrapper .logo-link {
+    pointer-events: auto;
+    position: relative;
+    z-index: 20;
+}
+.logo-link .logo {
+    height: clamp(20px, 4vw, 32px); /* min 20px, სასურველი 4vw, max 32px */
+    margin: clamp(25px, 40px, 30px);
+    width: auto;
+    display: block;
+}
+
+.mb-content, .mb-content-top, .mb-content-wrapper { pointer-events: none; }
+.mb-content .logo-link, .mb-content-top .logo-link { pointer-events: auto; }
+.mb-content-wrapper .logo-link { pointer-events: auto; position: relative; z-index: 20; }
