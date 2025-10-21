@@ -18,7 +18,6 @@
     padding: 0;
     border-bottom: none;
     transition: background .25s ease, box-shadow .25s ease, border-color .25s ease;
-    position: sticky;
     top: 0;
     right: 0;
     left: 0;
@@ -38,7 +37,6 @@
 }
 
 .header.nav-fixed {
-    position: sticky;
     top: 0;
     left: var(--sider-w);
     z-index: 10;
@@ -205,6 +203,13 @@
     border-top: 1px solid var(--border);
     display: grid;
     gap: 12px;
+}
+
+.wx-brand .logo {
+    height: clamp(20px, 4vw, 32px);
+    margin: clamp(25px, 40px, 30px);
+    width: auto;
+    display: block;
 }
 
 /* Responsive layout */

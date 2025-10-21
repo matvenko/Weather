@@ -1,13 +1,14 @@
 import React, {useEffect, useMemo, useState} from "react";
-import {Layout, Menu, Input, Button, Drawer, Grid, Switch, Space, Tooltip} from "antd";
+import {Layout, Menu, Button, Grid, Tooltip} from "antd";
 import {NavLink, useLocation, useNavigate} from "react-router-dom";
-import {FiUser, FiSettings} from "react-icons/fi";
+import {FiUser} from "react-icons/fi";
 import {useTranslation} from "react-i18next";
 import "./header.css";
 import MobileNavigationDrawer from "../MobileNavigation/MobileNavigationDrawer.jsx";
 import LanguageSelector from "./languageSelector/LanguageSelector.jsx";
-import {logOut, selectCurrentToken} from "@src/features/auth/authSlice.js";
+import {selectCurrentToken} from "@src/features/auth/authSlice.js";
 import {useSelector} from "react-redux";
+import meteoLogo from "@src/images/meteo-logo-white.png";
 
 const {Header} = Layout;
 const {useBreakpoint} = Grid;
@@ -70,8 +71,7 @@ export default function HeaderContainer() {
 
     const Brand = (
         <NavLink to="/" className="wx-brand">
-            <span className="wx-brand-main">Meteo</span>
-            <span className="wx-brand-sub">360</span>
+            <img src={meteoLogo} alt={"meteo360"} className={'logo'} />
         </NavLink>
     );
 
@@ -99,7 +99,8 @@ export default function HeaderContainer() {
 
 
     return (
-        <Header className={`header container ${scrolled ? "nav-fixed" : "main-header"}`}>
+        // <Header className={`header container ${scrolled ? "nav-fixed" : "main-header"}`}>
+        <Header className={`header container main-header`}>
             <div className="wx-bar">
                 {/* Left: Brand */}
                 <div className="wx-left">

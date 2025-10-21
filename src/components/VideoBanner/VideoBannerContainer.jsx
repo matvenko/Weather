@@ -37,7 +37,6 @@ function resolveVideoSrc(raw) {
         return s;
     }
 
-    // გასაღებები იწყება "./"-ით
     // მაგ: "./Mp4/cloudy.mp4"
     if (videoRegistry[s]) {
         return videoRegistry[s];

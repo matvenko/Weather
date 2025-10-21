@@ -1,5 +1,7 @@
 {
   "nav": { "home": "მთავარი", "about": "ჩვენ შესახებ", "maps": "რუკები", "service": "ჩვენი სერვისი", "contact": "კონტაქტი" },
-  "auth": { "login": "შესვლა", "google_sign_in": "Google-ით ავტორიზაცია", "email_or_username": "ელოფოსტა, ან მომხმარებლის სახელი", "password": "პაროლი", "sign_in": "ავტორიზაცია", "register": "რეგისტრაცია" },
-  "my_account": "ჩემი გვერდი"
+  "auth": { "login": "შესვლა", "google_sign_in": "Google-ით ავტორიზაცია", "email_or_username": "ელოფოსტა", "password": "პაროლი", "sign_in": "ავტორიზაცია", "register": "რეგისტრაცია" },
+  "my_account": "ჩემი გვერდი",
+  "hourly_forecast": "საათობრივი ფორქასთი",
+  "next_day_forecast": "შემდეგი დღეების ფორქასთი"
 }

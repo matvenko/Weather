@@ -21,7 +21,7 @@ export default function AboutMapCategories() {
     return (
         <section className="container MapsIncluded">
             <div className="mi-head">
-                <span className="mi-kicker">ჩვენი სერვისით სარგებლობის შემთცვევაში თვენ მიიღებთ</span>
+                <span className="mi-kicker">ჩვენი სერვისით სარგებლობის შემთხვევაში თქვენ მიიღებთ</span>
                 <h2 className="mi-title">შემდეგი ტიპის რუკებს</h2>
             </div>
 

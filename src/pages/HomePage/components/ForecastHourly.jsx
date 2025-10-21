@@ -1,7 +1,7 @@
 import React, {useMemo} from "react";
 import {motion} from "framer-motion";
 import {fadeUp, stagger} from "@src/ui/motion/variants.js";
-import RangeToggle from "@src/pages/HomePage/components/RangeToggle.jsx";
+import HourlyRangeToggle from "@src/pages/HomePage/components/HourlyRangeToggle.jsx";
 import Sparkline from "@src/pages/HomePage/components/Sparkline.jsx";
 import useDragScroll from "@src/utils/useDragScroll.js";
 import {
@@ -11,6 +11,7 @@ import {
     msToKmh,
 } from "@src/pages/HomePage/utils/homepage-utils.js";
 import {iconByCode} from "@src/pages/HomePage/utils/weather-icons.js";
+import {useTranslation} from "react-i18next";
 
 /**
  * Props:
@@ -19,10 +20,11 @@ import {iconByCode} from "@src/pages/HomePage/utils/weather-icons.js";
  * - selectedHourly: array of hourly points
  */
 const ForecastHourly = ({
-                           step = "1h", onChangeStep = () => {
+                            step = "1h", onChangeStep = () => {
     }, selectedHourly = []
-                       }) => {
+                        }) => {
     const {ref: dragRef, dragging} = useDragScroll();
+    const {t} = useTranslation();
 
     const temps = useMemo(
         () => (selectedHourly || []).map(h => Number(h.temperature)).filter(Number.isFinite),
@@ -32,8 +34,8 @@ const ForecastHourly = ({
     return (
         <motion.div className="gw-stats glass-soft" variants={fadeUp}>
             <div className="hourly-wrapper">
-                <div className="stats-title">Today’s statistics</div>
-                <RangeToggle value={step} onChange={onChangeStep}/>
+                <div className="stats-title">{t('hourly_forecast')}</div>
+                <HourlyRangeToggle value={step} onChange={onChangeStep} />
             </div>
 
             {/* Sparkline */}

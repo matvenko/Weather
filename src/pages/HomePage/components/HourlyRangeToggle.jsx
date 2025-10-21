@@ -1,4 +1,4 @@
-export default function RangeToggle({ value, onChange }) {
+export default function HourlyRangeToggle({ value, onChange }) {
     return (
         <div className="range-toggle">
             <button type="button" aria-pressed={value==="1h"} className={value==="1h" ? "active" : ""} onClick={() => onChange("1h")}>

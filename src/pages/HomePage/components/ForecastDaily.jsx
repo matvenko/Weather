@@ -1,14 +1,17 @@
 // src/pages/HomePage/components/ForecastDaily.jsx
 import React from "react";
-import { motion } from "framer-motion";
-import { listItem, stagger } from "@src/ui/motion/variants.js";
+import {motion} from "framer-motion";
+import {listItem, stagger} from "@src/ui/motion/variants.js";
+import {useTranslation} from "react-i18next";
 
 export default function ForecastDaily({
-                                        items = [],
-                                        isActive = () => false,
-                                        onSelect = () => {},
-                                        renderLabel,
-                                    }) {
+                                          items = [],
+                                          isActive = () => false,
+                                          onSelect = () => {
+                                          },
+                                          renderLabel,
+                                      }) {
+    const {t} = useTranslation();
     const hasItems = Array.isArray(items) && items.length > 0;
 
     return (
@@ -19,12 +22,12 @@ export default function ForecastDaily({
             variants={stagger(0.05, 0.05)}
         >
             <motion.div className="side-next-title" variants={listItem}>
-                The Next Day Forecast
+                {t('next_day_forecast')}
             </motion.div>
 
             {!hasItems ? (
                 // --- Fallback / Empty state (დაგეხმარება დიაგნოსტიკაში) ---
-                <div className="side-list-empty" style={{ opacity: 0.8 }}>
+                <div className="side-list-empty" style={{opacity: 0.8}}>
                     No days to show
                 </div>
             ) : (

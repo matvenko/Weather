@@ -38,11 +38,11 @@ function loadStyle(href, attrs = {}) {
 }
 
 const WeatherMaps = ({
-                         apiKey = "iuqwh32oifh",
+                         apiKey = "kokojambo",
                          lang = "ka",
                          brandLogoSrc = localBrandLogo,
                          brandLogoHref = "/",
-                         inventoryUrl = "http://weather-api.webmania.ge/api/v1/get_map_inventory",
+                         inventoryUrl = "https://weather-api.webmania.ge/api/v1/get_map_inventory",
                      }) => {
     const containerRef = useRef(null);
     const mapRef = useRef(null);
