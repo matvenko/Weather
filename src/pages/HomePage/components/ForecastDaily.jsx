@@ -3,6 +3,7 @@ import React from "react";
 import {motion} from "framer-motion";
 import {listItem, stagger} from "@src/ui/motion/variants.js";
 import {useTranslation} from "react-i18next";
+import DailyRangeToggle from "@src/pages/HomePage/components/DailyRangeToggle";
 
 export default function ForecastDaily({
                                           items = [],
@@ -24,6 +25,8 @@ export default function ForecastDaily({
             <motion.div className="side-next-title" variants={listItem}>
                 {t('next_day_forecast')}
             </motion.div>
+
+            <DailyRangeToggle value={"7d"} onChange={onChangeStep} />
 
             {!hasItems ? (
                 // --- Fallback / Empty state (დაგეხმარება დიაგნოსტიკაში) ---

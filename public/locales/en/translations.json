@@ -3,5 +3,9 @@
   "auth": { "login": "Log in", "google_sign_in": "Sign in with Google", "email_or_username": "Email or Username", "password": "password", "sign_in": "Sign in", "register": "Register"   },
   "my_account": "My Account",
   "hourly_forecast": "Hourly forecast",
-  "next_day_forecast": "The Next Day Forecast"
+  "next_day_forecast": "The Next Day Forecast",
+  "one_week_forcast_view": "7 Days View",
+  "two_week_forcast_view": "14 Days View",
+  "hourly_view": "Hourly view",
+  "3_hourly_view": "3-hourly view"
 }

@@ -114,11 +114,13 @@
     justify-content: space-between;
     align-items: center;
     margin-bottom: 8px;
+    border-bottom: 1px solid rgb(255 255 255 / 0.1);
+    padding-bottom: 6px;
 }
 
 .gw-stats .stats-title {
-    color: var(--muted);
-    font-weight: 600;
+    color: #fff;
+    font-size: 14px;
 }
 
 /* sparkline */
