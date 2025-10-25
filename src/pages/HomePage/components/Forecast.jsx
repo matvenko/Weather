@@ -1,6 +1,6 @@
 // src/pages/HomePage/components/WeatherWidgetAnimated.jsx
 import React, { useEffect, useMemo, useState } from "react";
-import { Row } from "antd";
+import {Divider, Row, Tooltip} from "antd";
 import { motion } from "framer-motion";
 import useDragScroll from "@src/utils/useDragScroll.js";
 import "../css/Forecast.css";
@@ -15,8 +15,9 @@ import { staggerCol } from "@src/ui/motion/variants.js";
 import ForecastDaily from "@src/pages/HomePage/components/ForecastDaily.jsx";
 import ForecastHero from "@src/pages/HomePage/components/ForecastHero.jsx";
 import ForecastHourly from "@src/pages/HomePage/components/ForecastHourly.jsx";
-import {iconByCode} from "@src/pages/HomePage/utils/weather-icons.js";
+import {iconByCode, getWeatherText} from "@src/pages/HomePage/utils/weather-icons.js";
 import {getTemperatureColor} from "@src/pages/HomePage/utils/temperature-colors.js";
+import {useTranslation} from "react-i18next";
 
 export default function Forecast({
                                      selectedLocation,
@@ -26,6 +27,7 @@ export default function Forecast({
                                      hourly = [],
                                  }) {
     const { ref: dragRef, dragging } = useDragScroll();
+    const { i18n } = useTranslation();
 
     // Robust arrays (თუ ჯერ undefined/obj მოდის)
     const dailyArr = Array.isArray(daily) ? daily : [];
@@ -103,18 +105,34 @@ export default function Forecast({
                     }}
                     dailyRange={dailyRange}
                     onChangeStep={setDailyRange}
-                    renderLabel={(d) => (
-                        <>
-                            <span className="ico">{iconByCode(d.pictocode)}</span>
-                            <div className="meta">
-                                <div className="day">{fmtDayLong(d.time)}</div>
-                                <div className="desc">Partly Cloudy</div>
-                            </div>
-                            <div className="t" style={{ color: getTemperatureColor(d.temperature_max) }}>
-                                {Math.round(d.temperature_max)}°
-                            </div>
-                        </>
-                    )}
+                    renderLabel={(d) => {
+                        const weatherText = getWeatherText(d.pictocode, i18n.language);
+                        return (
+                            <>
+                                <span className="ico">{iconByCode(d.pictocode)}</span>
+                                <div className="meta">
+                                    <div className="day">{fmtDayLong(d.time)}</div>
+                                    <div className="desc">{weatherText.desc}</div>
+                                </div>
+
+                                <div>
+                                    <Tooltip title="max temperature">
+                                        <div className="t" style={{ color: getTemperatureColor(d.temperature_max) }}>
+                                            {Math.round(d.temperature_max)}°
+                                        </div>
+                                    </Tooltip>
+
+                                    <Divider className={"m-0"}  />
+
+                                    <Tooltip title="min temperature">
+                                        <div className="t" style={{ color: getTemperatureColor(d.temperature_min) }}>
+                                            {Math.round(d.temperature_min)}°
+                                        </div>
+                                    </Tooltip>
+                                </div>
+                            </>
+                        );
+                    }}
                 />
             </motion.div>
         </Row>

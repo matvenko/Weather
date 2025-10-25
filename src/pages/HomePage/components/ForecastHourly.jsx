@@ -19,6 +19,7 @@ import {
     PrecipitationProbabilityIcon,
 } from "@src/pages/HomePage/components/WeatherDetailIcons.jsx";
 import {getTemperatureColor} from "@src/pages/HomePage/utils/temperature-colors.js";
+import RainspotBadge from "@src/pages/HomePage/components/RainspotBadge.jsx";
 
 /**
  * Props:
@@ -42,7 +43,7 @@ const ForecastHourly = ({
         <motion.div className="gw-stats glass-soft" variants={fadeUp}>
             <div className="hourly-wrapper">
                 <div className="stats-title">{t('hourly_forecast')}</div>
-                <HourlyRangeToggle value={step} onChange={onChangeStep} />
+                <HourlyRangeToggle value={step} onChange={onChangeStep}/>
             </div>
 
             {/* Sparkline */}
@@ -67,26 +68,32 @@ const ForecastHourly = ({
                         </div>
 
                         <div className="s-row">
-                            <WindDirectionIcon size={14} direction={h.winddirection} />
+                            <WindDirectionIcon size={14} direction={h.winddirection}/>
                             <span className="s-val">{degToCompass(h.winddirection)}</span>
                         </div>
                         <div className="s-row">
-                            <WindSpeedIcon size={14} />
-              <span className="s-val">
+                            <WindSpeedIcon size={14}/>
+                            <span className="s-val">
                 {Number.isFinite(Number(h.windspeed)) ? msToKmh(h.windspeed) : "—"} km/h
               </span>
                         </div>
                         <div className="s-row">
-                            <PrecipitationIcon size={14} />
+                            <PrecipitationIcon size={14}/>
                             <span className="s-val">{fmtPrecipMm(h.precipitation)}</span>
                         </div>
                         <div className="s-row">
-                            <PrecipitationProbabilityIcon size={14} />
-              <span className="s-val">
+                            <PrecipitationProbabilityIcon size={14}/>
+                            <span className="s-val">
                 {Math.round(h.precipitation_probability ?? 0)}%
               </span>
                         </div>
-
+                        {(h.rainspot ?? "").length > 0 && (
+                            <motion.div className="rainspot-box" variants={fadeUp}>
+                                <div className="rainspot-icon">
+                                    <RainspotBadge rainspot={h.rainspot} tile={12} round={10}/>
+                                </div>
+                            </motion.div>
+                        )}
                         <div className="s-time">{fmtHour(h.time)}</div>
                     </motion.div>
                 ))}

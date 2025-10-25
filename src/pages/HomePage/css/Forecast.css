@@ -173,7 +173,6 @@
     width: 124px;
     min-height: 210px;
     display: grid;
-    grid-template-rows: 45px 40px repeat(4, 18px) 34px; /* icon, temp, 4 rows, time */
     align-content: start;
     text-align: center;
     padding: 6px 8px;
@@ -470,7 +469,7 @@
     align-items: center;   /* ვერტიკალურად ცენტრში */
     justify-content: right; /* ჰორიზონტალურად ცენტრში */
     gap: 8px;              /* შორის დაშორება */
-    margin-top: 5px;
+    margin: 10px auto;
 }
 
 .rainspot-label {

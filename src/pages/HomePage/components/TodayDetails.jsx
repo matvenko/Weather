@@ -50,16 +50,6 @@ export default function TodayDetails({ day }) {
           {Math.round(day.precipitation_probability ?? 0)}%
         </span>
             </div>
-
-            {/* rainSPOT */}
-            {(day.rainspot ?? "").length > 0 && (
-                <motion.div className="rainspot-box" variants={fadeUp}>
-                    <span className="s-label">rainSPOT</span>
-                    <div className="rainspot-icon">
-                        <RainspotBadge rainspot={day.rainspot} tile={7} round={10} />
-                    </div>
-                </motion.div>
-            )}
         </motion.div>
     );
 }
