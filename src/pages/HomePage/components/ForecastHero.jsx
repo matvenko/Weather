@@ -5,6 +5,7 @@ import { fmtDayLong } from "@src/pages/HomePage/utils/homepage-utils.js";
 import { iconByCode } from "@src/pages/HomePage/utils/weather-icons.js";
 import TodayDetails from "@src/pages/HomePage/components/TodayDetails.jsx";
 import SearchByLocation from "@src/pages/HomePage/components/SearchByLocation.jsx";
+import { getTemperatureColor } from "@src/pages/HomePage/utils/temperature-colors.js";
 
 export default function ForecastHero({
                                          selectedLocation,
@@ -36,7 +37,9 @@ export default function ForecastHero({
                     </div>
 
                     <motion.div className="side-temp" variants={floatIcon}>
-                        {selectedDay ? Math.round(selectedDay.temperature_mean) : "—"}°
+                        <span style={{ color: getTemperatureColor(selectedDay?.temperature_mean) }}>
+                            {selectedDay ? Math.round(selectedDay.temperature_mean) : "—"}°
+                        </span>
                         {selectedDay && iconByCode(selectedDay.pictocode)}
                     </motion.div>
 

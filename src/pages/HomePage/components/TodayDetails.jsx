@@ -7,6 +7,12 @@ import {
     fmtPrecipMm,
 } from "@src/pages/HomePage/utils/homepage-utils.js";
 import RainspotBadge from "@src/pages/HomePage/components/RainspotBadge.jsx";
+import {
+    WindDirectionIcon,
+    WindSpeedIcon,
+    PrecipitationIcon,
+    PrecipitationProbabilityIcon,
+} from "@src/pages/HomePage/components/WeatherDetailIcons.jsx";
 
 export default function TodayDetails({ day }) {
     if (!day) return null;
@@ -18,11 +24,13 @@ export default function TodayDetails({ day }) {
             variants={asideEnter}
         >
             <div className="s-row">
+                <WindDirectionIcon size={18} direction={day.winddirection} />
                 <span className="s-label">Wind Direction - </span>
                 <span className="s-val">{degToCompass(day.winddirection)}</span>
             </div>
 
             <div className="s-row">
+                <WindSpeedIcon size={18} />
                 <span className="s-label">Wind speed (km/h) - </span>
                 <span className="s-val">
           {msToKmh(day.windspeed_min)}-{msToKmh(day.windspeed_max)}
@@ -30,11 +38,13 @@ export default function TodayDetails({ day }) {
             </div>
 
             <div className="s-row">
+                <PrecipitationIcon size={18} />
                 <span className="s-label">Precipitation - </span>
                 <span className="s-val">{fmtPrecipMm(day.precipitation)}</span>
             </div>
 
             <div className="s-row">
+                <PrecipitationProbabilityIcon size={18} />
                 <span className="s-label">Precipitation probability - </span>
                 <span className="s-val">
           {Math.round(day.precipitation_probability ?? 0)}%

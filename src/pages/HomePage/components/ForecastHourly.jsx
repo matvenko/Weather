@@ -12,6 +12,13 @@ import {
 } from "@src/pages/HomePage/utils/homepage-utils.js";
 import {iconByCode} from "@src/pages/HomePage/utils/weather-icons.js";
 import {useTranslation} from "react-i18next";
+import {
+    WindDirectionIcon,
+    WindSpeedIcon,
+    PrecipitationIcon,
+    PrecipitationProbabilityIcon,
+} from "@src/pages/HomePage/components/WeatherDetailIcons.jsx";
+import {getTemperatureColor} from "@src/pages/HomePage/utils/temperature-colors.js";
 
 /**
  * Props:
@@ -53,22 +60,28 @@ const ForecastHourly = ({
                             {iconByCode(h.pictocode)}
                         </div>
 
-                        <div className="s-temp-val">
+                        <div className="s-temp-val" style={{
+                            color: getTemperatureColor(Number(h.temperature))
+                        }}>
                             {Number.isFinite(Number(h.temperature)) ? Math.round(h.temperature) : "—"}°
                         </div>
 
                         <div className="s-row">
+                            <WindDirectionIcon size={14} direction={h.winddirection} />
                             <span className="s-val">{degToCompass(h.winddirection)}</span>
                         </div>
                         <div className="s-row">
+                            <WindSpeedIcon size={14} />
               <span className="s-val">
                 {Number.isFinite(Number(h.windspeed)) ? msToKmh(h.windspeed) : "—"} km/h
               </span>
                         </div>
                         <div className="s-row">
+                            <PrecipitationIcon size={14} />
                             <span className="s-val">{fmtPrecipMm(h.precipitation)}</span>
                         </div>
                         <div className="s-row">
+                            <PrecipitationProbabilityIcon size={14} />
               <span className="s-val">
                 {Math.round(h.precipitation_probability ?? 0)}%
               </span>

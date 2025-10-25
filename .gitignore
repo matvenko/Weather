@@ -23,5 +23,9 @@ dist-ssr
 *.sln
 *.sw?
 
+# local file for tasks
+task.txt
+
 # Claude Code files
 .claude/
+.temporary-images

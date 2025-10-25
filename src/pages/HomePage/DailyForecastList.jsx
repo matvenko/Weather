@@ -47,10 +47,10 @@ export default function DailyForecastList({days = []}) {
                                         <span className="wx-k">Prob</span>
                                         <span className="wx-v">{Math.round(d.precipitation_probability || 0)}%</span>
                                     </div>
-                                    <div className="wx-kv">
-                                        <span className="wx-k">UV</span>
-                                        <span className="wx-v">{d.uvindex ?? "—"}</span>
-                                    </div>
+                                    {/*<div className="wx-kv">*/}
+                                    {/*    <span className="wx-k">UV</span>*/}
+                                    {/*    <span className="wx-v">{d.uvindex ?? "—"}</span>*/}
+                                    {/*</div>*/}
                                 </div>
 
                                 <div className="wx-col">

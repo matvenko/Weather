@@ -16,6 +16,7 @@ import ForecastDaily from "@src/pages/HomePage/components/ForecastDaily.jsx";
 import ForecastHero from "@src/pages/HomePage/components/ForecastHero.jsx";
 import ForecastHourly from "@src/pages/HomePage/components/ForecastHourly.jsx";
 import {iconByCode} from "@src/pages/HomePage/utils/weather-icons.js";
+import {getTemperatureColor} from "@src/pages/HomePage/utils/temperature-colors.js";
 
 export default function Forecast({
                                      selectedLocation,
@@ -109,7 +110,9 @@ export default function Forecast({
                                 <div className="day">{fmtDayLong(d.time)}</div>
                                 <div className="desc">Partly Cloudy</div>
                             </div>
-                            <div className="t">{Math.round(d.temperature_max)}°</div>
+                            <div className="t" style={{ color: getTemperatureColor(d.temperature_max) }}>
+                                {Math.round(d.temperature_max)}°
+                            </div>
                         </>
                     )}
                 />
