@@ -11,6 +11,8 @@ export default function ForecastDaily({
                                           onSelect = () => {
                                           },
                                           renderLabel,
+                                          dailyRange = "7d",
+                                          onChangeStep = () => {},
                                       }) {
     const {t} = useTranslation();
     const hasItems = Array.isArray(items) && items.length > 0;
@@ -26,7 +28,7 @@ export default function ForecastDaily({
                 {t('next_day_forecast')}
             </motion.div>
 
-            <DailyRangeToggle value={"7d"} onChange={onChangeStep} />
+            <DailyRangeToggle value={dailyRange} onChange={onChangeStep} />
 
             {!hasItems ? (
                 // --- Fallback / Empty state (დაგეხმარება დიაგნოსტიკაში) ---

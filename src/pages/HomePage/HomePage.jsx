@@ -26,6 +26,8 @@ export default function HomePage() {
     } = useWeatherHourly(selectedLocation)
 
 
+    console.log("responseDailyForecast", responseDailyForecast)
+
     return (
         <div className="homePage container">
 

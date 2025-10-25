@@ -38,6 +38,7 @@ export default function Forecast({
     const [selectedDay, setSelectedDay] = useState(dailyArr?.[0] ?? null);
     const [selectedDayTime, setSelectedDayTime] = useState(initialDay);
     const [step, setStep] = useState("1h"); // "1h" | "3h"
+    const [dailyRange, setDailyRange] = useState("7d"); // "7d" | "14d"
 
     // როცა daily იცვლება, გადააყვანინე არჩევანი პირველ დღეზე
     useEffect(() => {
@@ -63,11 +64,12 @@ export default function Forecast({
         return step === "3h" ? pseudo.filter((_, i) => i % 3 === 0) : pseudo;
     }, [hourlyByDate, selectedDayTime, step, dailyArr]);
 
-    // მარჯვენა სია: პირველი 7 დღე
+    // მარჯვენა სია: პირველი 7 ან 14 დღე
     const rightDays = useMemo(() => {
         const arr = Array.isArray(dailyArr) ? dailyArr : [];
-        return arr.filter(Boolean).slice(0, 7);
-    }, [dailyArr]);
+        const count = dailyRange === "14d" ? 14 : 7;
+        return arr.filter(Boolean).slice(0, count);
+    }, [dailyArr, dailyRange]);
 
     return (
         <Row>
@@ -98,6 +100,8 @@ export default function Forecast({
                         setSelectedDayTime(d.time);
                         setSelectedDay(d);
                     }}
+                    dailyRange={dailyRange}
+                    onChangeStep={setDailyRange}
                     renderLabel={(d) => (
                         <>
                             <span className="ico">{iconByCode(d.pictocode)}</span>
