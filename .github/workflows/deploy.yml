@@ -37,8 +37,9 @@ jobs:
           local-dir: ./dist/
           server-dir: /weather/front/
           dangerous-clean-slate: false
-          protocol: ftps
-          timeout: 600000
+          protocol: ftp
+          security: loose
+          timeout: 900000
           log-level: verbose
 
       - name: Send Discord Success Notification
