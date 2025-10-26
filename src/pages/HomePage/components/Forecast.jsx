@@ -122,7 +122,7 @@ export default function Forecast({
                                         </div>
                                     </Tooltip>
 
-                                    <Divider className={"m-0"}  />
+                                    {/*<Divider className={"m-0"}  style={{margin: "0 !important"}} type="vertical" />*/}
 
                                     <Tooltip title="min temperature">
                                         <div className="t" style={{ color: getTemperatureColor(d.temperature_min) }}>

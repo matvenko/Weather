@@ -379,6 +379,63 @@
     cursor: pointer;
 }
 
+/* Vertical scroll for 14-day view with glass scrollbar (similar to .drag-scroll) */
+.side-list--scrollable {
+    max-height: 687px; /* adjust based on your layout */
+    overflow-y: auto;
+    padding-right: 6px; /* space for scrollbar */
+}
+
+/* Firefox scrollbar */
+.side-list--scrollable {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(255, 255, 255, .35) transparent;
+}
+
+/* Webkit scrollbar - default transparent */
+.side-list--scrollable::-webkit-scrollbar {
+    width: 10px; /* vertical scrollbar width */
+}
+
+.side-list--scrollable::-webkit-scrollbar-track {
+    background: transparent;
+    border-radius: 999px;
+    margin: 6px 0; /* vertical spacing from edges */
+}
+
+.side-list--scrollable::-webkit-scrollbar-thumb {
+    background: transparent; /* invisible by default */
+    border-radius: 999px;
+    border: 2px solid transparent;
+}
+
+/* Glass thumb appears on hover */
+.side-list--scrollable:hover::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, .25);
+    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .25), 0 0 8px rgba(0, 0, 0, .25);
+    border-radius: 999px;
+}
+
+/* Darken thumb on hover */
+.side-list--scrollable:hover::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, .35);
+}
+
+/* Track background (subtle glass effect) */
+.side-list--scrollable::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, .08);
+    border-radius: 999px;
+}
+
+.side-list--scrollable:hover::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, .10);
+}
+
+/* Firefox hover state - more visible colors */
+.side-list--scrollable:hover {
+    scrollbar-color: rgba(255, 255, 255, .45) rgba(255, 255, 255, .10);
+}
+
 .side-list li {
     display: grid;
     grid-template-columns: 36px 1fr auto;

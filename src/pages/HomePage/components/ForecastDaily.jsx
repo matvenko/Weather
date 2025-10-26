@@ -36,7 +36,10 @@ export default function ForecastDaily({
                     No days to show
                 </div>
             ) : (
-                <motion.ul className="side-list" variants={stagger(0.05, 0.05)}>
+                <motion.ul
+                    className={`side-list ${dailyRange === "14d" ? "side-list--scrollable" : ""}`}
+                    variants={stagger(0.05, 0.05)}
+                >
                     {items.map((d) => {
                         const active = isActive(d);
                         return (
