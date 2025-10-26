@@ -16,10 +16,28 @@ export default function Sparkline({ values = [] }) {
         <div className="sparkline">
             <svg viewBox="0 0 680 110" preserveAspectRatio="none">
                 <defs>
+                    {/* Gradient for area fill */}
                     <linearGradient id="gw-gradient" x1="0%" y1="0%" x2="0%" y2="100%">
-                        <stop offset="0%" stopColor="currentColor" stopOpacity="0.45" />
-                        <stop offset="100%" stopColor="currentColor" stopOpacity="0" />
+                        <stop offset="0%" stopColor="#f5bd52" stopOpacity="0.35" />
+                        <stop offset="50%" stopColor="#f5bd52" stopOpacity="0.15" />
+                        <stop offset="100%" stopColor="#f5bd52" stopOpacity="0" />
                     </linearGradient>
+
+                    {/* Gradient for the line stroke */}
+                    <linearGradient id="gw-line-gradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                        <stop offset="0%" stopColor="#f5bd52" stopOpacity="0.8" />
+                        <stop offset="50%" stopColor="#ffd67a" stopOpacity="1" />
+                        <stop offset="100%" stopColor="#f5bd52" stopOpacity="0.8" />
+                    </linearGradient>
+
+                    {/* Glow filter for the line */}
+                    <filter id="glow">
+                        <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
+                        <feMerge>
+                            <feMergeNode in="coloredBlur"/>
+                            <feMergeNode in="SourceGraphic"/>
+                        </feMerge>
+                    </filter>
                 </defs>
 
                 <AnimatePresence mode="wait">
