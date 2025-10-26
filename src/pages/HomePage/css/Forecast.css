@@ -157,28 +157,32 @@
     overflow-x: auto;
     gap: 12px;
     padding: 20px 0 20px;
-    scroll-snap-type: x proximity;
+    scroll-behavior: smooth;
     -webkit-overflow-scrolling: touch;
     /* Firefox scrollbar */
     scrollbar-width: thin;
     scrollbar-color: rgba(255, 255, 255, .35) transparent;
 }
 
-.stat-cards--scroll .stat-item {
-    scroll-snap-align: start;
-}
-
 /* ერთი ბარათი */
 .stat-item {
-    width: 124px;
+    width: 133px;
     min-height: 210px;
     display: grid;
     align-content: start;
     text-align: center;
-    padding: 6px 8px;
+    padding: 6px;
     border-radius: 10px;
     background: rgba(255, 255, 255, .06);
     border: 1px solid rgba(255, 255, 255, .12);
+}
+
+/* Current hour card highlighting */
+.stat-item.is-current-hour {
+    background: linear-gradient(135deg, rgba(245, 189, 82, 0.25), rgba(245, 189, 82, 0.15));
+    border: 2px solid var(--accent);
+    box-shadow: 0 0 20px rgba(245, 189, 82, 0.3), inset 0 0 20px rgba(255, 255, 255, 0.1);
+    transform: scale(1.05);
 }
 
 /* შიგთავსი */
@@ -201,7 +205,7 @@
 
 .s-row {
     align-items: center;
-    font-size: 12px;
+    font-size: 14px;
     padding: 1px 0;
 }
 
@@ -243,12 +247,8 @@
     overflow-x: auto;
     gap: 12px;
     padding: 10px 0 20px;
-    scroll-snap-type: x proximity;
+    scroll-behavior: smooth;
     -webkit-overflow-scrolling: touch;
-}
-
-.stat-cards--scroll .stat-item {
-    scroll-snap-align: start;
 }
 
 /* --- GLASS scrollbar მხოლოდ ამ ტრეკზე --- */
@@ -505,12 +505,16 @@
 
 /* სტაგერის დროს მცირე hover lift */
 .stat-item {
-    transition: transform .2s ease, background .2s ease, border-color .2s ease;
+    transition: transform .2s ease, background .2s ease, border-color .2s ease, box-shadow .2s ease;
 }
-.stat-item:hover {
+.stat-item:hover:not(.is-current-hour) {
     transform: translateY(-2px);
     background: rgba(255,255,255,.10);
     border-color: rgba(255,255,255,.18);
+}
+.stat-item.is-current-hour:hover {
+    transform: scale(1.08) translateY(-2px);
+    box-shadow: 0 0 25px rgba(245, 189, 82, 0.4), inset 0 0 20px rgba(255, 255, 255, 0.15);
 }
 
 /* right list hover */

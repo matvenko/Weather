@@ -39,6 +39,18 @@ const ForecastHourly = ({
         [selectedHourly]
     );
 
+    // Function to check if the hour matches current time
+    const isCurrentHour = (timeStr) => {
+        if (!timeStr) return false;
+        const currentHour = new Date().getHours();
+        const cardDate = new Date(timeStr);
+        const cardHour = cardDate.getHours();
+        const now = new Date();
+
+        // Check if it's the same day and hour
+        return cardDate.toDateString() === now.toDateString() && cardHour === currentHour;
+    };
+
     return (
         <motion.div className="gw-stats glass-soft" variants={fadeUp}>
             <div className="hourly-wrapper">
@@ -56,7 +68,11 @@ const ForecastHourly = ({
                 variants={stagger(0.05, 0.05)}
             >
                 {(selectedHourly || []).map((h, i) => (
-                    <motion.div key={`${h.time}-${i}`} className="stat-item" variants={fadeUp}>
+                    <motion.div
+                        key={`${h.time}-${i}`}
+                        className={`stat-item ${isCurrentHour(h.time) ? "is-current-hour" : ""}`}
+                        variants={fadeUp}
+                    >
                         <div className="s-icon" title={String(h.pictocode)}>
                             {iconByCode(h.pictocode)}
                         </div>
