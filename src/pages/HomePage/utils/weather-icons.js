@@ -2,7 +2,6 @@
 import React from "react";
 import { IoIosThunderstorm } from "react-icons/io";
 
-// ყოველთვის დააბრუნე render-თვის ვალიდური მნიშვნელობა (string ან React ელემენტი)
 // JSX-ის ნაცვლად ვიყენებთ React.createElement-ს, რომ ბილდერს JSX ტრანსფორმი არ დასჭირდეს.
 export function iconByCode(code) {
     const c = Number(code);
