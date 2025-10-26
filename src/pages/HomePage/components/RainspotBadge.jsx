@@ -19,13 +19,14 @@ export default function RainspotBadge({
         return n;
     }, [rainspot]);
 
-    // სიხშირის → ფერი (ნარინჯისფერი პალიტრა, 0 გამჭვირვალე)
+    // სიხშირის → ფერი (ლურჯი პალიტრა, 0 გამჭვირვალე)
     const colorOf = (v) => {
         const t = Math.max(0, Math.min(9, Number(v))); // 0..9
         const alpha = t / 10;                           // 0 → 0, 9 → 0.9
-        // ნარინჯისფერი გრადიენტი
-        const g = 160 + Math.round(30 * (t / 9));       // 160..190
-        return `rgba(255, ${g}, 95, ${alpha})`;
+        // ლურჯი გრადიენტი (ღია ლურჯიდან მუქ ლურჯამდე)
+        const r = 100 - Math.round(60 * (t / 9));       // 100..40
+        const g = 180 - Math.round(80 * (t / 9));       // 180..100
+        return `rgba(${r}, ${g}, 255, ${alpha})`;
     };
 
     useEffect(() => {
