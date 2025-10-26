@@ -37,3 +37,90 @@ jobs:
           local-dir: ./dist/
           server-dir: /weather/front/
           dangerous-clean-slate: false
+
+      - name: Send Discord Success Notification
+        if: success()
+        run: |
+          curl -H "Content-Type: application/json" \
+               -d '{
+                 "embeds": [{
+                   "title": "✅ Deployment Successful",
+                   "description": "**Weather App** deployed successfully to production!",
+                   "color": 3066993,
+                   "fields": [
+                     {
+                       "name": "Repository",
+                       "value": "[${{ github.repository }}](https://github.com/${{ github.repository }})",
+                       "inline": true
+                     },
+                     {
+                       "name": "Branch",
+                       "value": "`${{ github.ref_name }}`",
+                       "inline": true
+                     },
+                     {
+                       "name": "Commit",
+                       "value": "[`${{ github.sha }}`.substring(0,7)](https://github.com/${{ github.repository }}/commit/${{ github.sha }})",
+                       "inline": false
+                     },
+                     {
+                       "name": "Commit Message",
+                       "value": "${{ github.event.head_commit.message }}",
+                       "inline": false
+                     },
+                     {
+                       "name": "Author",
+                       "value": "${{ github.event.head_commit.author.name }}",
+                       "inline": true
+                     },
+                     {
+                       "name": "Workflow",
+                       "value": "[${{ github.workflow }}](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})",
+                       "inline": true
+                     }
+                   ],
+                   "timestamp": "${{ github.event.head_commit.timestamp }}"
+                 }]
+               }' \
+               ${{ secrets.DISCORD_WEBHOOK_URL }}
+
+      - name: Send Discord Failure Notification
+        if: failure()
+        run: |
+          curl -H "Content-Type: application/json" \
+               -d '{
+                 "embeds": [{
+                   "title": "❌ Deployment Failed",
+                   "description": "**Weather App** deployment failed!",
+                   "color": 15158332,
+                   "fields": [
+                     {
+                       "name": "Repository",
+                       "value": "[${{ github.repository }}](https://github.com/${{ github.repository }})",
+                       "inline": true
+                     },
+                     {
+                       "name": "Branch",
+                       "value": "`${{ github.ref_name }}`",
+                       "inline": true
+                     },
+                     {
+                       "name": "Commit Message",
+                       "value": "${{ github.event.head_commit.message }}",
+                       "inline": false
+                     },
+                     {
+                       "name": "Author",
+                       "value": "${{ github.event.head_commit.author.name }}",
+                       "inline": true
+                     },
+                     {
+                       "name": "Workflow",
+                       "value": "[View Logs](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})",
+                       "inline": true
+                     }
+                   ],
+                   "timestamp": "${{ github.event.head_commit.timestamp }}"
+                 }]
+               }' \
+               ${{ secrets.DISCORD_WEBHOOK_URL }}
