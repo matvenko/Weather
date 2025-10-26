@@ -3,6 +3,7 @@ import { Layout, Menu } from "antd";
 import {
     FiCloud, FiCamera, FiMap, FiBarChart2, FiNavigation,
     FiPackage, FiBook, FiTruck, FiLayers, FiRss,
+    FiChevronLeft, FiChevronRight,
 } from "react-icons/fi";
 import {useDispatch, useSelector} from "react-redux";
 import {selectCurrentDeviceViewPort, setBackgroundFile} from "@src/features/app/appSlice.js";
@@ -26,6 +27,7 @@ const rawItems = [
 export default function SiderNav() {
     const dispatch = useDispatch();
     const [selectedKey, setSelectedKey] = useState("1"); // საწყისი არჩეული (სურვილისამებრ)
+    const [collapsed, setCollapsed] = useState(false); // collapse მდგომარეობა
 
     // antd-სთვის საჭიროა {key, icon, label}
     const menuItems = useMemo(
@@ -45,13 +47,25 @@ export default function SiderNav() {
 
     const deviceViewPort = useSelector(selectCurrentDeviceViewPort)
 
+    // Custom collapse trigger with "Collapse" text
+    const customTrigger = collapsed ? <FiChevronRight /> : <FiChevronLeft />;
+
     return (
         <Layout.Sider
             className="wx-sider"
             breakpoint="lg"
-            collapsedWidth={0}
+            collapsible
+            collapsed={collapsed}
+            onCollapse={(value) => setCollapsed(value)}
+            collapsedWidth={80}
             theme="dark"
             width={deviceViewPort === "XXL" ? 300 : 240}
+            trigger={
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', height: '48px' }}>
+                    {customTrigger}
+                    {!collapsed && <span>Collapse</span>}
+                </div>
+            }
         >
             <Menu
                 theme="dark"
