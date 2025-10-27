@@ -7,5 +7,7 @@
   "one_week_forcast_view": "7 Days View",
   "two_week_forcast_view": "14 Days View",
   "hourly_view": "Hourly view",
-  "3_hourly_view": "3-hourly view"
+  "3_hourly_view": "3-hourly view",
+  "require_email_verification_text": "Your email address has not been verified yet. Would you like us to resend the verification email to",
+  "require_email_verification_title": "Email Verification Required"
 }

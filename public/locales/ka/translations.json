@@ -7,5 +7,7 @@
   "one_week_forcast_view": "7 დღის ფორქასთი",
   "two_week_forcast_view": "14 დღის ფორქასთი",
   "hourly_view": "საათობრივი ხედვა",
-  "3_hourly_view": "3 საათიანი ხედვა"
+  "3_hourly_view": "3 საათიანი ხედვა",
+  "require_email_verification_text": "თქვენი ელფოსტის მისამართი ჯერ არ არის დადასტურებული. გსურთ, რომ ხელახლა გამოგიგზავნოთ ელფოსტა დადასტურებისთვის",
+  "require_email_verification_title": "საჭიროა ელფოსტის დადასტურება"
 }

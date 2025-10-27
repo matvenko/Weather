@@ -1,25 +1,29 @@
-import React, { useEffect, useRef } from "react";
+import React, {useEffect, useRef, useState} from "react";
 import s from "./Login.module.css";
-import { Button, Divider, Form, Input } from "antd";
-import { GoogleOutlined, LockOutlined, UserOutlined } from "@ant-design/icons";
+import {Button, Divider, Form, Input, Modal} from "antd";
+import {GoogleOutlined, LockOutlined, UserOutlined} from "@ant-design/icons";
 import {useTranslation} from "react-i18next";
 import {useGlobalProvider} from "@src/providers/public/GlobalProvider/index.js";
 import {useLoginUser} from "@src/components/LoginForm/hooks/useLoginUser.js";
-import { useNavigate } from "react-router-dom";
+import {useResendEmailVerification} from "@src/components/LoginForm/hooks/useResendEmailVerification.ts";
+import {useNavigate} from "react-router-dom";
 
 export default function LoginForm() {
     const userRef = useRef(null);
-    const { t } = useTranslation();
-    const { notificationApi } = useGlobalProvider();
+    const {t} = useTranslation();
+    const {notificationApi} = useGlobalProvider();
     const navigate = useNavigate();
+    const [showResendModal, setShowResendModal] = useState(false);
+    const [userEmail, setUserEmail] = useState("");
 
-    const loginUserMutation = useLoginUser()
+    const loginUserMutation = useLoginUser();
+    const resendEmailMutation = useResendEmailVerification();
 
     useEffect(() => userRef.current?.focus(), []);
 
     const onFinishLogin = async (values) => {
         loginUserMutation.mutate(
-            { ...values },
+            {...values},
             {
                 onSuccess: (response) => {
                     // წარმატების შეტყობინება
@@ -35,11 +39,19 @@ export default function LoginForm() {
                 },
 
                 onError: (error) => {
-                    notificationApi?.error({
-                        message: "Login failed",
-                        description: error?.response?.data?.message || "Please try again.",
-                        duration: 3,
-                    });
+                    const errorMessage = error?.response?.data?.message;
+
+                    // შევამოწმოთ არის თუ არა ეს ემაილის ვერიფიკაციის შეცდომა
+                    if (errorMessage === 'მეილის ვერიფიკაცია არ არის დასრულებული!') {
+                        setUserEmail(values.email);
+                        setShowResendModal(true);
+                    } else {
+                        notificationApi?.error({
+                            message: "Login failed",
+                            description: errorMessage || "Please try again.",
+                            duration: 3,
+                        });
+                    }
                 },
             }
         );
@@ -54,32 +66,80 @@ export default function LoginForm() {
         );
     };
 
+    const handleResendVerification = () => {
+        resendEmailMutation.mutate(
+            {email: userEmail},
+            {
+                onSuccess: (response) => {
+                    setShowResendModal(false);
+                    notificationApi?.success({
+                        message: "Email Sent!",
+                        description: "Verification email has been resent. Please check your inbox.",
+                        duration: 3,
+                    });
+                },
+                onError: (error) => {
+                    notificationApi?.error({
+                        message: "Failed to send email",
+                        description: error?.response?.data?.message || "Please try again later.",
+                        duration: 3,
+                    });
+                },
+            }
+        );
+    };
+
     return (
-        <Form layout="vertical" size="large" onFinish={onFinishLogin} className={s.form}>
-            <Form.Item
-                label={t("auth.email_or_username")}
-                name="email"
-                rules={[{ required: true, message: "Please input your username or email" }]}
+        <>
+            <Form layout="vertical" size="large" onFinish={onFinishLogin} className={s.form}>
+                <Form.Item
+                    label={t("auth.email_or_username")}
+                    name="email"
+                    rules={[{required: true, message: "Please input your username or email"}]}
+                >
+                    <Input ref={userRef} prefix={<UserOutlined/>} placeholder="username@email.com"/>
+                </Form.Item>
+                <Form.Item
+                    label={t("auth.password")}
+                    name="password"
+                    rules={[{required: true, message: "Please input your password"}]}
+                >
+                    <Input.Password prefix={<LockOutlined/>} placeholder="••••••••"/>
+                </Form.Item>
+
+                <Button type="primary" htmlType="submit" block className={s.primaryBtn}>
+                    {t("auth.login")}
+                </Button>
+
+                <Divider className={s.divider}>or continue with</Divider>
+                <Button block icon={<GoogleOutlined/>} className={s.googleBtn} onClick={handleGoogleLogin}>
+                    {t("auth.google_sign_in")}
+                </Button>
+
+            </Form>
+
+            <Modal
+                title={t("require_email_verification_title")}
+                open={showResendModal}
+                onCancel={() => setShowResendModal(false)}
+                footer={[
+                    <Button key="cancel" onClick={() => setShowResendModal(false)}>
+                        Cancel
+                    </Button>,
+                    <Button
+                        key="resend"
+                        type="primary"
+                        loading={resendEmailMutation.isPending}
+                        onClick={handleResendVerification}
+                    >
+                        Resend Verification Email
+                    </Button>,
+                ]}
             >
-                <Input ref={userRef} prefix={<UserOutlined />} placeholder="username@email.com" />
-            </Form.Item>
-            <Form.Item
-                label={t("auth.password")}
-                name="password"
-                rules={[{ required: true, message: "Please input your password" }]}
-            >
-                <Input.Password prefix={<LockOutlined />} placeholder="••••••••" />
-            </Form.Item>
-
-            <Button type="primary" htmlType="submit" block className={s.primaryBtn}>
-                {t("auth.login")}
-            </Button>
-
-            <Divider className={s.divider}>or continue with</Divider>
-            <Button block icon={<GoogleOutlined />} className={s.googleBtn} onClick={handleGoogleLogin}>
-                {t("auth.google_sign_in")}
-            </Button>
-
-        </Form>
+                <p>
+                    {t("require_email_verification_text")} <strong>{userEmail}</strong>?
+                </p>
+            </Modal>
+        </>
     );
 }
