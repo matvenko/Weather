@@ -55,8 +55,7 @@ a:hover { text-decoration: none; }
 
 /* 4) საკონტენტო კონტეინერი */
 .container {
-    width: 100%;
-    max-width: var(--max-w);
+    width: min(90vw, 80vw);
     margin-inline: auto;
     padding-inline: var(--space-4);
 }
