@@ -1,13 +1,13 @@
 import React, {useEffect, useRef, useState} from "react";
 import s from "./Login.module.css";
 import {Button, Divider, Form, Input, Modal} from "antd";
-import {FacebookOutlined, GoogleOutlined, LockOutlined, UserOutlined} from "@ant-design/icons";
+import {AppleOutlined, FacebookOutlined, GoogleOutlined, LockOutlined, UserOutlined} from "@ant-design/icons";
 import {useTranslation} from "react-i18next";
 import {useGlobalProvider} from "@src/providers/public/GlobalProvider/index.js";
 import {useLoginUser} from "@src/components/LoginForm/hooks/useLoginUser.js";
 import {useResendEmailVerification} from "@src/components/LoginForm/hooks/useResendEmailVerification.ts";
 import {useNavigate} from "react-router-dom";
-import {handleFacebookLogin, handleGoogleLogin} from "@src/utils/socialAuth.js";
+import {handleAppleLogin, handleFacebookLogin, handleGoogleLogin} from "@src/utils/socialAuth.js";
 import {useDispatch} from "react-redux";
 import {setCredentials} from "@src/features/auth/authSlice.js";
 import {storeAuthCredentials} from "@src/utils/auth.js";
@@ -129,12 +129,30 @@ export default function LoginForm() {
                 </Button>
 
                 <Divider className={s.divider}>or continue with</Divider>
-                <Button block icon={<GoogleOutlined/>} className={s.googleBtn} onClick={handleGoogleLogin}>
-                    {t("auth.google_sign_in")}
-                </Button>
-                <Button block icon={<FacebookOutlined/>} className={s.facebookBtn} onClick={handleFacebookLogin} style={{marginTop: '10px'}}>
-                    {t("auth.facebook_sign_in")}
-                </Button>
+
+                <div className={s.socialButtons}>
+                    <Button
+                        shape="circle"
+                        size="large"
+                        icon={<GoogleOutlined/>}
+                        className={s.googleBtn}
+                        onClick={handleGoogleLogin}
+                    />
+                    <Button
+                        shape="circle"
+                        size="large"
+                        icon={<FacebookOutlined/>}
+                        className={s.facebookBtn}
+                        onClick={handleFacebookLogin}
+                    />
+                    <Button
+                        shape="circle"
+                        size="large"
+                        icon={<AppleOutlined/>}
+                        className={s.appleBtn}
+                        onClick={handleAppleLogin}
+                    />
+                </div>
 
             </Form>
 

@@ -11,6 +11,7 @@ const API_BASE_URL = "https://weather-api.webmania.ge/api/v1/auth";
 export const SocialProviders = {
   GOOGLE: "google",
   FACEBOOK: "facebook",
+  APPLE: "apple",
 };
 
 /**
@@ -74,4 +75,11 @@ export const handleGoogleLogin = () => {
  */
 export const handleFacebookLogin = () => {
   return redirectToSocialLogin(SocialProviders.FACEBOOK, window.location.origin);
+};
+
+/**
+ * Handle Apple login via redirect
+ */
+export const handleAppleLogin = () => {
+  return redirectToSocialLogin(SocialProviders.APPLE, window.location.origin);
 };

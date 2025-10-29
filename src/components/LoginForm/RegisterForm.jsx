@@ -1,17 +1,43 @@
-import React from "react";
+import React, { useState } from "react";
 import s from "./Login.module.css";
 import { Button, Checkbox, Divider, Form, Input } from "antd";
-import { FacebookOutlined, GoogleOutlined, LockOutlined, MailOutlined, UserOutlined } from "@ant-design/icons";
+import { AppleOutlined, FacebookOutlined, GoogleOutlined, LockOutlined, MailOutlined, UserOutlined } from "@ant-design/icons";
 import {useGlobalProvider} from "@src/providers/public/GlobalProvider/index.js";
 import {useTranslation} from "react-i18next";
 import {useRegistrationUser} from "@src/components/LoginForm/hooks/useRegistrationUser.js";
-import {handleFacebookLogin, handleGoogleLogin} from "@src/utils/socialAuth.js";
+import {useCheckEmailAvailability} from "@src/components/LoginForm/hooks/useCheckEmailAvailability.ts";
+import {handleAppleLogin, handleFacebookLogin, handleGoogleLogin} from "@src/utils/socialAuth.js";
 
 export default function RegisterForm() {
 
     const { t } = useTranslation();
     const { notificationApi } = useGlobalProvider();
-    const registerUserMutation = useRegistrationUser()
+    const registerUserMutation = useRegistrationUser();
+    const checkEmailMutation = useCheckEmailAvailability();
+    const [emailStatus, setEmailStatus] = useState("");
+
+    const handleEmailBlur = (e) => {
+        const email = e.target.value;
+        if (email && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+            checkEmailMutation.mutate(email, {
+                onSuccess: (data) => {
+                    if (!data.available) {
+                        setEmailStatus("error");
+                        notificationApi?.error({
+                            message: "Email already taken",
+                            description: data.message || "This email is already registered. Please use a different email or login.",
+                            duration: 4,
+                        });
+                    } else {
+                        setEmailStatus("success");
+                    }
+                },
+                onError: () => {
+                    setEmailStatus("");
+                }
+            });
+        }
+    };
 
     const onFinishRegister = async (values) => {
         registerUserMutation.mutate({...values}, {
@@ -40,9 +66,18 @@ export default function RegisterForm() {
             <Form.Item
                 label="Email"
                 name="userEmail"
-                rules={[{ required: true, type: "email", message: "Please input a valid email" }]}
+                rules={[
+                    { required: true, type: "email", message: "Please input a valid email" },
+                    { validator: async () => emailStatus === "error" ? Promise.reject("Email already taken") : Promise.resolve() }
+                ]}
+                validateStatus={emailStatus}
+                hasFeedback
             >
-                <Input prefix={<MailOutlined />} placeholder="name@domain.com" />
+                <Input
+                    prefix={<MailOutlined />}
+                    placeholder="name@domain.com"
+                    onBlur={handleEmailBlur}
+                />
             </Form.Item>
             <Form.Item
                 label="Password"
@@ -83,12 +118,30 @@ export default function RegisterForm() {
             </Button>
 
             <Divider className={s.divider}>or continue with</Divider>
-            <Button block icon={<GoogleOutlined/>} className={s.googleBtn} onClick={handleGoogleLogin}>
-                {t("auth.google_sign_in")}
-            </Button>
-            <Button block icon={<FacebookOutlined/>} className={s.facebookBtn} onClick={handleFacebookLogin} style={{marginTop: '10px'}}>
-                {t("auth.facebook_sign_in")}
-            </Button>
+
+            <div className={s.socialButtons}>
+                <Button
+                    shape="circle"
+                    size="large"
+                    icon={<GoogleOutlined/>}
+                    className={s.googleBtn}
+                    onClick={handleGoogleLogin}
+                />
+                <Button
+                    shape="circle"
+                    size="large"
+                    icon={<FacebookOutlined/>}
+                    className={s.facebookBtn}
+                    onClick={handleFacebookLogin}
+                />
+                <Button
+                    shape="circle"
+                    size="large"
+                    icon={<AppleOutlined/>}
+                    className={s.appleBtn}
+                    onClick={handleAppleLogin}
+                />
+            </div>
         </Form>
     );
 }
