@@ -1,16 +1,16 @@
 import React, {useEffect, useRef, useState} from "react";
 import s from "./Login.module.css";
-import {Button, Divider, Form, Input, Modal} from "antd";
-import {AppleOutlined, FacebookOutlined, GoogleOutlined, LockOutlined, UserOutlined} from "@ant-design/icons";
+import {Button, Form, Input, Modal} from "antd";
+import {LockOutlined, UserOutlined} from "@ant-design/icons";
 import {useTranslation} from "react-i18next";
 import {useGlobalProvider} from "@src/providers/public/GlobalProvider/index.js";
 import {useLoginUser} from "@src/components/LoginForm/hooks/useLoginUser.js";
 import {useResendEmailVerification} from "@src/components/LoginForm/hooks/useResendEmailVerification.ts";
 import {useNavigate} from "react-router-dom";
-import {handleAppleLogin, handleFacebookLogin, handleGoogleLogin} from "@src/utils/socialAuth.js";
 import {useDispatch} from "react-redux";
 import {setCredentials} from "@src/features/auth/authSlice.js";
 import {storeAuthCredentials} from "@src/utils/auth.js";
+import SocialLoginButtons from "./SocialLoginButtons.jsx";
 
 export default function LoginForm() {
     const userRef = useRef(null);
@@ -38,7 +38,7 @@ export default function LoginForm() {
 
                     if (token) {
                         // Update Redux store
-                        dispatch(setCredentials({ userName, accessToken: token }));
+                        dispatch(setCredentials({userName, accessToken: token}));
 
                         // Store in localStorage using utility
                         storeAuthCredentials({
@@ -80,7 +80,6 @@ export default function LoginForm() {
             }
         );
     };
-
 
 
     const handleResendVerification = () => {
@@ -128,31 +127,7 @@ export default function LoginForm() {
                     {t("auth.login")}
                 </Button>
 
-                <Divider className={s.divider}>or continue with</Divider>
-
-                <div className={s.socialButtons}>
-                    <Button
-                        shape="circle"
-                        size="large"
-                        icon={<GoogleOutlined/>}
-                        className={s.googleBtn}
-                        onClick={handleGoogleLogin}
-                    />
-                    <Button
-                        shape="circle"
-                        size="large"
-                        icon={<FacebookOutlined/>}
-                        className={s.facebookBtn}
-                        onClick={handleFacebookLogin}
-                    />
-                    <Button
-                        shape="circle"
-                        size="large"
-                        icon={<AppleOutlined/>}
-                        className={s.appleBtn}
-                        onClick={handleAppleLogin}
-                    />
-                </div>
+                <SocialLoginButtons />
 
             </Form>
 

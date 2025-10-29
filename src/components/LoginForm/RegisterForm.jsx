@@ -1,13 +1,13 @@
 import React, { useState } from "react";
 import s from "./Login.module.css";
-import { Button, Checkbox, Divider, Form, Input } from "antd";
-import { AppleOutlined, FacebookOutlined, GoogleOutlined, LockOutlined, MailOutlined, UserOutlined } from "@ant-design/icons";
+import { Button, Checkbox, Form, Input } from "antd";
+import { LockOutlined, MailOutlined, UserOutlined } from "@ant-design/icons";
 import {useGlobalProvider} from "@src/providers/public/GlobalProvider/index.js";
 import {useTranslation} from "react-i18next";
 import {useRegistrationUser} from "@src/components/LoginForm/hooks/useRegistrationUser.js";
 import {useCheckEmailAvailability} from "@src/components/LoginForm/hooks/useCheckEmailAvailability.ts";
-import {handleAppleLogin, handleFacebookLogin, handleGoogleLogin} from "@src/utils/socialAuth.js";
 import PasswordStrengthIndicator from "./PasswordStrengthIndicator.jsx";
+import SocialLoginButtons from "./SocialLoginButtons.jsx";
 
 export default function RegisterForm() {
 
@@ -123,31 +123,7 @@ export default function RegisterForm() {
                 Sign Up
             </Button>
 
-            <Divider className={s.divider}>or continue with</Divider>
-
-            <div className={s.socialButtons}>
-                <Button
-                    shape="circle"
-                    size="large"
-                    icon={<GoogleOutlined/>}
-                    className={s.googleBtn}
-                    onClick={handleGoogleLogin}
-                />
-                <Button
-                    shape="circle"
-                    size="large"
-                    icon={<FacebookOutlined/>}
-                    className={s.facebookBtn}
-                    onClick={handleFacebookLogin}
-                />
-                <Button
-                    shape="circle"
-                    size="large"
-                    icon={<AppleOutlined/>}
-                    className={s.appleBtn}
-                    onClick={handleAppleLogin}
-                />
-            </div>
+            <SocialLoginButtons />
         </Form>
     );
 }
