@@ -7,6 +7,7 @@ import {useTranslation} from "react-i18next";
 import {useRegistrationUser} from "@src/components/LoginForm/hooks/useRegistrationUser.js";
 import {useCheckEmailAvailability} from "@src/components/LoginForm/hooks/useCheckEmailAvailability.ts";
 import {handleAppleLogin, handleFacebookLogin, handleGoogleLogin} from "@src/utils/socialAuth.js";
+import PasswordStrengthIndicator from "./PasswordStrengthIndicator.jsx";
 
 export default function RegisterForm() {
 
@@ -15,6 +16,7 @@ export default function RegisterForm() {
     const registerUserMutation = useRegistrationUser();
     const checkEmailMutation = useCheckEmailAvailability();
     const [emailStatus, setEmailStatus] = useState("");
+    const [password, setPassword] = useState("");
 
     const handleEmailBlur = (e) => {
         const email = e.target.value;
@@ -82,10 +84,14 @@ export default function RegisterForm() {
             <Form.Item
                 label="Password"
                 name="password"
-                rules={[{ required: true, message: "Please input your password" }]}
             >
-                <Input.Password prefix={<LockOutlined />} placeholder="Create a password" />
+                <Input.Password
+                    prefix={<LockOutlined />}
+                    placeholder="Create a password"
+                    onChange={(e) => setPassword(e.target.value)}
+                />
             </Form.Item>
+            {password && <PasswordStrengthIndicator password={password} />}
             <Form.Item
                 label="Confirm password"
                 name="password_confirmation"
