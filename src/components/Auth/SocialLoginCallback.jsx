@@ -11,6 +11,7 @@ function parseParams(search) {
     return {
         token: p.get("token") || "",
         userName: p.get("userName") || p.get("username") || "",
+        userEmail: p.get("userEmail") || p.get("email") || "",
         permissions: p.get("permissions") ? JSON.parse(decodeURIComponent(p.get("permissions"))) : undefined,
         userConfig: p.get("userConfig") ? JSON.parse(decodeURIComponent(p.get("userConfig"))) : undefined,
     };
@@ -21,14 +22,14 @@ export default function SocialLoginCallback() {
     const navigate = useNavigate();
 
     useEffect(() => {
-        const { token, userName, permissions, userConfig } = parseParams(window.location.search);
+        const { token, userName, userEmail, permissions, userConfig } = parseParams(window.location.search);
 
         if (token) {
             // Update Redux store
             dispatch(setCredentials({ userName, accessToken: token }));
 
             // Store credentials using centralized utility
-            storeAuthCredentials({ token, userName, permissions, userConfig });
+            storeAuthCredentials({ token, userName, userEmail, permissions, userConfig });
 
             // Redirect to home page
             navigate("/", { replace: true });

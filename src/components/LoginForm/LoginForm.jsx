@@ -33,7 +33,8 @@ export default function LoginForm() {
                 onSuccess: (response) => {
                     // Store credentials in Redux and localStorage
                     const token = response?.token || response?.accessToken;
-                    const userName = response?.userName || response?.username || response?.email;
+                    const userName = response?.userName || response?.username;
+                    const userEmail = response?.userEmail || response?.email;
 
                     if (token) {
                         // Update Redux store
@@ -43,6 +44,7 @@ export default function LoginForm() {
                         storeAuthCredentials({
                             token,
                             userName,
+                            userEmail,
                             permissions: response?.permissions,
                             userConfig: response?.userConfig
                         });
@@ -65,7 +67,7 @@ export default function LoginForm() {
 
                     // შევამოწმოთ არის თუ არა ეს ემაილის ვერიფიკაციის შეცდომა
                     if (errorMessage === 'მეილის ვერიფიკაცია არ არის დასრულებული!') {
-                        setUserEmail(values.email);
+                        setUserEmail(values.userEmail || values.email);
                         setShowResendModal(true);
                     } else {
                         notificationApi?.error({

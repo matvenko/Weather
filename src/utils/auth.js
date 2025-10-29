@@ -21,11 +21,19 @@ export const getAuthToken = () => {
 };
 
 /**
- * Get current username
+ * Get current username (full name)
  * @returns {string|null} username or null
  */
 export const getUsername = () => {
   return localStorage.getItem("userName");
+};
+
+/**
+ * Get current user email
+ * @returns {string|null} user email or null
+ */
+export const getUserEmail = () => {
+  return localStorage.getItem("userEmail");
 };
 
 /**
@@ -72,6 +80,7 @@ export const hasPermission = (permission) => {
 export const clearAuthData = () => {
   localStorage.removeItem("token");
   localStorage.removeItem("userName");
+  localStorage.removeItem("userEmail");
   sessionStorage.removeItem("permissions");
   sessionStorage.removeItem("userConfig");
 };
@@ -80,16 +89,20 @@ export const clearAuthData = () => {
  * Store auth credentials
  * @param {Object} credentials - auth credentials
  * @param {string} credentials.token - access token
- * @param {string} credentials.userName - username
+ * @param {string} credentials.userName - username (full name)
+ * @param {string} [credentials.userEmail] - user email
  * @param {Array} [credentials.permissions] - user permissions
  * @param {Object} [credentials.userConfig] - user config
  */
-export const storeAuthCredentials = ({ token, userName, permissions, userConfig }) => {
+export const storeAuthCredentials = ({ token, userName, userEmail, permissions, userConfig }) => {
   if (token) {
     localStorage.setItem("token", token);
   }
   if (userName) {
     localStorage.setItem("userName", userName);
+  }
+  if (userEmail) {
+    localStorage.setItem("userEmail", userEmail);
   }
   if (permissions) {
     sessionStorage.setItem("permissions", JSON.stringify(permissions));

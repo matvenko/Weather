@@ -1,7 +1,7 @@
 import React from "react";
 import s from "./Login.module.css";
 import { Button, Checkbox, Divider, Form, Input } from "antd";
-import { FacebookOutlined, GoogleOutlined, LockOutlined, MailOutlined } from "@ant-design/icons";
+import { FacebookOutlined, GoogleOutlined, LockOutlined, MailOutlined, UserOutlined } from "@ant-design/icons";
 import {useGlobalProvider} from "@src/providers/public/GlobalProvider/index.js";
 import {useTranslation} from "react-i18next";
 import {useRegistrationUser} from "@src/components/LoginForm/hooks/useRegistrationUser.js";
@@ -31,8 +31,15 @@ export default function RegisterForm() {
     return (
         <Form layout="vertical" size="large" onFinish={onFinishRegister} className={s.form}>
             <Form.Item
+                label={t("auth.full_name") || "Full Name"}
+                name="userName"
+                rules={[{ required: true, message: "Please input your full name" }]}
+            >
+                <Input prefix={<UserOutlined />} placeholder="John Doe" />
+            </Form.Item>
+            <Form.Item
                 label="Email"
-                name="email"
+                name="userEmail"
                 rules={[{ required: true, type: "email", message: "Please input a valid email" }]}
             >
                 <Input prefix={<MailOutlined />} placeholder="name@domain.com" />
