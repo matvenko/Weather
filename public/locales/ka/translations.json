@@ -1,6 +1,6 @@
 {
   "nav": { "home": "მთავარი", "about": "ჩვენ შესახებ", "maps": "რუკები", "service": "ჩვენი სერვისი", "contact": "კონტაქტი" },
-  "auth": { "login": "შესვლა", "google_sign_in": "Google-ით ავტორიზაცია", "email_or_username": "ელოფოსტა", "password": "პაროლი", "sign_in": "ავტორიზაცია", "register": "რეგისტრაცია" },
+  "auth": { "login": "შესვლა", "google_sign_in": "Google-ით ავტორიზაცია", "facebook_sign_in": "Facebook-ით ავტორიზაცია", "email_or_username": "ელოფოსტა", "password": "პაროლი", "sign_in": "ავტორიზაცია", "register": "რეგისტრაცია" },
   "my_account": "ჩემი გვერდი",
   "hourly_forecast": "საათობრივი ფორქასთი",
   "next_day_forecast": "შემდეგი დღეების ფორქასთი",
@@ -9,5 +9,8 @@
   "hourly_view": "საათობრივი ხედვა",
   "3_hourly_view": "3 საათიანი ხედვა",
   "require_email_verification_text": "თქვენი ელფოსტის მისამართი ჯერ არ არის დადასტურებული. გსურთ, რომ ხელახლა გამოგიგზავნოთ ელფოსტა დადასტურებისთვის",
-  "require_email_verification_title": "საჭიროა ელფოსტის დადასტურება"
+  "require_email_verification_title": "საჭიროა ელფოსტის დადასტურება",
+  "resend": "თავიდან გაგზავნა",
+  "cancel": "გაუქმება",
+  "logout": "გასვლა"
 }

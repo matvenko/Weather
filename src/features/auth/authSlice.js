@@ -10,7 +10,7 @@ const authSlice = createSlice({
     token: initialToken || null,
   },
   reducers: {
-    accessToken: (state, action) => {
+    setCredentials: (state, action) => {
       const { userName, accessToken } = action.payload || {};
       state.userName = userName ?? null;
       state.token = accessToken ?? null;
@@ -22,6 +22,8 @@ const authSlice = createSlice({
       state.token = null;
       window.localStorage.removeItem("token");
       window.localStorage.removeItem("userName");
+      window.sessionStorage.removeItem("permissions");
+      window.sessionStorage.removeItem("userConfig");
     },
   },
 });

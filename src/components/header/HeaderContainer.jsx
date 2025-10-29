@@ -6,9 +6,11 @@ import {useTranslation} from "react-i18next";
 import "./header.css";
 import MobileNavigationDrawer from "../MobileNavigation/MobileNavigationDrawer.jsx";
 import LanguageSelector from "./languageSelector/LanguageSelector.jsx";
-import {selectCurrentToken} from "@src/features/auth/authSlice.js";
-import {useSelector} from "react-redux";
+import {isAuthorized} from "@src/utils/auth.js";
 import meteoLogo from "@src/images/meteo-logo-white.png";
+import {logOut} from "@src/features/auth/authSlice.js";
+import {useDispatch} from "react-redux";
+import {AiOutlineLogout} from "react-icons/ai";
 
 const {Header} = Layout;
 const {useBreakpoint} = Grid;
@@ -21,12 +23,10 @@ export default function HeaderContainer() {
 
     const [scrolled, setScrolled] = useState(false);
     const [open, setOpen] = useState(false);
+    const dispatch = useDispatch();
 
     const [themeDark, setThemeDark] = useState(false);
-    const token = useSelector(selectCurrentToken);
-
-
-    console.log("token", token)
+    const isUserAuthorized = isAuthorized();
     // Sticky / shadow on scroll
     useEffect(() => {
         const onScroll = () => setScrolled(window.scrollY > 10);
@@ -55,6 +55,11 @@ export default function HeaderContainer() {
         }
     }, []);
 
+    const handleLogout = async (e) => {
+        dispatch(logOut());
+        navigate("/login");
+    };
+
     const menuItems = useMemo(() => ([
         {key: "/", label: <NavLink to="/">{t("nav.home")}</NavLink>},
         {key: "/about", label: <NavLink to="/about">{t("nav.about")}</NavLink>},
@@ -71,26 +76,35 @@ export default function HeaderContainer() {
 
     const Brand = (
         <NavLink to="/" className="wx-brand">
-            <img src={meteoLogo} alt={"meteo360"} className={'logo'} />
+            <img src={meteoLogo} alt={"meteo360"} className={'logo'}/>
         </NavLink>
     );
 
-    const showButton = token ? (
-        <Tooltip title={t("my_account") || "Account"}>
-            <Button
-                type="primary"
-                icon={<FiUser />}
-                onClick={() => navigate("/account")}
-                className="wx-cta-btn"
-            >
-                {screens.md ? t("common.signIn") || "Sign in" : null}
-            </Button>
-        </Tooltip>
+    const showButton = isUserAuthorized ? (
+        <>
+            <Tooltip title={t("my_account") || "Account"}>
+                <Button
+                    type="primary"
+                    icon={<FiUser/>}
+                    onClick={() => navigate("/account")}
+                    className="wx-cta-btn"
+                >
+                    {screens.md ? t("my_account") : null}
+                </Button>
+            </Tooltip>
+            <Tooltip>
+                <Button icon={<AiOutlineLogout/>}
+                        className={'capitalize'}
+                        onClick={() => {
+                            handleLogout().then();
+                        }}>{t('logout')}</Button>
+            </Tooltip>
+        </>
     ) : (
         <Tooltip title={t("auth.login")}>
             <Button
                 type="primary"
-                icon={<FiUser />}
+                icon={<FiUser/>}
                 onClick={() => navigate("/login")}
                 className="wx-cta-btn"
             />

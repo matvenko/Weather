@@ -1,6 +1,6 @@
 {
   "nav": { "home": "Home", "about": "About", "maps": "Maps", "service": "Service", "contact": "Contact" },
-  "auth": { "login": "Log in", "google_sign_in": "Sign in with Google", "email_or_username": "Email or Username", "password": "password", "sign_in": "Sign in", "register": "Register"   },
+  "auth": { "login": "Log in", "google_sign_in": "Sign in with Google", "facebook_sign_in": "Sign in with Facebook", "email_or_username": "Email or Username", "password": "password", "sign_in": "Sign in", "register": "Register"   },
   "my_account": "My Account",
   "hourly_forecast": "Hourly forecast",
   "next_day_forecast": "The Next Day Forecast",
@@ -9,5 +9,8 @@
   "hourly_view": "Hourly view",
   "3_hourly_view": "3-hourly view",
   "require_email_verification_text": "Your email address has not been verified yet. Would you like us to resend the verification email to",
-  "require_email_verification_title": "Email Verification Required"
+  "require_email_verification_title": "Email Verification Required",
+  "resend": "resend",
+  "cancel": "cancel",
+  "logout": "log out"
 }

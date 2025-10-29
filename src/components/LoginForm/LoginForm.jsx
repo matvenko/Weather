@@ -1,18 +1,23 @@
 import React, {useEffect, useRef, useState} from "react";
 import s from "./Login.module.css";
 import {Button, Divider, Form, Input, Modal} from "antd";
-import {GoogleOutlined, LockOutlined, UserOutlined} from "@ant-design/icons";
+import {FacebookOutlined, GoogleOutlined, LockOutlined, UserOutlined} from "@ant-design/icons";
 import {useTranslation} from "react-i18next";
 import {useGlobalProvider} from "@src/providers/public/GlobalProvider/index.js";
 import {useLoginUser} from "@src/components/LoginForm/hooks/useLoginUser.js";
 import {useResendEmailVerification} from "@src/components/LoginForm/hooks/useResendEmailVerification.ts";
 import {useNavigate} from "react-router-dom";
+import {handleFacebookLogin, handleGoogleLogin} from "@src/utils/socialAuth.js";
+import {useDispatch} from "react-redux";
+import {setCredentials} from "@src/features/auth/authSlice.js";
+import {storeAuthCredentials} from "@src/utils/auth.js";
 
 export default function LoginForm() {
     const userRef = useRef(null);
     const {t} = useTranslation();
     const {notificationApi} = useGlobalProvider();
     const navigate = useNavigate();
+    const dispatch = useDispatch();
     const [showResendModal, setShowResendModal] = useState(false);
     const [userEmail, setUserEmail] = useState("");
 
@@ -26,11 +31,28 @@ export default function LoginForm() {
             {...values},
             {
                 onSuccess: (response) => {
+                    // Store credentials in Redux and localStorage
+                    const token = response?.token || response?.accessToken;
+                    const userName = response?.userName || response?.username || response?.email;
+
+                    if (token) {
+                        // Update Redux store
+                        dispatch(setCredentials({ userName, accessToken: token }));
+
+                        // Store in localStorage using utility
+                        storeAuthCredentials({
+                            token,
+                            userName,
+                            permissions: response?.permissions,
+                            userConfig: response?.userConfig
+                        });
+                    }
+
                     // წარმატების შეტყობინება
                     notificationApi?.success({
                         message: "Welcome!",
                         description: response?.message || "You have successfully logged in.",
-                        duration: 2, // 2 წამით გამოჩნდება
+                        duration: 1,
                     });
 
                     setTimeout(() => {
@@ -58,13 +80,6 @@ export default function LoginForm() {
     };
 
 
-    const handleGoogleLogin = () => {
-        window.open(
-            "https://weather-api.webmania.ge/api/v1/auth/google/redirect",
-            "google_oauth",
-            "width=500,height=600,scrollbars=yes"
-        );
-    };
 
     const handleResendVerification = () => {
         resendEmailMutation.mutate(
@@ -115,6 +130,9 @@ export default function LoginForm() {
                 <Button block icon={<GoogleOutlined/>} className={s.googleBtn} onClick={handleGoogleLogin}>
                     {t("auth.google_sign_in")}
                 </Button>
+                <Button block icon={<FacebookOutlined/>} className={s.facebookBtn} onClick={handleFacebookLogin} style={{marginTop: '10px'}}>
+                    {t("auth.facebook_sign_in")}
+                </Button>
 
             </Form>
 
@@ -123,16 +141,17 @@ export default function LoginForm() {
                 open={showResendModal}
                 onCancel={() => setShowResendModal(false)}
                 footer={[
-                    <Button key="cancel" onClick={() => setShowResendModal(false)}>
-                        Cancel
+                    <Button key="cancel" className={"capitalize"} onClick={() => setShowResendModal(false)}>
+                        {t("cancel")}
                     </Button>,
                     <Button
                         key="resend"
                         type="primary"
                         loading={resendEmailMutation.isPending}
                         onClick={handleResendVerification}
+                        className={"capitalize"}
                     >
-                        Resend Verification Email
+                        {t("resend")}
                     </Button>,
                 ]}
             >

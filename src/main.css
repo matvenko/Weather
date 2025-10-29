@@ -149,15 +149,13 @@ label { display: inline-block; margin-bottom: 6px; color: #434343; }
     font-weight: 400;
     font-style: normal;
     font-display: swap;
-    /* Georgian unicode ranges */
     unicode-range:
             U+10A0-10FF,   /* Georgian */
             U+2D00-2D2F,   /* Georgian Supplement */
             U+1C90-1CBF;   /* Georgian Extended */
 }
 
-/* English/Latin — Calibri (Normal)
-   რეკომენდაცია: გამოიყენე ლოკალურად შენახული .woff2/.ttf, რადგან გარე URL-ები ხშირად ბლოკირდება CORS-ით. */
+/* English/Latin — Calibri (Normal) */
 @font-face {
     font-family: 'Nunito', sans-serif;
     src:
@@ -193,7 +191,31 @@ html[lang="ge"],
 
 .grey-wrapper{
     width: 100%;
-    /*background-color: #f5f9f7;*/
     background-color: #f5f9f7;
+}
+
+.capitalize{
+    text-transform: capitalize;
+}
+.uppercase{
+    text-transform: uppercase;
+}
+.lowercase{
+    text-transform: lowercase;
+}
+.text-center{
+    text-align: center;
+}
+.text-left{
+    text-align: left;
+}
+.text-right{
+    text-align: right;
+}
+.text-justify{
+    text-align: justify;
+}
+.text-nowrap{
+    white-space: nowrap;
 }
 

@@ -49,7 +49,7 @@ export default function LoginRegister() {
     );
 
     return token ? (
-        <Navigate to="/admin"/>
+        <Navigate to="/"/>
     ) : (
         <div className={s.shell}>
             {card}

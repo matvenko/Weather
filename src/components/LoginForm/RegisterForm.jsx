@@ -1,11 +1,11 @@
 import React from "react";
 import s from "./Login.module.css";
 import { Button, Checkbox, Divider, Form, Input } from "antd";
-import { LockOutlined, MailOutlined } from "@ant-design/icons";
-import GoogleLoginButton from "./GoogleButton.jsx";
+import { FacebookOutlined, GoogleOutlined, LockOutlined, MailOutlined } from "@ant-design/icons";
 import {useGlobalProvider} from "@src/providers/public/GlobalProvider/index.js";
 import {useTranslation} from "react-i18next";
 import {useRegistrationUser} from "@src/components/LoginForm/hooks/useRegistrationUser.js";
+import {handleFacebookLogin, handleGoogleLogin} from "@src/utils/socialAuth.js";
 
 export default function RegisterForm() {
 
@@ -16,14 +16,13 @@ export default function RegisterForm() {
     const onFinishRegister = async (values) => {
         registerUserMutation.mutate({...values}, {
             onSuccess: (response) => {
-                debugger;
                 notificationApi?.success({
-                    message: response?.message
+                    message: response?.message || "Registration successful! Please check your email to verify your account."
                 });
             },
             onError: (error) => {
                 notificationApi?.error({
-                    message: error?.response?.data?.message
+                    message: error?.response?.data?.message || "Registration failed. Please try again."
                 });
             }
         })
@@ -77,7 +76,12 @@ export default function RegisterForm() {
             </Button>
 
             <Divider className={s.divider}>or continue with</Divider>
-            <GoogleLoginButton />
+            <Button block icon={<GoogleOutlined/>} className={s.googleBtn} onClick={handleGoogleLogin}>
+                {t("auth.google_sign_in")}
+            </Button>
+            <Button block icon={<FacebookOutlined/>} className={s.facebookBtn} onClick={handleFacebookLogin} style={{marginTop: '10px'}}>
+                {t("auth.facebook_sign_in")}
+            </Button>
         </Form>
     );
 }
