@@ -31,7 +31,7 @@ export default function SocialLoginButtons() {
 
     return (
         <>
-            <Divider className={s.divider}>or continue with</Divider>
+            <Divider className={s.divider}>{t("auth.or_continue_with")}</Divider>
 
             <div className={s.socialButtons}>
                 {buttons.map((btn, index) => {

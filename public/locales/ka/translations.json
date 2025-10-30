@@ -1,6 +1,29 @@
 {
-  "nav": { "home": "მთავარი", "about": "ჩვენ შესახებ", "maps": "რუკები", "service": "ჩვენი სერვისი", "contact": "კონტაქტი" },
-  "auth": { "login": "შესვლა", "google_sign_in": "Google-ით ავტორიზაცია", "facebook_sign_in": "Facebook-ით ავტორიზაცია", "apple_sign_in": "Apple-ით ავტორიზაცია", "email_or_username": "ელოფოსტა", "password": "პაროლი", "sign_in": "ავტორიზაცია", "register": "რეგისტრაცია", "full_name": "სახელი და გვარი", "password_requirements": { "min_length": "მინიმუმ 8 სიმბოლო", "uppercase": "ერთი დიდი ასო", "lowercase": "ერთი პატარა ასო", "number": "ერთი რიცხვი" } },
+  "nav": {
+    "home": "მთავარი",
+    "about": "ჩვენ შესახებ",
+    "maps": "რუკები",
+    "service": "ჩვენი სერვისი",
+    "contact": "კონტაქტი"
+  },
+  "auth": {
+    "login": "შესვლა",
+    "or_continue_with": "ან",
+    "google_sign_in": "Google-ით ავტორიზაცია",
+    "facebook_sign_in": "Facebook-ით ავტორიზაცია",
+    "apple_sign_in": "Apple-ით ავტორიზაცია",
+    "email_or_username": "ელ-ფოსტა",
+    "password": "პაროლი",
+    "sign_in": "ავტორიზაცია",
+    "register": "რეგისტრაცია",
+    "full_name": "სახელი და გვარი",
+    "password_requirements": {
+      "min_length": "მინიმუმ 8 სიმბოლო",
+      "uppercase": "ერთი დიდი ასო",
+      "lowercase": "ერთი პატარა ასო",
+      "number": "ერთი რიცხვი"
+    }
+  },
   "my_account": "ჩემი გვერდი",
   "hourly_forecast": "საათობრივი ფორქასთი",
   "next_day_forecast": "შემდეგი დღეების ფორქასთი",

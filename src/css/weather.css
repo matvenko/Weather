@@ -7,7 +7,7 @@
     --wx-border: #e5e7ef;
     --wx-green: #c5f36b;
     --wx-yellow: #ffc24b;
-    --wx-header-h: 4px;
+    --wx-header-h: 120px;
     --sider-w: 240px; /* default */
 }
 
@@ -15,7 +15,7 @@
 .wx-content {
     position: relative;
     min-height: 100vh;
-    padding-top: var(--wx-header-h);
+    padding-top: 5px;
 }
 
 .myVideo {
