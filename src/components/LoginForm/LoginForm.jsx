@@ -33,12 +33,12 @@ export default function LoginForm() {
                 onSuccess: (response) => {
                     // Store credentials in Redux and localStorage
                     const token = response?.token || response?.accessToken;
-                    const userName = response?.userName || response?.username;
-                    const userEmail = response?.userEmail || response?.email;
+                    const userName = response?.user.name || response?.user.name;
+                    const userEmail = response?.user.email || response?.user.email;
 
                     if (token) {
                         // Update Redux store
-                        dispatch(setCredentials({userName, accessToken: token}));
+                        dispatch(setCredentials({userName, accessToken: token, userEmail}));
 
                         // Store in localStorage using utility
                         storeAuthCredentials({
