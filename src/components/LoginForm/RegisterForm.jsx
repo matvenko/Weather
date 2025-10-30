@@ -18,11 +18,18 @@ export default function RegisterForm() {
     const checkEmailMutation = useCheckEmailAvailability();
     const [emailStatus, setEmailStatus] = useState("");
     const [password, setPassword] = useState("");
+    const [lastCheckedEmail, setLastCheckedEmail] = useState("");
     const navigate = useNavigate();
+
+    const handleEmailChange = () => {
+        setEmailStatus("");
+        setLastCheckedEmail("");
+    };
 
     const handleEmailBlur = (e) => {
         const email = e.target.value;
-        if (email && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+        if (email && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) && email !== lastCheckedEmail) {
+            setLastCheckedEmail(email);
             checkEmailMutation.mutate(email, {
                 onSuccess: (data) => {
                     if (!data.available) {
@@ -85,6 +92,7 @@ export default function RegisterForm() {
                 <Input
                     prefix={<MailOutlined />}
                     placeholder="name@domain.com"
+                    onChange={handleEmailChange}
                     onBlur={handleEmailBlur}
                 />
             </Form.Item>
