@@ -8,6 +8,7 @@ import {useRegistrationUser} from "@src/components/LoginForm/hooks/useRegistrati
 import {useCheckEmailAvailability} from "@src/components/LoginForm/hooks/useCheckEmailAvailability.ts";
 import PasswordStrengthIndicator from "./PasswordStrengthIndicator.jsx";
 import SocialLoginButtons from "./SocialLoginButtons.jsx";
+import {useNavigate} from "react-router-dom";
 
 export default function RegisterForm() {
 
@@ -17,6 +18,7 @@ export default function RegisterForm() {
     const checkEmailMutation = useCheckEmailAvailability();
     const [emailStatus, setEmailStatus] = useState("");
     const [password, setPassword] = useState("");
+    const navigate = useNavigate();
 
     const handleEmailBlur = (e) => {
         const email = e.target.value;
@@ -45,8 +47,13 @@ export default function RegisterForm() {
         registerUserMutation.mutate({...values}, {
             onSuccess: (response) => {
                 notificationApi?.success({
-                    message: response?.message || "Registration successful! Please check your email to verify your account."
+                    message: response?.message || "Registration successful! Please check your email to verify your account.",
+                    duration: 3,
                 });
+
+                setTimeout(() => {
+                    navigate("/");
+                }, 2500);
             },
             onError: (error) => {
                 notificationApi?.error({
@@ -60,17 +67,17 @@ export default function RegisterForm() {
         <Form layout="vertical" size="large" onFinish={onFinishRegister} className={s.form}>
             <Form.Item
                 label={t("auth.full_name") || "Full Name"}
-                name="userName"
-                rules={[{ required: true, message: "Please input your full name" }]}
+                name="name"
+                rules={[{ required: true, message: "გთხოვთ შეიყვანოთ სრული სახელი" }]}
             >
-                <Input prefix={<UserOutlined />} placeholder="John Doe" />
+                <Input prefix={<UserOutlined />} placeholder="მათე ზაქარიაძე" />
             </Form.Item>
             <Form.Item
                 label="Email"
-                name="userEmail"
+                name="email"
                 rules={[
-                    { required: true, type: "email", message: "Please input a valid email" },
-                    { validator: async () => emailStatus === "error" ? Promise.reject("Email already taken") : Promise.resolve() }
+                    { required: true, type: "email", message: "გთხოვთ შეიყვანეთ ვალიდური ელ-ფოსტა" },
+                    { validator: async () => emailStatus === "error" ? Promise.reject("ელ-ფოსტა დაკავებულია") : Promise.resolve() }
                 ]}
                 validateStatus={emailStatus}
                 hasFeedback
@@ -87,13 +94,13 @@ export default function RegisterForm() {
             >
                 <Input.Password
                     prefix={<LockOutlined />}
-                    placeholder="Create a password"
+                    placeholder="შეიყვანეთ პაროლი"
                     onChange={(e) => setPassword(e.target.value)}
                 />
             </Form.Item>
             {password && <PasswordStrengthIndicator password={password} />}
             <Form.Item
-                label="Confirm password"
+                label="გაიმეორეთ პაროლი"
                 name="password_confirmation"
                 dependencies={["password"]}
                 rules={[
@@ -120,7 +127,7 @@ export default function RegisterForm() {
             </Form.Item>
 
             <Button type="primary" htmlType="submit" block className={s.primaryBtn}>
-                Sign Up
+                {t('auth.register')}
             </Button>
 
             <SocialLoginButtons />
