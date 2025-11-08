@@ -7,6 +7,7 @@ import RequireAuth from "./features/auth/RequireAuth.jsx";
 import SocialLoginCallback from "@src/components/Auth/SocialLoginCallback.jsx";
 
 const DashboardContainer = lazy(() => import("./admin/components/Dashboard/DashboardContainer.jsx"));
+const UsersContainer = lazy(() => import("./admin/components/Users/UsersContainer.jsx"));
 const Login = lazy(() => import("./components/LoginForm/RegistrationAuthorizationModule.jsx"));
 const Registration = lazy(() => import("./components/Registration/Registration.jsx"));
 const Homepage = lazy(() => import("./pages/HomePage/HomePage.jsx"));
@@ -42,6 +43,7 @@ export default function App() {
                             {/* Protected */}
                             <Route element={<RequireAuth />}>
                                 <Route path="admin" element={<DashboardContainer />} />
+                                <Route path="users" element={<UsersContainer />} />
                             </Route>
 
                             <Route path="*" element={<Result status="404" title="Not Found" />} />

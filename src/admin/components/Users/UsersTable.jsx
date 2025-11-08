@@ -1,16 +1,19 @@
 import React from "react";
 import Title from "antd/es/typography/Title";
 import { Button, Space, Table, Tooltip, Tag } from "antd";
-import { AiOutlinePlus } from "react-icons/ai";
-import { MdDeleteForever, MdModeEditOutline } from "react-icons/md";
+import { FcCancel, FcApproval, FcManager } from "react-icons/fc";
+import {AiFillFileExcel} from "react-icons/ai";
 
 const UsersTable = ({
   users,
   loading,
   pagination,
   onPageChange,
-  onEdit,
-  onDelete,
+  onExport,
+  exportLoading,
+  onBlock,
+  onActivate,
+  onChangeRole,
 }) => {
   const columns = [
     {
@@ -65,23 +68,77 @@ const UsersTable = ({
     {
       title: "Actions",
       key: "action",
-      width: 100,
-      render: (_, record) => (
-        <Space size="middle">
-          <Tooltip title="რედაქტირება">
-            <MdModeEditOutline
-              className="action-icon"
-              onClick={() => onEdit(record)}
-            />
-          </Tooltip>
-          <Tooltip title="წაშლა">
-            <MdDeleteForever
-              className="action-icon"
-              onClick={() => onDelete(record)}
-            />
-          </Tooltip>
-        </Space>
-      ),
+      width: 150,
+      render: (_, record) => {
+        const actions = record.actions || [];
+        const hasCloseAction = actions.includes("close");
+        const hasRecoverAction = actions.includes("recover");
+        const hasChangeRoleAction = actions.includes("change_role");
+
+        return (
+          <Space size="small">
+            <Tooltip title={hasCloseAction ? "დაბლოკვა" : "მოქმედება მიუწვდომელია"}>
+              <span>
+                <Button
+                  type="text"
+                  icon={
+                    <FcCancel
+                      style={{
+                        fontSize: '18px',
+                        filter: !hasCloseAction ? 'grayscale(100%)' : 'none',
+                        opacity: !hasCloseAction ? 0.5 : 1
+                      }}
+                    />
+                  }
+                  onClick={() => onBlock(record)}
+                  disabled={!hasCloseAction}
+                  style={{ padding: '4px 8px' }}
+                />
+              </span>
+            </Tooltip>
+
+            <Tooltip title={hasRecoverAction ? "გააქტიურება" : "მოქმედება მიუწვდომელია"}>
+              <span>
+                <Button
+                  type="text"
+                  icon={
+                    <FcApproval
+                      style={{
+                        fontSize: '18px',
+                        filter: !hasRecoverAction ? 'grayscale(100%)' : 'none',
+                        opacity: !hasRecoverAction ? 0.5 : 1
+                      }}
+                    />
+                  }
+                  onClick={() => onActivate(record)}
+                  disabled={!hasRecoverAction}
+                  style={{ padding: '4px 8px' }}
+                />
+              </span>
+            </Tooltip>
+
+            <Tooltip title={hasChangeRoleAction ? "როლის შეცვლა" : "მოქმედება მიუწვდომელია"}>
+              <span>
+                <Button
+                  type="text"
+                  icon={
+                    <FcManager
+                      style={{
+                        fontSize: '18px',
+                        filter: !hasChangeRoleAction ? 'grayscale(100%)' : 'none',
+                        opacity: !hasChangeRoleAction ? 0.5 : 1
+                      }}
+                    />
+                  }
+                  onClick={() => onChangeRole(record)}
+                  disabled={!hasChangeRoleAction}
+                  style={{ padding: '4px 8px' }}
+                />
+              </span>
+            </Tooltip>
+          </Space>
+        );
+      },
     },
   ];
 
@@ -96,6 +153,16 @@ const UsersTable = ({
         <Title className="title" level={2}>
           Users
         </Title>
+
+        <Button
+          type="primary"
+          onClick={onExport}
+          loading={exportLoading}
+          className="bpg-arial-caps-webfont"
+          icon={<AiFillFileExcel />}
+        >
+          <span>Excel-ში ექსპორტი</span>
+        </Button>
       </div>
 
       <Table

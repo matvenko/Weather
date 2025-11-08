@@ -30,7 +30,6 @@
 
 .ant-layout-sider {
     min-width: 0;
-    background: rgba(33, 33, 33, .57) !important;
 }
 
 .ant-menu-dark {
@@ -41,6 +40,7 @@
     position: sticky;
     top: 0;
     height: 100vh;
+    background: rgba(33, 33, 33, .57) !important;
 }
 
 .wx-sider-menu {

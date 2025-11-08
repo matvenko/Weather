@@ -92,14 +92,9 @@ const SidebarContent = () => {
               label: "Dashboard",
             },
             {
-              key: "/banners",
-              icon: <MdOutlineImagesearchRoller />,
-              label: "Banners",
-            },
-            {
-              key: "/brands",
+              key: "/users",
               icon: <TbBrandStackshare />,
-              label: "Brands",
+              label: "users",
             },
             {
               key: "/watches",
