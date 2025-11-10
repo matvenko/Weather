@@ -73,7 +73,7 @@ const UsersTable = ({
         const actions = record.actions || [];
         const hasCloseAction = actions.includes("close");
         const hasRecoverAction = actions.includes("recover");
-        const hasChangeRoleAction = actions.includes("change_role");
+        const hasChangeRoleAction = actions.includes("changeRole");
 
         return (
           <Space size="small">
