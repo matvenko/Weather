@@ -185,33 +185,26 @@ ul {
 	transition-delay: 0.3s;
 }
 .sidebarUserWrapper {
-	display: flex;
 	margin: 24px 18px;
 	padding-bottom: 24px;
 	border-bottom: 1px solid #f5f4f7;
 	color: #5f6a75;
 }
 
-.sidebarUsername {
-	background-color: #167bf2;
-	width: 44px;
-	height: 44px;
+.adminLogo {
 	text-align: center;
-	line-height: 44px;
-	border-radius: 100%;
-	color: #ffffff;
-	background-image: url("../../images/daytona-logo.jpg");
-	background-size: cover;
-	background-repeat: no-repeat;
-	background-position: center;
 }
 
 .sidebarUserInfo {
-	margin: 0 12px;
+	margin: 10px 0px;
 	line-height: 20px;
 	white-space: nowrap;
 	overflow: hidden;
 	text-overflow: ellipsis;
+}
+
+.darkTextGrey{
+    color: #7c7c7c
 }
 
 .sidebarBell {
