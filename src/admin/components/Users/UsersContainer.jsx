@@ -11,6 +11,7 @@ import { useExportUsers } from "./Hooks/useExportUsers.js";
 import { useBlockUser } from "./Hooks/useBlockUser.js";
 import { useActivateUser } from "./Hooks/useActivateUser.js";
 import { useChangeRole } from "./Hooks/useChangeRole.js";
+import { useRoles } from "./Hooks/useRoles.js";
 import { selectCurrentState } from "../../../features/app/appSlice.js";
 import "../../css/admin.css";
 
@@ -36,6 +37,9 @@ const UsersContainer = () => {
     page,
     per_page: pageSize,
   });
+
+  // Fetch roles
+  const { data: rolesData, isLoading: isLoadingRoles } = useRoles();
 
   // Export users mutation
   const { mutate: exportUsers, isPending: isExporting } = useExportUsers();
@@ -236,10 +240,14 @@ const UsersContainer = () => {
             <Radio.Group
               onChange={(e) => setSelectedRole(e.target.value)}
               value={selectedRole}
+              disabled={isLoadingRoles}
             >
               <Space direction="vertical">
-                <Radio value={1}>Admin</Radio>
-                <Radio value={2}>User</Radio>
+                {rolesData?.map((role) => (
+                  <Radio key={role.id} value={role.id}>
+                    {role.dictionaryKey}
+                  </Radio>
+                ))}
               </Space>
             </Radio.Group>
           </Space>
