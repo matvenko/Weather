@@ -21,6 +21,8 @@ import {
   MdWatch,
 } from "react-icons/md";
 import { TbBrandStackshare } from "react-icons/tb";
+import { usePermissions } from "@src/admin/providers/PermissionsProvider/index.js";
+import { useMemo } from "react";
 
 const SidebarContent = () => {
   const { t } = useTranslation();
@@ -28,6 +30,7 @@ const SidebarContent = () => {
   const state = useSelector(selectCurrentState);
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const { permissions, isPageVisible } = usePermissions();
 
   const setDarkSidebarTheme = async () => {
     dispatch(setDarkSidebar());
@@ -41,6 +44,38 @@ const SidebarContent = () => {
   const setCollapsedSidebar = async () => {
     dispatch(setCollapsed());
   };
+
+  // Define all available menu items with their permissions
+  const allMenuItems = useMemo(() => [
+    {
+      key: "/admin",
+      icon: <MdOutlineDashboard />,
+      label: "Dashboard",
+      pageUrl: "dashboard", // This should match the pageUrl from API
+    },
+    {
+      key: "/users",
+      icon: <TbBrandStackshare />,
+      label: "Users",
+      pageUrl: "users",
+    },
+    {
+      key: "/watches",
+      icon: <MdWatch />,
+      label: "Watches",
+      pageUrl: "watches",
+    },
+  ], []);
+
+  // Filter menu items based on permissions
+  const visibleMenuItems = useMemo(() => {
+    return allMenuItems.filter((item) => {
+      // Always show dashboard
+      if (item.pageUrl === "dashboard") return true;
+      // Check if page is visible based on permissions
+      return isPageVisible(item.pageUrl);
+    });
+  }, [allMenuItems, isPageVisible]);
 
   return (
     <>
@@ -85,23 +120,7 @@ const SidebarContent = () => {
           onClick={({ key }) => {
             navigate(key);
           }}
-          items={[
-            {
-              key: "/admin",
-              icon: <MdOutlineDashboard />,
-              label: "Dashboard",
-            },
-            {
-              key: "/users",
-              icon: <TbBrandStackshare />,
-              label: "users",
-            },
-            {
-              key: "/watches",
-              icon: <MdWatch />,
-              label: "Watches",
-            },
-          ]}
+          items={visibleMenuItems}
         />
         <div className={s.menuFixedSection}>
           <div className={s.divider}></div>

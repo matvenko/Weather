@@ -5,6 +5,7 @@ import AppLayout from "./components/AppLayout.jsx";
 import WeatherLayout from "./components/layout/WeatherLayout.jsx";
 import RequireAuth from "./features/auth/RequireAuth.jsx";
 import SocialLoginCallback from "@src/components/Auth/SocialLoginCallback.jsx";
+import AdminLayout from "./admin/components/AdminLayout.jsx";
 
 const DashboardContainer = lazy(() => import("./admin/components/Dashboard/DashboardContainer.jsx"));
 const UsersContainer = lazy(() => import("./admin/components/Users/UsersContainer.jsx"));
@@ -42,8 +43,10 @@ export default function App() {
 
                             {/* Protected */}
                             <Route element={<RequireAuth />}>
-                                <Route path="admin" element={<DashboardContainer />} />
-                                <Route path="users" element={<UsersContainer />} />
+                                <Route element={<AdminLayout />}>
+                                    <Route path="admin" element={<DashboardContainer />} />
+                                    <Route path="users" element={<UsersContainer />} />
+                                </Route>
                             </Route>
 
                             <Route path="*" element={<Result status="404" title="Not Found" />} />

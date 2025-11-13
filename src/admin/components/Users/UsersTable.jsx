@@ -3,6 +3,7 @@ import Title from "antd/es/typography/Title";
 import { Button, Space, Table, Tooltip, Tag } from "antd";
 import { FcCancel, FcApproval, FcManager } from "react-icons/fc";
 import {AiFillFileExcel} from "react-icons/ai";
+import { usePermissions } from "@src/admin/providers/PermissionsProvider/index.js";
 
 const UsersTable = ({
   users,
@@ -15,6 +16,10 @@ const UsersTable = ({
   onActivate,
   onChangeRole,
 }) => {
+  const { hasPermission } = usePermissions();
+
+  // Check if user has export permission
+  const canExport = hasPermission("users", "exportUsers");
   const columns = [
     {
       title: "ID",
@@ -154,15 +159,17 @@ const UsersTable = ({
           Users
         </Title>
 
-        <Button
-          type="primary"
-          onClick={onExport}
-          loading={exportLoading}
-          className="bpg-arial-caps-webfont"
-          icon={<AiFillFileExcel />}
-        >
-          <span>Excel-ში ექსპორტი</span>
-        </Button>
+        {canExport && (
+          <Button
+            type="primary"
+            onClick={onExport}
+            loading={exportLoading}
+            className="bpg-arial-caps-webfont"
+            icon={<AiFillFileExcel />}
+          >
+            <span>Excel-ში ექსპორტი</span>
+          </Button>
+        )}
       </div>
 
       <Table
