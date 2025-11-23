@@ -1,5 +1,45 @@
 # Sferic Map - Lightning Monitoring System
 
+## Session Context (for future reference)
+
+### Current Status (2024)
+- **Implementation**: Complete and functional
+- **WebSocket**: Using Earth Networks test API key (may need valid key for production)
+- **Demo Mode**: Available for testing when no real lightning data
+- **Map Provider**: Esri satellite tiles (free, no API key required)
+
+### What Works
+- Map loads with satellite imagery
+- User geolocation with 10km radius visualization
+- Demo mode with simulated lightning strikes
+- Statistics panel showing strike counts
+- Toggle button to start/stop demo mode
+
+### What Needs Attention
+- **API Key**: Current key `8E2A3C14-B44A-41AC-A0B8-74AA1123A912` is test/demo key
+- **Production**: Need valid Earth Networks API subscription for real data
+- **WebSocket URL**: `wss://lx.wsapi.earthnetworks.com/ws/` - verify if correct for production
+
+### Key Files to Edit
+```
+src/pages/SfericMap/SfericMap.jsx  - Main component (all logic)
+src/pages/SfericMap/sfericMap.css  - All styles
+src/App.jsx                         - Route definition (line ~45)
+src/components/header/HeaderContainer.jsx - Navigation menu item
+```
+
+### Environment Variable
+```env
+VITE_SFERIC_API_KEY=your-production-api-key
+```
+
+### Quick Test
+1. Run `npm run dev`
+2. Go to `/sferic-map`
+3. Click "დემო ჩართვა" to see simulated lightning
+
+---
+
 ## Overview
 
 Sferic Map is a real-time lightning monitoring page integrated with Earth Networks Sferic API. The page displays an interactive map with live lightning strike data, user geolocation with customizable radius, and comprehensive statistics.
@@ -192,3 +232,86 @@ Added to header navigation in `src/components/header/HeaderContainer.jsx`:
 - Ensure HTTPS or localhost
 - Check browser location permissions
 - Map will fall back to Georgia bounds
+
+---
+
+## Development Notes
+
+### React StrictMode Considerations
+The component uses `mapInitializedRef` to prevent double initialization in React StrictMode.
+Key refs used to avoid re-render loops:
+- `mapInitializedRef` - prevents map double init
+- `userLocationRef` - stores location without causing callback recreation
+- `demoIntervalRef` - tracks demo interval for cleanup
+
+### Cleanup on Unmount
+The useEffect cleanup properly:
+- Clears all intervals (cleanup, stats, demo)
+- Closes WebSocket connection
+- Removes map instance
+- Resets initialization flag
+
+### WebSocket Message Format
+Earth Networks sends lightning data in this format:
+```json
+{"lat": 41.7151, "lon": 44.8271, "timestamp": "...", "intensity": 15.5}
+```
+Or as an array of pulses for batch updates.
+
+### Demo Mode Bounds (Georgia)
+```javascript
+const bounds = {
+    minLat: 41.0,
+    maxLat: 43.5,
+    minLng: 40.0,
+    maxLng: 46.5,
+};
+```
+
+### Map Style (Esri Satellite)
+Using free Esri tiles - no API key needed:
+```
+https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}
+```
+
+### Radius Calculation
+Uses Haversine formula for accurate geodesic distance.
+Circle visualization uses approximation based on latitude for performance.
+
+---
+
+## Earth Networks API Reference
+
+### Documentation
+- Main docs: https://developer.earthnetworks.com/documentation
+- WebSocket endpoint: `wss://lx.wsapi.earthnetworks.com/ws/`
+
+### WebSocket Parameters
+| Param | Value | Description |
+|-------|-------|-------------|
+| p | API_KEY | Project/API key |
+| f | json | Response format |
+| t | pulse | Data type (lightning pulses) |
+| l | all | Location filter |
+| k | on | Keep-alive enabled |
+
+### Getting Production API Key
+Contact Earth Networks for API subscription:
+- Website: https://www.earthnetworks.com/
+- Sferic Maps: https://sfericmaps.com/
+
+---
+
+## Related Tasks (task.txt reference)
+
+The original task requested:
+1. Lightning detection integration (ელვის დეტექცია)
+2. Real-time strike visualization
+3. Strike count in radius
+4. Similar UI to sfericmap.com
+
+All core requirements have been implemented. Additional features from task.txt that could be added:
+- Weather data overlay (temperature, humidity, wind)
+- Storm tracking
+- Radar data
+- Alert notifications
