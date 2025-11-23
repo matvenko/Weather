@@ -1,0 +1,294 @@
+/* Sferic Map Styles */
+.sferic-map-wrap {
+    position: relative;
+    width: 100%;
+    height: 100vh;
+    background: #1a1a2e;
+}
+
+.sferic-map-container {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+}
+
+/* Lightning strike animation */
+@keyframes lightning-pulse {
+    0% {
+        transform: scale(1);
+        opacity: 1;
+    }
+    50% {
+        transform: scale(2);
+        opacity: 0.6;
+    }
+    100% {
+        transform: scale(3);
+        opacity: 0;
+    }
+}
+
+.lightning-marker {
+    width: 12px;
+    height: 12px;
+    background: #ffeb3b;
+    border-radius: 50%;
+    box-shadow: 0 0 10px #ffeb3b, 0 0 20px #ff9800;
+    animation: lightning-pulse 2s ease-out forwards;
+}
+
+/* User location marker */
+.user-location-marker {
+    width: 20px;
+    height: 20px;
+    background: #4fc3f7;
+    border: 3px solid #fff;
+    border-radius: 50%;
+    box-shadow: 0 0 10px rgba(79, 195, 247, 0.8), 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+.user-location-marker::after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 8px;
+    height: 8px;
+    background: #fff;
+    border-radius: 50%;
+}
+
+/* Control Panel */
+.sferic-controls {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    z-index: 100;
+    background: rgba(26, 26, 46, 0.9);
+    border-radius: 12px;
+    padding: 16px;
+    min-width: 200px;
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.sferic-controls h3 {
+    color: #fff;
+    margin: 0 0 12px 0;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.sferic-controls h3 svg {
+    color: #ffeb3b;
+}
+
+.sferic-stats {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.sferic-stat {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    color: rgba(255, 255, 255, 0.8);
+    font-size: 13px;
+}
+
+.sferic-stat-value {
+    color: #4fc3f7;
+    font-weight: 600;
+}
+
+/* Connection Status */
+.connection-status {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 12px;
+    padding-top: 12px;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.status-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #f44336;
+}
+
+.status-dot.connected {
+    background: #4caf50;
+    box-shadow: 0 0 8px #4caf50;
+}
+
+.status-dot.demo {
+    background: #ff9800;
+    box-shadow: 0 0 8px #ff9800;
+}
+
+.status-text {
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 12px;
+    flex: 1;
+}
+
+.retry-button {
+    background: rgba(79, 195, 247, 0.2);
+    border: 1px solid rgba(79, 195, 247, 0.5);
+    border-radius: 4px;
+    color: #4fc3f7;
+    padding: 4px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+}
+
+.retry-button:hover {
+    background: rgba(79, 195, 247, 0.3);
+    transform: rotate(180deg);
+}
+
+.retry-button svg {
+    width: 16px;
+    height: 16px;
+}
+
+.demo-notice {
+    margin-top: 8px;
+    padding: 8px;
+    background: rgba(255, 152, 0, 0.2);
+    border-radius: 4px;
+    color: #ffb74d;
+    font-size: 11px;
+    text-align: center;
+}
+
+.location-info {
+    background: rgba(79, 195, 247, 0.1);
+    padding: 6px 10px;
+    border-radius: 6px;
+    gap: 8px;
+}
+
+.sferic-stat-value.highlight {
+    color: #ffeb3b;
+    font-size: 16px;
+}
+
+.location-error {
+    margin-top: 8px;
+    padding: 8px;
+    background: rgba(244, 67, 54, 0.2);
+    border-radius: 4px;
+    color: #ff8a80;
+    font-size: 11px;
+}
+
+/* Logo */
+.sferic-logo {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    z-index: 100;
+}
+
+.sferic-logo img {
+    height: 40px;
+    width: auto;
+}
+
+/* Legend */
+.sferic-legend {
+    position: absolute;
+    bottom: 30px;
+    left: 20px;
+    z-index: 100;
+    background: rgba(26, 26, 46, 0.9);
+    border-radius: 8px;
+    padding: 12px 16px;
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.legend-title {
+    color: rgba(255, 255, 255, 0.6);
+    font-size: 11px;
+    margin-bottom: 8px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.legend-items {
+    display: flex;
+    gap: 16px;
+}
+
+.legend-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    color: rgba(255, 255, 255, 0.8);
+    font-size: 12px;
+}
+
+.legend-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+}
+
+.legend-dot.new {
+    background: #ffeb3b;
+    box-shadow: 0 0 6px #ffeb3b;
+}
+
+.legend-dot.recent {
+    background: #ff9800;
+}
+
+.legend-dot.old {
+    background: #795548;
+}
+
+/* Loading overlay */
+.sferic-loading {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: rgba(26, 26, 46, 0.95);
+    z-index: 200;
+    color: white;
+}
+
+.sferic-loading-spinner {
+    width: 50px;
+    height: 50px;
+    border: 3px solid rgba(255, 255, 255, 0.1);
+    border-top-color: #4fc3f7;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.sferic-loading-text {
+    margin-top: 16px;
+    font-size: 14px;
+    color: rgba(255, 255, 255, 0.7);
+}
