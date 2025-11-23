@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState, useCallback } from "react";
-import { MdFlashOn, MdMyLocation, MdRefresh } from "react-icons/md";
+import { MdFlashOn, MdMyLocation, MdRefresh, MdPlayArrow, MdStop } from "react-icons/md";
 import localBrandLogo from "@src/images/meteo-logo-white.png";
 import "./sfericMap.css";
 
@@ -110,6 +110,8 @@ const SfericMap = () => {
     const userMarkerRef = useRef(null);
     const reconnectAttemptsRef = useRef(0);
     const demoIntervalRef = useRef(null);
+    const userLocationRef = useRef(null);
+    const mapInitializedRef = useRef(false);
     const maxReconnectAttempts = 5;
 
     const [isLoading, setIsLoading] = useState(true);
@@ -124,6 +126,11 @@ const SfericMap = () => {
         lastStrikeTime: null,
         strikesInRadius: 0,
     });
+
+    // Keep userLocationRef in sync
+    useEffect(() => {
+        userLocationRef.current = userLocation;
+    }, [userLocation]);
 
     // Calculate distance between two points in km (Haversine formula)
     const calculateDistance = useCallback((lat1, lon1, lat2, lon2) => {
@@ -173,10 +180,10 @@ const SfericMap = () => {
             data,
         });
 
-        // Check if strike is within radius of user location
+        // Check if strike is within radius of user location (use ref to avoid dependency)
         let isInRadius = false;
-        if (userLocation) {
-            const distance = calculateDistance(userLocation.lat, userLocation.lng, lat, lng);
+        if (userLocationRef.current) {
+            const distance = calculateDistance(userLocationRef.current.lat, userLocationRef.current.lng, lat, lng);
             isInRadius = distance <= RADIUS_KM;
         }
 
@@ -193,7 +200,7 @@ const SfericMap = () => {
             marker.remove();
             markersRef.current = markersRef.current.filter(m => m.marker !== marker);
         }, 10000);
-    }, [userLocation, calculateDistance]);
+    }, [calculateDistance]);
 
     // Start demo mode - simulate lightning strikes around Georgia
     const startDemoMode = useCallback(() => {
@@ -317,11 +324,16 @@ const SfericMap = () => {
         }
     }, [addLightningMarker, startDemoMode]);
 
-    // Initialize map
+    // Initialize map - only once
     useEffect(() => {
+        // Skip if already initialized
+        if (mapInitializedRef.current) return;
+        mapInitializedRef.current = true;
+
         let destroyed = false;
 
         async function initMap() {
+            try {
             // Load Mapbox GL from meteoblue CDN (same as WeatherMaps)
             await loadStyle(
                 "https://static.meteoblue.com/cdn/mapbox-gl-js/v1.11.1/mapbox-gl.css",
@@ -440,6 +452,10 @@ const SfericMap = () => {
                 // Connect to lightning WebSocket
                 connectWebSocket();
             });
+            } catch (error) {
+                console.error("Map initialization error:", error);
+                setIsLoading(false);
+            }
         }
 
         initMap();
@@ -459,15 +475,21 @@ const SfericMap = () => {
 
             if (demoIntervalRef.current) {
                 clearInterval(demoIntervalRef.current);
+                demoIntervalRef.current = null;
             }
             if (wsRef.current) {
                 wsRef.current.close();
+                wsRef.current = null;
             }
             if (mapRef.current) {
                 mapRef.current.remove();
+                mapRef.current = null;
             }
+            // Reset initialization flag for potential remount
+            mapInitializedRef.current = false;
         };
-    }, [connectWebSocket, cleanupOldMarkers]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
 
     // Retry connection handler
     const handleRetryConnection = useCallback(() => {
@@ -486,6 +508,15 @@ const SfericMap = () => {
         // Try to connect again
         connectWebSocket();
     }, [stopDemoMode, connectWebSocket]);
+
+    // Toggle demo mode handler
+    const handleToggleDemo = useCallback(() => {
+        if (isDemoMode) {
+            stopDemoMode();
+        } else {
+            startDemoMode();
+        }
+    }, [isDemoMode, startDemoMode, stopDemoMode]);
 
     return (
         <div className="sferic-map-wrap">
@@ -560,9 +591,18 @@ const SfericMap = () => {
                 </div>
                 {isDemoMode && (
                     <div className="demo-notice">
-                        სიმულაციური მონაცემები - API ხელმისაწვდომი არ არის
+                        სიმულაციური მონაცემები
                     </div>
                 )}
+                {/* Demo mode toggle button */}
+                <button
+                    className={`demo-toggle-button ${isDemoMode ? "active" : ""}`}
+                    onClick={handleToggleDemo}
+                    title={isDemoMode ? "დემო გამორთვა" : "დემო ჩართვა"}
+                >
+                    {isDemoMode ? <MdStop /> : <MdPlayArrow />}
+                    <span>{isDemoMode ? "დემო გამორთვა" : "დემო ჩართვა"}</span>
+                </button>
                 {wsError && !isDemoMode && (
                     <div className="location-error">
                         {wsError}
