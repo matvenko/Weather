@@ -20,10 +20,21 @@ const UsersContainer = () => {
   const queryClient = useQueryClient();
   const { notificationApi } = useGlobalProvider();
 
-  // Pagination and filter state
+  // Pagination state
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
+
+  // Filter state
   const [filters, setFilters] = useState({
+    email: "",
+    provider: "",
+    roleId: "",
+    status: "",
+    packageId: "",
+  });
+
+  // Applied filters (used for API call)
+  const [appliedFilters, setAppliedFilters] = useState({
     email: "",
     provider: "",
     roleId: "",
@@ -33,7 +44,7 @@ const UsersContainer = () => {
 
   // Fetch users using custom hook
   const { data, isLoading, error } = useUsers({
-    ...filters,
+    ...appliedFilters,
     page,
     per_page: pageSize,
   });
@@ -65,9 +76,34 @@ const UsersContainer = () => {
     setPageSize(newPageSize);
   };
 
+  const handleFilterChange = (field, value) => {
+    setFilters((prev) => ({
+      ...prev,
+      [field]: value,
+    }));
+  };
+
+  const handleSearch = () => {
+    setPage(1);
+    setAppliedFilters({ ...filters });
+  };
+
+  const handleClearFilters = () => {
+    const emptyFilters = {
+      email: "",
+      provider: "",
+      roleId: "",
+      status: "",
+      packageId: "",
+    };
+    setFilters(emptyFilters);
+    setAppliedFilters(emptyFilters);
+    setPage(1);
+  };
+
   const handleExport = () => {
     exportUsers({
-      ...filters,
+      ...appliedFilters,
       page,
       per_page: pageSize,
     });
@@ -290,6 +326,12 @@ const UsersContainer = () => {
                       onChangeRole={handleChangeRole}
                       onExport={handleExport}
                       exportLoading={isExporting}
+                      filters={filters}
+                      onFilterChange={handleFilterChange}
+                      onSearch={handleSearch}
+                      onClearFilters={handleClearFilters}
+                      roles={rolesData}
+                      rolesLoading={isLoadingRoles}
                     />
                   )}
                 </Content>

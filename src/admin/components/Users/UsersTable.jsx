@@ -2,8 +2,9 @@ import React from "react";
 import Title from "antd/es/typography/Title";
 import { Button, Space, Table, Tooltip, Tag } from "antd";
 import { FcCancel, FcApproval, FcManager } from "react-icons/fc";
-import {AiFillFileExcel} from "react-icons/ai";
+import { AiFillFileExcel } from "react-icons/ai";
 import { usePermissions } from "@src/admin/providers/PermissionsProvider/index.js";
+import UsersFilter from "./Filter/UsersFilter.jsx";
 
 const UsersTable = ({
   users,
@@ -15,6 +16,12 @@ const UsersTable = ({
   onBlock,
   onActivate,
   onChangeRole,
+  filters,
+  onFilterChange,
+  onSearch,
+  onClearFilters,
+  roles,
+  rolesLoading,
 }) => {
   const { hasPermission } = usePermissions();
 
@@ -171,6 +178,15 @@ const UsersTable = ({
           </Button>
         )}
       </div>
+
+      <UsersFilter
+        filters={filters}
+        onFilterChange={onFilterChange}
+        onSearch={onSearch}
+        onClearFilters={onClearFilters}
+        roles={roles}
+        rolesLoading={rolesLoading}
+      />
 
       <Table
         loading={loading}
