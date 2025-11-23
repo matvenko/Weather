@@ -201,8 +201,14 @@
 .wx-drawer-footer {
     padding: 12px 16px 16px;
     border-top: 1px solid var(--border);
-    display: grid;
+}
+
+.wx-drawer-footer-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
     gap: 12px;
+    flex-wrap: wrap;
 }
 
 .wx-brand .logo {

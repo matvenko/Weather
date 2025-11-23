@@ -134,11 +134,9 @@ export default function HeaderContainer() {
 
                 <div className="wx-right">
 
-                    <LanguageSelector/>
+                    {screens.lg && <LanguageSelector/>}
 
-
-                    {showButton}
-
+                    {screens.lg && showButton}
 
                     {!screens.lg && (
                         <Button
@@ -154,7 +152,12 @@ export default function HeaderContainer() {
             </div>
 
 
-            <MobileNavigationDrawer/>
+            <MobileNavigationDrawer
+                open={open}
+                onClose={() => setOpen(false)}
+                isUserAuthorized={isUserAuthorized}
+                onLogout={handleLogout}
+            />
 
         </Header>
     );

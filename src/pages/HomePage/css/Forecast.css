@@ -508,6 +508,18 @@
     .gw-wrap {
         grid-template-columns: 1fr;
     }
+
+    .gw-hero-inner {
+        grid-template-columns: 1fr;
+    }
+
+    .today-forecast {
+        text-align: left;
+    }
+
+    .today-forecast-details-wrapper {
+        text-align: left;
+    }
 }
 
 /* --- Motion-friendly tweaks & prefers-reduced-motion --- */

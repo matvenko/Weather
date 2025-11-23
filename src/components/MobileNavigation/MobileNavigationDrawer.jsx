@@ -1,21 +1,22 @@
-import React, {useMemo, useState} from 'react';
-import {Button, Drawer, Input, Menu, Space} from "antd";
+import React, {useMemo} from 'react';
+import {Button, Drawer, Menu, Space} from "antd";
 import LanguageSelector from "../header/languageSelector/LanguageSelector.jsx";
-import {FiSettings, FiUser} from "react-icons/fi";
+import {FiUser} from "react-icons/fi";
+import {AiOutlineLogout} from "react-icons/ai";
 import {useTranslation} from "react-i18next";
 import {NavLink, useLocation, useNavigate} from "react-router-dom";
 
-const MobileNavigationDrawer = () => {
+const MobileNavigationDrawer = ({ open, onClose, isUserAuthorized, onLogout }) => {
     const { t } = useTranslation();
-    const [open, setOpen] = useState(false);
     const navigate = useNavigate();
     const location = useLocation();
 
     const menuItems = useMemo(() => ([
-        { key: "/",        label: <NavLink to="/">{t("nav.home")}</NavLink> },
-        { key: "/about",   label: <NavLink to="/about">{t("nav.about")}</NavLink> },
-        { key: "/maps",    label: <NavLink to="/maps">{t("nav.maps")}</NavLink> },
-        { key: "/contact", label: <NavLink to="/contact">{t("nav.contact")}</NavLink> },
+        { key: "/",           label: <NavLink to="/">{t("nav.home")}</NavLink> },
+        { key: "/about",      label: <NavLink to="/about">{t("nav.about")}</NavLink> },
+        { key: "/maps",       label: <NavLink to="/maps">{t("nav.maps")}</NavLink> },
+        { key: "/sferic-map", label: <NavLink to="/sferic-map">Sferic Map</NavLink> },
+        { key: "/contact",    label: <NavLink to="/contact">{t("nav.contact")}</NavLink> },
     ]), [t]);
 
     const selectedKeys = useMemo(() => {
@@ -25,16 +26,14 @@ const MobileNavigationDrawer = () => {
 
     const Brand = (
         <NavLink to="/" className="wx-brand">
-            <span className="wx-brand-main">Weather</span>
-            <span className="wx-brand-sub">app</span>
+            <span className="wx-brand-main">Meteo</span>
+            <span className="wx-brand-sub">360</span>
         </NavLink>
     );
 
-    const onSearch = (value) => {
-        const q = value?.trim();
-        if (!q) return;
-        navigate(`/search?q=${encodeURIComponent(q)}`);
-        // setOpen(false);
+    const handleLogout = () => {
+        onClose();
+        onLogout();
     };
 
     return (
@@ -42,7 +41,7 @@ const MobileNavigationDrawer = () => {
             placement="left"
             width={280}
             open={open}
-            onClose={() => setOpen(false)}
+            onClose={onClose}
             bodyStyle={{ padding: 0 }}
             className="wx-drawer"
         >
@@ -54,26 +53,39 @@ const MobileNavigationDrawer = () => {
                     mode="inline"
                     selectedKeys={selectedKeys}
                     items={menuItems}
-                    onClick={() => setOpen(false)}
+                    onClick={onClose}
                 />
-                <div className="wx-drawer-search">
-                    <Input.Search
-                        placeholder={t("common.searchPlaceholder") || "Search…"}
-                        allowClear
-                        onSearch={onSearch}
-                        enterButton
-                    />
-                </div>
                 <div className="wx-drawer-footer">
-                    <LanguageSelector />
-                    <Space>
-                        <Button icon={<FiSettings />} onClick={() => { setOpen(false); navigate("/account/settings"); }}>
-                            {t("common.settings") || "Settings"}
-                        </Button>
-                        <Button type="primary" icon={<FiUser />} onClick={() => { setOpen(false); navigate("/account"); }}>
-                            {t("common.signIn") || "Sign in"}
-                        </Button>
-                    </Space>
+                    <div className="wx-drawer-footer-row">
+                        <LanguageSelector />
+                        <Space>
+                            {isUserAuthorized ? (
+                                <>
+                                    <Button
+                                        type="primary"
+                                        icon={<FiUser />}
+                                        onClick={() => { onClose(); navigate("/account"); }}
+                                    >
+                                        {t("my_account")}
+                                    </Button>
+                                    <Button
+                                        icon={<AiOutlineLogout />}
+                                        onClick={handleLogout}
+                                    >
+                                        {t("logout")}
+                                    </Button>
+                                </>
+                            ) : (
+                                <Button
+                                    type="primary"
+                                    icon={<FiUser />}
+                                    onClick={() => { onClose(); navigate("/login"); }}
+                                >
+                                    {t("auth.login")}
+                                </Button>
+                            )}
+                        </Space>
+                    </div>
                 </div>
             </div>
         </Drawer>
