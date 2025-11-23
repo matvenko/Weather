@@ -126,11 +126,49 @@ const SfericMap = () => {
         lastStrikeTime: null,
         strikesInRadius: 0,
     });
+    // Alert level: 'normal' (blue), 'warning' (yellow), 'danger' (red)
+    const [alertLevel, setAlertLevel] = useState('normal');
+    const lastRadiusStrikeRef = useRef(null);
+    const alertResetTimerRef = useRef(null);
 
     // Keep userLocationRef in sync
     useEffect(() => {
         userLocationRef.current = userLocation;
     }, [userLocation]);
+
+    // Update radius circle color based on alert level
+    useEffect(() => {
+        if (!mapRef.current) return;
+
+        const map = mapRef.current;
+
+        // Check if the layer exists
+        if (!map.getLayer('radius-circle-fill')) return;
+
+        // Define colors for each alert level
+        const colors = {
+            normal: '#4fc3f7',   // Light blue
+            warning: '#ffeb3b',  // Light yellow
+            danger: '#ff5252'    // Light red
+        };
+
+        const strokeColors = {
+            normal: '#4fc3f7',
+            warning: '#ffc107',
+            danger: '#f44336'
+        };
+
+        const color = colors[alertLevel] || colors.normal;
+        const strokeColor = strokeColors[alertLevel] || strokeColors.normal;
+
+        // Update fill color
+        map.setPaintProperty('radius-circle-fill', 'fill-color', color);
+        map.setPaintProperty('radius-circle-fill', 'fill-opacity', alertLevel === 'normal' ? 0.1 : 0.2);
+
+        // Update stroke color
+        map.setPaintProperty('radius-circle-stroke', 'line-color', strokeColor);
+
+    }, [alertLevel]);
 
     // Calculate distance between two points in km (Haversine formula)
     const calculateDistance = useCallback((lat1, lon1, lat2, lon2) => {
@@ -163,15 +201,27 @@ const SfericMap = () => {
 
     // Add lightning strike marker
     const addLightningMarker = useCallback((lng, lat, data) => {
-        if (!mapRef.current) return;
+        if (!mapRef.current || !window.mapboxgl) return;
 
+        // Create marker element with inline styles to ensure proper rendering
         const el = document.createElement("div");
-        el.className = "lightning-marker";
+        el.style.width = "16px";
+        el.style.height = "16px";
+        el.style.background = "#ffeb3b";
+        el.style.borderRadius = "50%";
+        el.style.boxShadow = "0 0 15px #ffeb3b, 0 0 30px #ff9800";
+        el.style.pointerEvents = "none";
 
-        // Create marker
-        const marker = new window.mapboxgl.Marker(el)
+        // Create marker with center anchor
+        const marker = new window.mapboxgl.Marker({
+            element: el,
+            anchor: 'center'
+        })
             .setLngLat([lng, lat])
             .addTo(mapRef.current);
+
+        // Apply animation class after marker is added
+        el.className = "lightning-marker";
 
         // Store marker with timestamp
         markersRef.current.push({
@@ -185,6 +235,34 @@ const SfericMap = () => {
         if (userLocationRef.current) {
             const distance = calculateDistance(userLocationRef.current.lat, userLocationRef.current.lng, lat, lng);
             isInRadius = distance <= RADIUS_KM;
+        }
+
+        // Update alert level if strike is in radius
+        if (isInRadius) {
+            const now = Date.now();
+            const fiveMinutesAgo = now - 5 * 60 * 1000;
+
+            // Check if there was a previous strike in the last 5 minutes
+            if (lastRadiusStrikeRef.current && lastRadiusStrikeRef.current > fiveMinutesAgo) {
+                // Second or more strike within 5 minutes - danger (red)
+                setAlertLevel('danger');
+            } else {
+                // First strike - warning (yellow)
+                setAlertLevel('warning');
+            }
+
+            lastRadiusStrikeRef.current = now;
+
+            // Clear existing reset timer
+            if (alertResetTimerRef.current) {
+                clearTimeout(alertResetTimerRef.current);
+            }
+
+            // Reset to normal after 5 minutes of no strikes in radius
+            alertResetTimerRef.current = setTimeout(() => {
+                setAlertLevel('normal');
+                lastRadiusStrikeRef.current = null;
+            }, 5 * 60 * 1000);
         }
 
         // Update stats
@@ -202,50 +280,112 @@ const SfericMap = () => {
         }, 10000);
     }, [calculateDistance]);
 
-    // Start demo mode - simulate lightning strikes around Georgia
+    // Lightning crack sound
+    const playThunderSound = useCallback(() => {
+        try {
+            const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            const now = audioContext.currentTime;
+
+            // Sharp initial CRACK
+            const crack = audioContext.createOscillator();
+            const crackGain = audioContext.createGain();
+            crack.type = 'square';
+            crack.frequency.setValueAtTime(150, now);
+            crackGain.gain.setValueAtTime(0.5, now);
+            crackGain.gain.exponentialRampToValueAtTime(0.001, now + 0.03);
+            crack.connect(crackGain);
+            crackGain.connect(audioContext.destination);
+            crack.start(now);
+            crack.stop(now + 0.03);
+
+            // Quick noise burst
+            const bufferSize = audioContext.sampleRate * 0.15;
+            const buffer = audioContext.createBuffer(1, bufferSize, audioContext.sampleRate);
+            const data = buffer.getChannelData(0);
+            for (let i = 0; i < bufferSize; i++) {
+                data[i] = (Math.random() * 2 - 1) * Math.exp(-i / (bufferSize * 0.1));
+            }
+
+            const noise = audioContext.createBufferSource();
+            noise.buffer = buffer;
+
+            const noiseGain = audioContext.createGain();
+            noiseGain.gain.setValueAtTime(0.25, now);
+
+            noise.connect(noiseGain);
+            noiseGain.connect(audioContext.destination);
+            noise.start(now);
+
+        } catch (e) {
+            // Audio not supported
+        }
+    }, []);
+
+    // Start demo mode - simulate lightning strikes around user location
     const startDemoMode = useCallback(() => {
         if (demoIntervalRef.current) return;
 
         setIsDemoMode(true);
         console.log("Starting demo mode - simulating lightning strikes");
 
-        // Georgia bounds for random lightning
-        const bounds = {
-            minLat: 41.0,
-            maxLat: 43.5,
-            minLng: 40.0,
-            maxLng: 46.5,
-        };
-
-        // Generate random lightning every 2-5 seconds
+        // Generate random lightning every 3-6 seconds
         const generateStrike = () => {
             if (!mapRef.current) return;
 
-            const lat = bounds.minLat + Math.random() * (bounds.maxLat - bounds.minLat);
-            const lng = bounds.minLng + Math.random() * (bounds.maxLng - bounds.minLng);
+            // Get current map center or user location
+            let centerLat, centerLng;
+            if (userLocationRef.current) {
+                centerLat = userLocationRef.current.lat;
+                centerLng = userLocationRef.current.lng;
+            } else {
+                const center = mapRef.current.getCenter();
+                centerLat = center.lat;
+                centerLng = center.lng;
+            }
+
+            // Generate strike within 50km radius of center (wider for visibility)
+            const radiusKm = 50;
+            const randomAngle = Math.random() * 2 * Math.PI;
+            const randomRadius = Math.random() * radiusKm;
+
+            // Convert km to degrees (approximate)
+            const latOffset = (randomRadius * Math.cos(randomAngle)) / 110.574;
+            const lngOffset = (randomRadius * Math.sin(randomAngle)) / (111.32 * Math.cos(centerLat * Math.PI / 180));
+
+            const lat = centerLat + latOffset;
+            const lng = centerLng + lngOffset;
 
             addLightningMarker(lng, lat, { demo: true });
+
+            // Play electric zap sound
+            playThunderSound();
         };
 
         // Initial strikes
         for (let i = 0; i < 3; i++) {
-            setTimeout(generateStrike, i * 500);
+            setTimeout(generateStrike, i * 800);
         }
 
         // Continuous generation
-        demoIntervalRef.current = setInterval(() => {
-            generateStrike();
-            // Sometimes generate multiple strikes in quick succession (storm simulation)
-            if (Math.random() > 0.7) {
-                setTimeout(generateStrike, 200);
-            }
-        }, 2000 + Math.random() * 3000);
-    }, [addLightningMarker]);
+        const scheduleNextStrike = () => {
+            const delay = 3000 + Math.random() * 3000;
+            demoIntervalRef.current = setTimeout(() => {
+                generateStrike();
+                // Sometimes generate multiple strikes in quick succession (storm simulation)
+                if (Math.random() > 0.7) {
+                    setTimeout(generateStrike, 300);
+                }
+                scheduleNextStrike();
+            }, delay);
+        };
+
+        scheduleNextStrike();
+    }, [addLightningMarker, playThunderSound]);
 
     // Stop demo mode
     const stopDemoMode = useCallback(() => {
         if (demoIntervalRef.current) {
-            clearInterval(demoIntervalRef.current);
+            clearTimeout(demoIntervalRef.current);
             demoIntervalRef.current = null;
         }
         setIsDemoMode(false);
@@ -474,8 +614,12 @@ const SfericMap = () => {
             clearInterval(statsInterval);
 
             if (demoIntervalRef.current) {
-                clearInterval(demoIntervalRef.current);
+                clearTimeout(demoIntervalRef.current);
                 demoIntervalRef.current = null;
+            }
+            if (alertResetTimerRef.current) {
+                clearTimeout(alertResetTimerRef.current);
+                alertResetTimerRef.current = null;
             }
             if (wsRef.current) {
                 wsRef.current.close();
