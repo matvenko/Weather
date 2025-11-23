@@ -1,6 +1,7 @@
 import React from "react";
 import Title from "antd/es/typography/Title";
-import { Table, Tag, Tooltip } from "antd";
+import { Table, Tag, Tooltip, Button } from "antd";
+import { AiFillFileExcel } from "react-icons/ai";
 import dayjs from "dayjs";
 import TransactionsFilter from "./Filter/TransactionsFilter.jsx";
 
@@ -13,6 +14,8 @@ const TransactionsTable = ({
   onFilterChange,
   onSearch,
   onClearFilters,
+  onExport,
+  exportLoading,
 }) => {
   const columns = [
     {
@@ -113,6 +116,16 @@ const TransactionsTable = ({
         <Title className="title" level={2}>
           გადარიცხვები
         </Title>
+
+        <Button
+          type="primary"
+          onClick={onExport}
+          loading={exportLoading}
+          className="bpg-arial-caps-webfont"
+          icon={<AiFillFileExcel />}
+        >
+          <span>Excel-ში ექსპორტი</span>
+        </Button>
       </div>
 
       <TransactionsFilter

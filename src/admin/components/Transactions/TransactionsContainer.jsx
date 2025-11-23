@@ -5,6 +5,7 @@ import { Content } from "antd/es/layout/layout";
 import SidebarContent from "../Sidebar/SidebarContent.jsx";
 import TransactionsTable from "./TransactionsTable.jsx";
 import { useTransactions } from "./Hooks/useTransactions.js";
+import { useExportTransactions } from "./Hooks/useExportTransactions.js";
 import { selectCurrentState } from "../../../features/app/appSlice.js";
 import "../../css/admin.css";
 
@@ -40,6 +41,9 @@ const TransactionsContainer = () => {
     per_page: pageSize,
   });
 
+  // Export transactions mutation
+  const { mutate: exportTransactions, isPending: isExporting } = useExportTransactions();
+
   const handlePageChange = (newPage, newPageSize) => {
     setPage(newPage);
     setPageSize(newPageSize);
@@ -68,6 +72,14 @@ const TransactionsContainer = () => {
     setFilters(emptyFilters);
     setAppliedFilters(emptyFilters);
     setPage(1);
+  };
+
+  const handleExport = () => {
+    exportTransactions({
+      ...appliedFilters,
+      page,
+      per_page: pageSize,
+    });
   };
 
   // Prepare transactions list for table
@@ -111,6 +123,8 @@ const TransactionsContainer = () => {
                       onFilterChange={handleFilterChange}
                       onSearch={handleSearch}
                       onClearFilters={handleClearFilters}
+                      onExport={handleExport}
+                      exportLoading={isExporting}
                     />
                   )}
                 </Content>
