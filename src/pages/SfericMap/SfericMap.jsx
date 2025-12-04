@@ -67,13 +67,55 @@ const MAPBOX_STYLE = {
             ],
             tileSize: 256,
             attribution: "&copy; Esri"
+        },
+        // Labels layer - city names, roads, boundaries
+        labels: {
+            type: "raster",
+            tiles: [
+                "https://server.arcgisonline.com/ArcGIS/rest/services/Reference/World_Boundaries_and_Places/MapServer/tile/{z}/{y}/{x}"
+            ],
+            tileSize: 256,
+            attribution: "&copy; Esri"
+        },
+        // Transportation layer - roads, highways (creates line work)
+        transportation: {
+            type: "raster",
+            tiles: [
+                "https://server.arcgisonline.com/ArcGIS/rest/services/Reference/World_Transportation/MapServer/tile/{z}/{y}/{x}"
+            ],
+            tileSize: 256,
+            attribution: "&copy; Esri"
         }
     },
     layers: [
         {
+            id: "osm",
+            type: "raster",
+            source: "osm",
+            minzoom: 0,
+            maxzoom: 19,
+            layout: {
+                visibility: "none" // Hidden by default
+            }
+        },
+        {
             id: "satellite",
             type: "raster",
             source: "satellite",
+            minzoom: 0,
+            maxzoom: 19
+        },
+        {
+            id: "transportation",
+            type: "raster",
+            source: "transportation",
+            minzoom: 0,
+            maxzoom: 19
+        },
+        {
+            id: "labels",
+            type: "raster",
+            source: "labels",
             minzoom: 0,
             maxzoom: 19
         }
@@ -145,11 +187,42 @@ const SfericMap = () => {
     const [radarOpacity, setRadarOpacity] = useState(0.7);
     const [currentTimeSlot, setCurrentTimeSlot] = useState(null);
     const radarUpdateIntervalRef = useRef(null);
+    const [showContours, setShowContours] = useState(false); // Contour effect toggle
+
+    // Map style state
+    const [showLabels, setShowLabels] = useState(true);
+    const [mapStyle, setMapStyle] = useState('satellite'); // 'satellite' or 'streets'
 
     // Keep userLocationRef in sync
     useEffect(() => {
         userLocationRef.current = userLocation;
     }, [userLocation]);
+
+    // Toggle labels visibility
+    useEffect(() => {
+        if (!mapRef.current) return;
+        const map = mapRef.current;
+
+        if (map.getLayer('labels')) {
+            map.setLayoutProperty('labels', 'visibility', showLabels ? 'visible' : 'none');
+        }
+        if (map.getLayer('transportation')) {
+            map.setLayoutProperty('transportation', 'visibility', showLabels ? 'visible' : 'none');
+        }
+    }, [showLabels]);
+
+    // Toggle map style (satellite vs streets)
+    useEffect(() => {
+        if (!mapRef.current) return;
+        const map = mapRef.current;
+
+        if (map.getLayer('satellite')) {
+            map.setLayoutProperty('satellite', 'visibility', mapStyle === 'satellite' ? 'visible' : 'none');
+        }
+        if (map.getLayer('osm')) {
+            map.setLayoutProperty('osm', 'visibility', mapStyle === 'streets' ? 'visible' : 'none');
+        }
+    }, [mapStyle]);
 
     // Update radius circle color based on alert level
     useEffect(() => {
@@ -460,12 +533,15 @@ const SfericMap = () => {
             source: sourceId,
             paint: {
                 'raster-opacity': radarOpacity,
-                'raster-fade-duration': 300
+                'raster-fade-duration': 300,
+                // Add contour-like effect with brightness/contrast
+                'raster-brightness-max': showContours ? 1.2 : 1.0,
+                'raster-contrast': showContours ? 0.3 : 0
             }
         }, map.getLayer('radius-circle-fill') ? 'radius-circle-fill' : undefined);
 
         console.log('✅ Radar layer added with time slot:', timeSlot, new Date(timeSlot * 1000));
-    }, [radarOpacity]);
+    }, [radarOpacity, showContours]);
 
     // Toggle radar layer visibility
     const toggleRadar = useCallback(() => {
@@ -912,20 +988,39 @@ const SfericMap = () => {
                             </button>
 
                             {radarEnabled && (
-                                <div className="opacity-control" style={{marginBottom: '10px'}}>
-                                    <label style={{fontSize: '12px', display: 'block', marginBottom: '5px'}}>
-                                        გამჭვირვალობა: {Math.round(radarOpacity * 100)}%
-                                    </label>
-                                    <input
-                                        type="range"
-                                        min="0"
-                                        max="1"
-                                        step="0.1"
-                                        value={radarOpacity}
-                                        onChange={(e) => updateRadarOpacity(parseFloat(e.target.value))}
-                                        style={{width: '100%'}}
-                                    />
-                                </div>
+                                <>
+                                    <div className="opacity-control" style={{marginBottom: '10px'}}>
+                                        <label style={{fontSize: '12px', display: 'block', marginBottom: '5px'}}>
+                                            გამჭვირვალობა: {Math.round(radarOpacity * 100)}%
+                                        </label>
+                                        <input
+                                            type="range"
+                                            min="0"
+                                            max="1"
+                                            step="0.1"
+                                            value={radarOpacity}
+                                            onChange={(e) => updateRadarOpacity(parseFloat(e.target.value))}
+                                            style={{width: '100%'}}
+                                        />
+                                    </div>
+                                    <button
+                                        onClick={() => {
+                                            setShowContours(!showContours);
+                                            // Force radar layer refresh
+                                            if (mapRef.current && currentTimeSlot) {
+                                                updateRadarLayer(mapRef.current, currentTimeSlot);
+                                            }
+                                        }}
+                                        className="demo-toggle-button"
+                                        style={{
+                                            background: showContours ? '#FF9800' : '#666',
+                                            marginBottom: '10px',
+                                            fontSize: '12px'
+                                        }}
+                                    >
+                                        {showContours ? '✓ კონტურები' : '○ კონტურები'}
+                                    </button>
+                                </>
                             )}
 
                             {currentTimeSlot && (
@@ -933,6 +1028,53 @@ const SfericMap = () => {
                                     ბოლო განახლება: {new Date(currentTimeSlot * 1000).toLocaleTimeString('ka-GE')}
                                 </div>
                             )}
+                        </div>
+
+                        {/* Map Style Toggle */}
+                        <div style={{marginTop: '15px'}}>
+                            <h4 style={{fontSize: '14px', marginBottom: '10px', display: 'flex', alignItems: 'center', gap: '8px'}}>
+                                🗺️ რუკის ტიპი
+                            </h4>
+                            <div style={{display: 'flex', gap: '5px'}}>
+                                <button
+                                    onClick={() => setMapStyle('satellite')}
+                                    className="demo-toggle-button"
+                                    style={{
+                                        background: mapStyle === 'satellite' ? '#4CAF50' : '#666',
+                                        flex: 1,
+                                        padding: '8px 12px'
+                                    }}
+                                >
+                                    🛰️ სატელიტი
+                                </button>
+                                <button
+                                    onClick={() => setMapStyle('streets')}
+                                    className="demo-toggle-button"
+                                    style={{
+                                        background: mapStyle === 'streets' ? '#4CAF50' : '#666',
+                                        flex: 1,
+                                        padding: '8px 12px'
+                                    }}
+                                >
+                                    🗺️ ქუჩები
+                                </button>
+                            </div>
+                        </div>
+
+                        {/* Labels Toggle */}
+                        <div style={{marginTop: '15px'}}>
+                            <h4 style={{fontSize: '14px', marginBottom: '10px', display: 'flex', alignItems: 'center', gap: '8px'}}>
+                                📍 ლეიბლები
+                            </h4>
+                            <button
+                                onClick={() => setShowLabels(!showLabels)}
+                                className="demo-toggle-button"
+                                style={{
+                                    background: showLabels ? '#4CAF50' : '#666'
+                                }}
+                            >
+                                {showLabels ? '✓ ქალაქები ჩართულია' : '✗ ქალაქები გამორთულია'}
+                            </button>
                         </div>
                     </>
                 )}
