@@ -7,6 +7,15 @@ import "./sfericMap.css";
 const LIGHTNING_API_KEY = import.meta.env.VITE_SFERIC_API_KEY || "8E2A3C14-B44A-41AC-A0B8-74AA1123A912";
 const LIGHTNING_WS_URL = `wss://lx.wsapi.earthnetworks.com/ws/?p=${LIGHTNING_API_KEY}&f=json&t=pulse&l=all&k=on`;
 
+// Radar API configuration
+const SUBSCRIPTION_KEY = import.meta.env.VITE_EARTH_NETWORKS_SUBSCRIPTION_KEY;
+const RADAR_METADATA_URL = SUBSCRIPTION_KEY
+    ? `https://earthnetworks.azure-api.net/maps/overlays/v2/metadata?lid=pulserad&subscription-key=${SUBSCRIPTION_KEY}`
+    : null;
+const RADAR_TILE_URL = SUBSCRIPTION_KEY
+    ? `https://earthnetworks.azure-api.net/maps/overlays/tile?x={x}&y={y}&z={z}&t={t}&lid=pulserad&epsg=3857&subscription-key=${SUBSCRIPTION_KEY}`
+    : null;
+
 // Radius in kilometers
 const RADIUS_KM = 10;
 
@@ -130,6 +139,12 @@ const SfericMap = () => {
     const [alertLevel, setAlertLevel] = useState('normal');
     const lastRadiusStrikeRef = useRef(null);
     const alertResetTimerRef = useRef(null);
+
+    // Radar layer state
+    const [radarEnabled, setRadarEnabled] = useState(true);
+    const [radarOpacity, setRadarOpacity] = useState(0.7);
+    const [currentTimeSlot, setCurrentTimeSlot] = useState(null);
+    const radarUpdateIntervalRef = useRef(null);
 
     // Keep userLocationRef in sync
     useEffect(() => {
@@ -391,6 +406,122 @@ const SfericMap = () => {
         setIsDemoMode(false);
     }, []);
 
+    // Fetch latest radar time slot from metadata API
+    const fetchRadarMetadata = useCallback(async () => {
+        if (!RADAR_METADATA_URL) {
+            console.warn('No subscription key provided for radar data');
+            return null;
+        }
+
+        try {
+            const response = await fetch(RADAR_METADATA_URL);
+            const data = await response.json();
+
+            if (data.Code === 200 && data.Result) {
+                const latestSlot = data.Result.PreferredSlot || data.Result.LatestSlot;
+                console.log('📡 Radar metadata fetched. Latest slot:', latestSlot);
+                return latestSlot;
+            }
+        } catch (error) {
+            console.error('Error fetching radar metadata:', error);
+        }
+        return null;
+    }, []);
+
+    // Add or update radar tile layer on map
+    const updateRadarLayer = useCallback((map, timeSlot) => {
+        if (!map || !timeSlot || !RADAR_TILE_URL) return;
+
+        const sourceId = 'pulserad-source';
+        const layerId = 'pulserad-layer';
+
+        // Remove existing layer and source if present
+        if (map.getLayer(layerId)) {
+            map.removeLayer(layerId);
+        }
+        if (map.getSource(sourceId)) {
+            map.removeSource(sourceId);
+        }
+
+        // Add radar tile source
+        map.addSource(sourceId, {
+            type: 'raster',
+            tiles: [
+                RADAR_TILE_URL.replace('{t}', timeSlot)
+            ],
+            tileSize: 256,
+            attribution: 'Earth Networks PulseRad'
+        });
+
+        // Add radar layer (below any existing layers to keep lightning on top)
+        map.addLayer({
+            id: layerId,
+            type: 'raster',
+            source: sourceId,
+            paint: {
+                'raster-opacity': radarOpacity,
+                'raster-fade-duration': 300
+            }
+        }, map.getLayer('radius-circle-fill') ? 'radius-circle-fill' : undefined);
+
+        console.log('✅ Radar layer added with time slot:', timeSlot, new Date(timeSlot * 1000));
+    }, [radarOpacity]);
+
+    // Toggle radar layer visibility
+    const toggleRadar = useCallback(() => {
+        const map = mapRef.current;
+        if (!map) return;
+
+        const layerId = 'pulserad-layer';
+        if (map.getLayer(layerId)) {
+            const visibility = map.getLayoutProperty(layerId, 'visibility');
+            map.setLayoutProperty(
+                layerId,
+                'visibility',
+                visibility === 'visible' ? 'none' : 'visible'
+            );
+            setRadarEnabled(visibility !== 'visible');
+        }
+    }, []);
+
+    // Update radar opacity
+    const updateRadarOpacity = useCallback((opacity) => {
+        const map = mapRef.current;
+        if (!map) return;
+
+        const layerId = 'pulserad-layer';
+        if (map.getLayer(layerId)) {
+            map.setPaintProperty(layerId, 'raster-opacity', opacity);
+            setRadarOpacity(opacity);
+        }
+    }, []);
+
+    // Start periodic radar updates (every 5 minutes)
+    const startRadarUpdates = useCallback(() => {
+        if (!RADAR_METADATA_URL) return;
+
+        // Initial update
+        fetchRadarMetadata().then(timeSlot => {
+            if (timeSlot) {
+                setCurrentTimeSlot(timeSlot);
+                if (mapRef.current) {
+                    updateRadarLayer(mapRef.current, timeSlot);
+                }
+            }
+        });
+
+        // Update every 5 minutes (300 seconds as per API docs)
+        radarUpdateIntervalRef.current = setInterval(async () => {
+            const timeSlot = await fetchRadarMetadata();
+            if (timeSlot) {
+                setCurrentTimeSlot(timeSlot);
+                if (mapRef.current) {
+                    updateRadarLayer(mapRef.current, timeSlot);
+                }
+            }
+        }, 300000); // 5 minutes
+    }, [fetchRadarMetadata, updateRadarLayer]);
+
     // Connect to WebSocket
     const connectWebSocket = useCallback(() => {
         if (wsRef.current?.readyState === WebSocket.OPEN) return;
@@ -514,6 +645,13 @@ const SfericMap = () => {
                 // Add navigation controls
                 map.addControl(new mapboxgl.NavigationControl(), "bottom-right");
 
+                // Start radar updates if subscription key is available
+                if (SUBSCRIPTION_KEY) {
+                    startRadarUpdates();
+                } else {
+                    console.warn('⚠️ No subscription key found. Radar overlay disabled.');
+                }
+
                 // Request geolocation
                 if (navigator.geolocation) {
                     navigator.geolocation.getCurrentPosition(
@@ -613,6 +751,10 @@ const SfericMap = () => {
             clearInterval(cleanupInterval);
             clearInterval(statsInterval);
 
+            if (radarUpdateIntervalRef.current) {
+                clearInterval(radarUpdateIntervalRef.current);
+                radarUpdateIntervalRef.current = null;
+            }
             if (demoIntervalRef.current) {
                 clearTimeout(demoIntervalRef.current);
                 demoIntervalRef.current = null;
@@ -747,6 +889,54 @@ const SfericMap = () => {
                     {isDemoMode ? <MdStop /> : <MdPlayArrow />}
                     <span>{isDemoMode ? "დემო გამორთვა" : "დემო ჩართვა"}</span>
                 </button>
+
+                {/* Radar Controls */}
+                {SUBSCRIPTION_KEY && (
+                    <>
+                        <div style={{margin: '15px 0', borderTop: '1px solid rgba(255,255,255,0.2)'}} />
+
+                        <div className="radar-controls">
+                            <h4 style={{fontSize: '14px', marginBottom: '10px', display: 'flex', alignItems: 'center', gap: '8px'}}>
+                                📡 რადარი (PulseRad)
+                            </h4>
+
+                            <button
+                                onClick={toggleRadar}
+                                className="demo-toggle-button"
+                                style={{
+                                    background: radarEnabled ? '#4CAF50' : '#666',
+                                    marginBottom: '10px'
+                                }}
+                            >
+                                {radarEnabled ? '✓ რადარი ჩართულია' : '✗ რადარი გამორთულია'}
+                            </button>
+
+                            {radarEnabled && (
+                                <div className="opacity-control" style={{marginBottom: '10px'}}>
+                                    <label style={{fontSize: '12px', display: 'block', marginBottom: '5px'}}>
+                                        გამჭვირვალობა: {Math.round(radarOpacity * 100)}%
+                                    </label>
+                                    <input
+                                        type="range"
+                                        min="0"
+                                        max="1"
+                                        step="0.1"
+                                        value={radarOpacity}
+                                        onChange={(e) => updateRadarOpacity(parseFloat(e.target.value))}
+                                        style={{width: '100%'}}
+                                    />
+                                </div>
+                            )}
+
+                            {currentTimeSlot && (
+                                <div style={{fontSize: '11px', opacity: 0.7}}>
+                                    ბოლო განახლება: {new Date(currentTimeSlot * 1000).toLocaleTimeString('ka-GE')}
+                                </div>
+                            )}
+                        </div>
+                    </>
+                )}
+
                 {wsError && !isDemoMode && (
                     <div className="location-error">
                         {wsError}
@@ -772,6 +962,37 @@ const SfericMap = () => {
                         <span>ბოლო 5 წთ</span>
                     </div>
                 </div>
+
+                {/* Radar Legend */}
+                {SUBSCRIPTION_KEY && radarEnabled && (
+                    <>
+                        <div style={{marginTop: '15px', paddingTop: '15px', borderTop: '1px solid rgba(255,255,255,0.3)'}}>
+                            <div className="legend-title">რადარი (ნალექი)</div>
+                        </div>
+                        <div style={{fontSize: '11px', marginTop: '8px'}}>
+                            <div style={{display: 'flex', alignItems: 'center', marginBottom: '4px'}}>
+                                <div style={{width: '20px', height: '12px', background: '#4444FF', marginRight: '8px', border: '1px solid rgba(255,255,255,0.3)'}}></div>
+                                <span>სუსტი</span>
+                            </div>
+                            <div style={{display: 'flex', alignItems: 'center', marginBottom: '4px'}}>
+                                <div style={{width: '20px', height: '12px', background: '#00FF00', marginRight: '8px', border: '1px solid rgba(255,255,255,0.3)'}}></div>
+                                <span>ზომიერი</span>
+                            </div>
+                            <div style={{display: 'flex', alignItems: 'center', marginBottom: '4px'}}>
+                                <div style={{width: '20px', height: '12px', background: '#FFFF00', marginRight: '8px', border: '1px solid rgba(255,255,255,0.3)'}}></div>
+                                <span>ძლიერი</span>
+                            </div>
+                            <div style={{display: 'flex', alignItems: 'center', marginBottom: '4px'}}>
+                                <div style={{width: '20px', height: '12px', background: '#FF6600', marginRight: '8px', border: '1px solid rgba(255,255,255,0.3)'}}></div>
+                                <span>ძალიან ძლიერი</span>
+                            </div>
+                            <div style={{display: 'flex', alignItems: 'center'}}>
+                                <div style={{width: '20px', height: '12px', background: '#FF0000', marginRight: '8px', border: '1px solid rgba(255,255,255,0.3)'}}></div>
+                                <span>უკიდურესი</span>
+                            </div>
+                        </div>
+                    </>
+                )}
             </div>
         </div>
     );
