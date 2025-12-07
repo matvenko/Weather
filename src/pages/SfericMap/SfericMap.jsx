@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState, useCallback } from "react";
-import { MdFlashOn, MdMyLocation, MdRefresh, MdPlayArrow, MdStop } from "react-icons/md";
+import { MdFlashOn, MdMyLocation, MdRefresh, MdPlayArrow, MdStop, MdExpandMore, MdExpandLess } from "react-icons/md";
 import localBrandLogo from "@src/images/meteo-logo-white.png";
+import privateAxios from "@src/api/privateAxios";
 import "./sfericMap.css";
 
 // WebSocket URL for Earth Networks lightning data - configurable via env
@@ -15,6 +16,25 @@ const RADAR_METADATA_URL = SUBSCRIPTION_KEY
 const RADAR_TILE_URL = SUBSCRIPTION_KEY
     ? `https://earthnetworks.azure-api.net/maps/overlays/tile?x={x}&y={y}&z={z}&t={t}&lid=pulserad&epsg=3857&subscription-key=${SUBSCRIPTION_KEY}`
     : null;
+
+// Lightning Flash Tile Layer configuration (from p3.pdf)
+const LIGHTNING_FLASH_METADATA_URL = SUBSCRIPTION_KEY
+    ? `https://earthnetworks.azure-api.net/maps/overlays/v2/metadata?lid=lxflash-consumer&subscription-key=${SUBSCRIPTION_KEY}`
+    : null;
+const LIGHTNING_FLASH_TILE_URL = SUBSCRIPTION_KEY
+    ? `https://earthnetworks.azure-api.net/maps/overlays/tile?x={x}&y={y}&z={z}&t={t}&lid=lxflash-consumer&epsg=3857&subscription-key=${SUBSCRIPTION_KEY}`
+    : null;
+
+// OpenWeatherMap Cloud Layer
+// Note: Free API keys may take 1-2 hours to activate
+// Get your API key from: https://openweathermap.org/api
+const OPENWEATHER_API_KEY = import.meta.env.VITE_OPENWEATHER_API_KEY;
+const CLOUDS_TILE_URL = OPENWEATHER_API_KEY && OPENWEATHER_API_KEY !== 'your-api-key-here'
+    ? `https://tile.openweathermap.org/map/clouds_new/{z}/{x}/{y}.png?appid=${OPENWEATHER_API_KEY}`
+    : null;
+
+// NASA GIBS Satellite Imagery (free, no API key needed)
+const NASA_SATELLITE_URL = 'https://gibs.earthdata.nasa.gov/wmts/epsg3857/best/MODIS_Terra_CorrectedReflectance_TrueColor/default/2024-12-06/GoogleMapsCompatible_Level9/{z}/{y}/{x}.jpg';
 
 // Radius in kilometers
 const RADIUS_KM = 10;
@@ -189,9 +209,28 @@ const SfericMap = () => {
     const radarUpdateIntervalRef = useRef(null);
     const [showContours, setShowContours] = useState(false); // Contour effect toggle
 
+    // Lightning Flash tile layer state (from p3.pdf)
+    const [lightningFlashEnabled, setLightningFlashEnabled] = useState(false); // Off by default
+    const [lightningFlashOpacity, setLightningFlashOpacity] = useState(0.8);
+    const [currentLightningTimeSlot, setCurrentLightningTimeSlot] = useState(null);
+    const lightningFlashUpdateIntervalRef = useRef(null);
+
+    // Cloud layer state
+    const [cloudsEnabled, setCloudsEnabled] = useState(false); // Off by default
+    const [cloudsOpacity, setCloudsOpacity] = useState(0.5);
+
     // Map style state
     const [showLabels, setShowLabels] = useState(true);
     const [mapStyle, setMapStyle] = useState('satellite'); // 'satellite' or 'streets'
+
+    // Polygon state
+    const [polygonsEnabled, setPolygonsEnabled] = useState(true);
+    const [polygonsData, setPolygonsData] = useState([]);
+    const polygonUpdateIntervalRef = useRef(null);
+
+    // Collapse state for UI panels
+    const [isMonitoringCollapsed, setIsMonitoringCollapsed] = useState(false);
+    const [isLegendCollapsed, setIsLegendCollapsed] = useState(false);
 
     // Keep userLocationRef in sync
     useEffect(() => {
@@ -543,6 +582,75 @@ const SfericMap = () => {
         console.log('✅ Radar layer added with time slot:', timeSlot, new Date(timeSlot * 1000));
     }, [radarOpacity, showContours]);
 
+    // Add or update cloud tile layer on map
+    const updateCloudLayer = useCallback((map) => {
+        if (!map || !CLOUDS_TILE_URL) return;
+
+        const sourceId = 'clouds-source';
+        const layerId = 'clouds-layer';
+
+        // Remove existing layer and source if present
+        if (map.getLayer(layerId)) {
+            map.removeLayer(layerId);
+        }
+        if (map.getSource(sourceId)) {
+            map.removeSource(sourceId);
+        }
+
+        // Add cloud tile source
+        map.addSource(sourceId, {
+            type: 'raster',
+            tiles: [CLOUDS_TILE_URL],
+            tileSize: 256,
+            attribution: 'OpenWeatherMap'
+        });
+
+        // Add cloud layer
+        map.addLayer({
+            id: layerId,
+            type: 'raster',
+            source: sourceId,
+            paint: {
+                'raster-opacity': cloudsOpacity,
+                'raster-fade-duration': 300
+            },
+            layout: {
+                visibility: cloudsEnabled ? 'visible' : 'none'
+            }
+        }, map.getLayer('pulserad-layer') || map.getLayer('radius-circle-fill') ? undefined : undefined);
+
+        console.log('✅ Cloud layer added');
+    }, [cloudsOpacity, cloudsEnabled]);
+
+    // Toggle cloud layer visibility
+    const toggleClouds = useCallback(() => {
+        const map = mapRef.current;
+        if (!map) return;
+
+        const layerId = 'clouds-layer';
+        if (map.getLayer(layerId)) {
+            const visibility = map.getLayoutProperty(layerId, 'visibility');
+            map.setLayoutProperty(
+                layerId,
+                'visibility',
+                visibility === 'visible' ? 'none' : 'visible'
+            );
+            setCloudsEnabled(visibility !== 'visible');
+        }
+    }, []);
+
+    // Update cloud opacity
+    const updateCloudOpacity = useCallback((opacity) => {
+        const map = mapRef.current;
+        if (!map) return;
+
+        const layerId = 'clouds-layer';
+        if (map.getLayer(layerId)) {
+            map.setPaintProperty(layerId, 'raster-opacity', opacity);
+            setCloudsOpacity(opacity);
+        }
+    }, []);
+
     // Toggle radar layer visibility
     const toggleRadar = useCallback(() => {
         const map = mapRef.current;
@@ -597,6 +705,619 @@ const SfericMap = () => {
             }
         }, 300000); // 5 minutes
     }, [fetchRadarMetadata, updateRadarLayer]);
+
+    // Fetch lightning polygons from backend API
+    const fetchPolygons = useCallback(async () => {
+        try {
+            console.log('🔄 Fetching lightning polygons from /api/v1/weather/get-polygons...');
+            const response = await privateAxios.get('/api/v1/weather/get-polygons');
+            console.log('📦 Raw API response:', response.data);
+
+            if (response.data && Array.isArray(response.data)) {
+                console.log('⚡ Lightning polygons fetched:', response.data.length);
+
+                // Log each polygon details for debugging
+                response.data.forEach((polygon, index) => {
+                    console.log(`Polygon ${index + 1}:`, {
+                        identifier: polygon.identifier,
+                        severity: polygon.severity,
+                        lightning_level: polygon.lightning_level,
+                        coordinateCount: polygon.polygon?.length || 0,
+                        firstCoord: polygon.polygon?.[0],
+                    });
+                });
+
+                setPolygonsData(response.data);
+                return response.data;
+            } else {
+                console.warn('⚠️ API response is not an array or is empty');
+            }
+        } catch (error) {
+            console.error('❌ Error fetching lightning polygons:', error);
+            console.error('Error details:', {
+                message: error.message,
+                response: error.response?.data,
+                status: error.response?.status
+            });
+        }
+        return [];
+    }, []);
+
+    // Calculate polygon centroid
+    const calculatePolygonCentroid = useCallback((coordinates) => {
+        let sumLng = 0;
+        let sumLat = 0;
+        const numPoints = coordinates.length;
+
+        coordinates.forEach(([lng, lat]) => {
+            sumLng += lng;
+            sumLat += lat;
+        });
+
+        return [sumLng / numPoints, sumLat / numPoints];
+    }, []);
+
+    // Convert mph to km/h
+    // Handles both number and string formats (e.g., "12 mph" or "12" or 12)
+    const mphToKmh = (mph) => {
+        if (typeof mph === 'string') {
+            // Extract number from strings like "12 mph"
+            const match = mph.match(/[\d.]+/);
+            if (match) {
+                const speed = parseFloat(match[0]);
+                return isNaN(speed) ? 0 : speed * 1.60934;
+            }
+        }
+        const speed = parseFloat(mph);
+        return isNaN(speed) ? 0 : speed * 1.60934;
+    };
+
+    // Calculate future position based on speed, direction, and time
+    const calculateFuturePosition = useCallback((center, direction, speedMph, minutes) => {
+        const speedKmh = mphToKmh(speedMph);
+        const distanceKm = (speedKmh / 60) * minutes; // distance in km
+
+        // Convert direction from degrees to radians (direction is meteorological: 0° = North, clockwise)
+        const directionDeg = parseFloat(direction);
+        const bearing = ((directionDeg + 180) % 360) * (Math.PI / 180); // Add 180 to get movement direction
+
+        const [lng, lat] = center;
+
+        // Earth's radius in km
+        const R = 6371;
+
+        // Convert to radians
+        const lat1 = lat * (Math.PI / 180);
+        const lng1 = lng * (Math.PI / 180);
+
+        // Calculate new position
+        const lat2 = Math.asin(
+            Math.sin(lat1) * Math.cos(distanceKm / R) +
+            Math.cos(lat1) * Math.sin(distanceKm / R) * Math.cos(bearing)
+        );
+
+        const lng2 = lng1 + Math.atan2(
+            Math.sin(bearing) * Math.sin(distanceKm / R) * Math.cos(lat1),
+            Math.cos(distanceKm / R) - Math.sin(lat1) * Math.sin(lat2)
+        );
+
+        return [lng2 * (180 / Math.PI), lat2 * (180 / Math.PI)];
+    }, []);
+
+    // Get color and opacity based on severity and lightning level
+    const getPolygonStyle = useCallback((polygon) => {
+        const { severity, lightning_level } = polygon;
+
+        // Use yellow/orange colors for CELL_POLYGON (matching sf9.png reference image)
+        let fillColor = '#FFD700'; // Yellow/Gold (default for Low/Unknown)
+        let fillOpacity = 0.3;
+        let strokeColor = '#FFA500';
+        let strokeOpacity = 0.8;
+
+        if (lightning_level === 'High' || severity === 'Severe') {
+            fillColor = '#FF8C00'; // Dark orange
+            fillOpacity = 0.4;
+            strokeColor = '#FF4500'; // Orange red
+        } else if (lightning_level === 'Medium' || severity === 'Moderate') {
+            fillColor = '#FFA500'; // Orange
+            fillOpacity = 0.35;
+            strokeColor = '#FF8C00'; // Dark orange
+        } else {
+            fillColor = '#FFD700'; // Gold
+            fillOpacity = 0.25;
+            strokeColor = '#FFA500'; // Orange
+        }
+
+        return { fillColor, fillOpacity, strokeColor, strokeOpacity };
+    }, []);
+
+    // Convert polygon data to GeoJSON format
+    const polygonToGeoJSON = useCallback((polygonsArray) => {
+        const features = polygonsArray.map((item, index) => {
+            // Convert polygon coordinates from {lat, lng} to [lng, lat] format
+            // with automatic detection and correction of swapped coordinates
+            const coordinates = item.polygon.map((coord, coordIndex) => {
+                const lat = parseFloat(coord.lat);
+                const lng = parseFloat(coord.lng);
+
+                // Auto-detect if lat/lng are swapped based on valid ranges
+                // Latitude MUST be -90 to +90, Longitude MUST be -180 to +180
+                const latIsInvalid = lat < -90 || lat > 90;
+                const lngIsInvalid = lng < -180 || lng > 180;
+                const lngAsLat = lng >= -90 && lng <= 90;
+
+                if (latIsInvalid && lngAsLat && !lngIsInvalid) {
+                    // Coordinates are swapped: lat is actually lng, lng is actually lat
+                    if (coordIndex === 0) {
+                        console.warn(`⚠️ Polygon ${index + 1} (${item.identifier}): Detected swapped coordinates - auto-correcting`);
+                        console.warn(`   Original: lat=${lat}, lng=${lng} → Corrected: lat=${lng}, lng=${lat}`);
+                    }
+                    return [lat, lng];  // Use lat as longitude, lng as latitude (swapped)
+                }
+
+                // Validate coordinates even when not swapping
+                if (latIsInvalid) {
+                    console.error(`❌ Polygon ${index + 1}, coord ${coordIndex}: Invalid latitude ${lat} (must be -90 to +90)`);
+                }
+                if (lngIsInvalid) {
+                    console.error(`❌ Polygon ${index + 1}, coord ${coordIndex}: Invalid longitude ${lng} (must be -180 to +180)`);
+                }
+
+                return [lng, lat];  // Normal: GeoJSON [longitude, latitude]
+            });
+
+            const style = getPolygonStyle(item);
+
+            return {
+                type: 'Feature',
+                id: item.identifier || `polygon-${index}`,
+                properties: {
+                    identifier: item.identifier,
+                    severity: item.severity,
+                    lightning_level: item.lightning_level,
+                    headline: item.headline,
+                    description: item.description,
+                    expires: item.expires,
+                    fillColor: style.fillColor,
+                    fillOpacity: style.fillOpacity,
+                    strokeColor: style.strokeColor,
+                    strokeOpacity: style.strokeOpacity
+                },
+                geometry: {
+                    type: 'Polygon',
+                    coordinates: [coordinates]
+                }
+            };
+        });
+
+        return {
+            type: 'FeatureCollection',
+            features
+        };
+    }, [getPolygonStyle]);
+
+    // Add or update polygon layers on map
+    const updatePolygonLayers = useCallback((map, polygonsArray) => {
+        console.log('🗺️ updatePolygonLayers called with:', {
+            hasMap: !!map,
+            polygonCount: polygonsArray?.length || 0
+        });
+
+        if (!map || !polygonsArray) {
+            console.warn('⚠️ No map or polygons array provided');
+            return;
+        }
+
+        const sourceId = 'lightning-polygons-source';
+        const fillLayerId = 'lightning-polygons-fill';
+        const strokeLayerId = 'lightning-polygons-stroke';
+
+        // Remove existing layers if present
+        if (map.getLayer(fillLayerId)) {
+            console.log('🗑️ Removing existing fill layer');
+            map.removeLayer(fillLayerId);
+        }
+        if (map.getLayer(strokeLayerId)) {
+            console.log('🗑️ Removing existing stroke layer');
+            map.removeLayer(strokeLayerId);
+        }
+        if (map.getSource(sourceId)) {
+            console.log('🗑️ Removing existing source');
+            map.removeSource(sourceId);
+        }
+
+        // If no polygons, just return after cleanup
+        if (polygonsArray.length === 0) {
+            console.log('📭 No lightning polygons to display');
+            return;
+        }
+
+        // Convert to GeoJSON
+        console.log('🔄 Converting polygons to GeoJSON...');
+        const geojson = polygonToGeoJSON(polygonsArray);
+        console.log('📐 GeoJSON created:', {
+            type: geojson.type,
+            featureCount: geojson.features?.length,
+            firstFeature: geojson.features?.[0]
+        });
+
+        // Add polygon source
+        map.addSource(sourceId, {
+            type: 'geojson',
+            data: geojson
+        });
+
+        // Add fill layer with data-driven styling
+        map.addLayer({
+            id: fillLayerId,
+            type: 'fill',
+            source: sourceId,
+            paint: {
+                'fill-color': ['get', 'fillColor'],
+                'fill-opacity': ['get', 'fillOpacity']
+            },
+            layout: {
+                visibility: polygonsEnabled ? 'visible' : 'none'
+            }
+        }, map.getLayer('radius-circle-fill') ? 'radius-circle-fill' : undefined);
+
+        // Add stroke layer
+        map.addLayer({
+            id: strokeLayerId,
+            type: 'line',
+            source: sourceId,
+            paint: {
+                'line-color': ['get', 'strokeColor'],
+                'line-width': 2,
+                'line-opacity': ['get', 'strokeOpacity']
+            },
+            layout: {
+                visibility: polygonsEnabled ? 'visible' : 'none'
+            }
+        }, map.getLayer('radius-circle-fill') ? 'radius-circle-fill' : undefined);
+
+        // Add click handler for polygons to show info
+        map.on('click', fillLayerId, (e) => {
+            if (e.features && e.features.length > 0) {
+                const properties = e.features[0].properties;
+                const popup = new window.mapboxgl.Popup()
+                    .setLngLat(e.lngLat)
+                    .setHTML(`
+                        <div style="color: #000; padding: 5px;">
+                            <h4 style="margin: 0 0 5px 0; font-size: 14px;">${properties.headline || 'Lightning Alert'}</h4>
+                            <p style="margin: 5px 0; font-size: 12px;"><strong>Level:</strong> ${properties.lightning_level || 'Unknown'}</p>
+                            <p style="margin: 5px 0; font-size: 12px;"><strong>Severity:</strong> ${properties.severity || 'Unknown'}</p>
+                            <p style="margin: 5px 0; font-size: 11px;">${properties.description ? properties.description.substring(0, 150) + '...' : ''}</p>
+                            ${properties.expires ? `<p style="margin: 5px 0; font-size: 11px;"><strong>Expires:</strong> ${new Date(properties.expires).toLocaleString('ka-GE')}</p>` : ''}
+                        </div>
+                    `)
+                    .addTo(map);
+            }
+        });
+
+        // Change cursor on hover
+        map.on('mouseenter', fillLayerId, () => {
+            map.getCanvas().style.cursor = 'pointer';
+        });
+        map.on('mouseleave', fillLayerId, () => {
+            map.getCanvas().style.cursor = '';
+        });
+
+        // Add direction arrows and forecast paths for polygons with direction/speed data
+        const directionArrows = [];
+        const arrowheads = [];  // Arrowheads at the end of direction lines
+        const forecastCircles = [];
+        const stormCenters = [];
+
+        polygonsArray.forEach((polygon, index) => {
+            if (polygon.direction && polygon.speed) {
+                // Get polygon coordinates (already swapped if needed)
+                const coords = polygon.polygon.map((coord, coordIndex) => {
+                    const lat = parseFloat(coord.lat);
+                    const lng = parseFloat(coord.lng);
+                    const latIsInvalid = lat < -90 || lat > 90;
+                    const lngAsLat = lng >= -90 && lng <= 90;
+                    const lngIsInvalid = lng < -180 || lng > 180;
+
+                    if (latIsInvalid && lngAsLat && !lngIsInvalid) {
+                        return [lat, lng]; // swapped
+                    }
+                    return [lng, lat]; // normal
+                });
+
+                // Calculate centroid
+                const center = calculatePolygonCentroid(coords);
+
+                // Add storm center marker
+                stormCenters.push({
+                    type: 'Feature',
+                    id: `storm-center-${index}`,
+                    properties: {
+                        identifier: polygon.identifier,
+                        speed: polygon.speed,
+                        direction: polygon.direction
+                    },
+                    geometry: {
+                        type: 'Point',
+                        coordinates: center
+                    }
+                });
+
+                // Calculate arrow end point (60 minutes in direction)
+                const arrowEnd = calculateFuturePosition(center, polygon.direction, polygon.speed, 60);
+
+                directionArrows.push({
+                    type: 'Feature',
+                    id: `arrow-${index}`,
+                    properties: {
+                        identifier: polygon.identifier,
+                        speed: polygon.speed,
+                        direction: polygon.direction
+                    },
+                    geometry: {
+                        type: 'LineString',
+                        coordinates: [center, arrowEnd]
+                    }
+                });
+
+                // Create arrowhead triangle at the end
+                // Triangle pointing in direction of movement
+                const directionRad = (parseFloat(polygon.direction) + 180) * (Math.PI / 180);
+                const arrowSize = 0.02; // Size in degrees (~2km)
+
+                // Three points of the triangle
+                const tipAngle = directionRad;
+                const leftAngle = directionRad + (2.5 * Math.PI / 3);  // 150 degrees left
+                const rightAngle = directionRad - (2.5 * Math.PI / 3); // 150 degrees right
+
+                const tip = arrowEnd;
+                const left = [
+                    arrowEnd[0] + arrowSize * Math.sin(leftAngle),
+                    arrowEnd[1] + arrowSize * Math.cos(leftAngle)
+                ];
+                const right = [
+                    arrowEnd[0] + arrowSize * Math.sin(rightAngle),
+                    arrowEnd[1] + arrowSize * Math.cos(rightAngle)
+                ];
+
+                arrowheads.push({
+                    type: 'Feature',
+                    id: `arrowhead-${index}`,
+                    properties: {
+                        identifier: polygon.identifier
+                    },
+                    geometry: {
+                        type: 'Polygon',
+                        coordinates: [[tip, left, right, tip]]
+                    }
+                });
+
+                // Create forecast circles for 15, 30, 45 minutes
+                [15, 30, 45].forEach((minutes, minuteIndex) => {
+                    const forecastPos = calculateFuturePosition(center, polygon.direction, polygon.speed, minutes);
+                    const radiusKm = 8 + (minuteIndex * 3); // Larger circles: 8km, 11km, 14km
+
+                    forecastCircles.push({
+                        type: 'Feature',
+                        id: `forecast-${index}-${minutes}min`,
+                        properties: {
+                            identifier: polygon.identifier,
+                            minutes: minutes,
+                            radiusKm: radiusKm
+                        },
+                        geometry: {
+                            type: 'Point',
+                            coordinates: forecastPos
+                        }
+                    });
+                });
+            }
+        });
+
+        // Add direction arrow layers
+        if (directionArrows.length > 0) {
+            const arrowSourceId = 'direction-arrows-source';
+            const arrowLayerId = 'direction-arrows-layer';
+
+            if (map.getLayer(arrowLayerId)) map.removeLayer(arrowLayerId);
+            if (map.getSource(arrowSourceId)) map.removeSource(arrowSourceId);
+
+            map.addSource(arrowSourceId, {
+                type: 'geojson',
+                data: {
+                    type: 'FeatureCollection',
+                    features: directionArrows
+                }
+            });
+
+            map.addLayer({
+                id: arrowLayerId,
+                type: 'line',
+                source: arrowSourceId,
+                paint: {
+                    'line-color': '#00CED1', // Cyan/turquoise arrows (matching sf7.png)
+                    'line-width': 4,
+                    'line-opacity': 1.0
+                },
+                layout: {
+                    visibility: polygonsEnabled ? 'visible' : 'none',
+                    'line-cap': 'round'
+                }
+            });
+
+            console.log(`➡️ Added ${directionArrows.length} direction arrows`);
+        }
+
+        // Add arrowhead layer
+        if (arrowheads.length > 0) {
+            const arrowheadSourceId = 'arrowheads-source';
+            const arrowheadLayerId = 'arrowheads-layer';
+
+            if (map.getLayer(arrowheadLayerId)) map.removeLayer(arrowheadLayerId);
+            if (map.getSource(arrowheadSourceId)) map.removeSource(arrowheadSourceId);
+
+            map.addSource(arrowheadSourceId, {
+                type: 'geojson',
+                data: {
+                    type: 'FeatureCollection',
+                    features: arrowheads
+                }
+            });
+
+            map.addLayer({
+                id: arrowheadLayerId,
+                type: 'fill',
+                source: arrowheadSourceId,
+                paint: {
+                    'fill-color': '#00CED1', // Cyan/turquoise (matching arrow)
+                    'fill-opacity': 1.0
+                },
+                layout: {
+                    visibility: polygonsEnabled ? 'visible' : 'none'
+                }
+            });
+
+            console.log(`🔺 Added ${arrowheads.length} arrowheads`);
+        }
+
+        // Add storm center markers
+        if (stormCenters.length > 0) {
+            const centerSourceId = 'storm-centers-source';
+            const centerLayerId = 'storm-centers-layer';
+
+            if (map.getLayer(centerLayerId)) map.removeLayer(centerLayerId);
+            if (map.getSource(centerSourceId)) map.removeSource(centerSourceId);
+
+            map.addSource(centerSourceId, {
+                type: 'geojson',
+                data: {
+                    type: 'FeatureCollection',
+                    features: stormCenters
+                }
+            });
+
+            map.addLayer({
+                id: centerLayerId,
+                type: 'circle',
+                source: centerSourceId,
+                paint: {
+                    'circle-radius': 6,
+                    'circle-color': '#00CED1', // Cyan/turquoise
+                    'circle-stroke-width': 2,
+                    'circle-stroke-color': '#FFFFFF',
+                    'circle-opacity': 0.9
+                },
+                layout: {
+                    visibility: polygonsEnabled ? 'visible' : 'none'
+                }
+            });
+
+            console.log(`🎯 Added ${stormCenters.length} storm center markers`);
+        }
+
+        // Add forecast circle layers
+        if (forecastCircles.length > 0) {
+            const forecastSourceId = 'forecast-circles-source';
+            const forecastLayerId = 'forecast-circles-layer';
+
+            if (map.getLayer(forecastLayerId)) map.removeLayer(forecastLayerId);
+            if (map.getSource(forecastSourceId)) map.removeSource(forecastSourceId);
+
+            map.addSource(forecastSourceId, {
+                type: 'geojson',
+                data: {
+                    type: 'FeatureCollection',
+                    features: forecastCircles
+                }
+            });
+
+            map.addLayer({
+                id: forecastLayerId,
+                type: 'circle',
+                source: forecastSourceId,
+                paint: {
+                    // Much larger circles that scale with zoom (8-14km circles)
+                    'circle-radius': [
+                        'interpolate',
+                        ['linear'],
+                        ['zoom'],
+                        4, ['*', ['get', 'radiusKm'], 1],      // zoom 4: 1x
+                        6, ['*', ['get', 'radiusKm'], 3],      // zoom 6: 3x
+                        8, ['*', ['get', 'radiusKm'], 6],      // zoom 8: 6x
+                        10, ['*', ['get', 'radiusKm'], 10],    // zoom 10: 10x
+                        12, ['*', ['get', 'radiusKm'], 16]     // zoom 12: 16x (very large)
+                    ],
+                    'circle-color': '#00FF00',               // Green fill
+                    'circle-opacity': 0.02,                  // Nearly transparent fill
+                    'circle-stroke-width': 3,                // Visible stroke
+                    'circle-stroke-color': '#00FF00',        // Green stroke
+                    'circle-stroke-opacity': 0.9             // Strong visible stroke
+                },
+                layout: {
+                    visibility: polygonsEnabled ? 'visible' : 'none'
+                }
+            });
+
+            console.log(`⭕ Added ${forecastCircles.length} forecast circles`);
+        }
+
+        console.log('✅ Lightning polygons successfully added to map!', {
+            polygonCount: polygonsArray.length,
+            layersCreated: [fillLayerId, strokeLayerId],
+            sourceId: sourceId,
+            visibility: polygonsEnabled ? 'visible' : 'none',
+            mapBounds: map.getBounds().toArray()
+        });
+    }, [polygonToGeoJSON, polygonsEnabled, calculatePolygonCentroid, calculateFuturePosition]);
+
+    // Toggle polygon visibility
+    const togglePolygons = useCallback(() => {
+        const map = mapRef.current;
+        if (!map) return;
+
+        const layers = [
+            'lightning-polygons-fill',
+            'lightning-polygons-stroke',
+            'direction-arrows-layer',
+            'arrowheads-layer',           // Add arrowheads toggle
+            'storm-centers-layer',
+            'forecast-circles-layer'
+        ];
+
+        const fillLayerId = layers[0];
+
+        if (map.getLayer(fillLayerId)) {
+            const visibility = map.getLayoutProperty(fillLayerId, 'visibility');
+            const newVisibility = visibility === 'visible' ? 'none' : 'visible';
+
+            // Toggle visibility for all related layers
+            layers.forEach(layerId => {
+                if (map.getLayer(layerId)) {
+                    map.setLayoutProperty(layerId, 'visibility', newVisibility);
+                }
+            });
+
+            setPolygonsEnabled(newVisibility === 'visible');
+        }
+    }, []);
+
+    // Start periodic polygon updates (every 2 minutes)
+    const startPolygonUpdates = useCallback(() => {
+        // Initial fetch
+        fetchPolygons().then(polygons => {
+            if (polygons && polygons.length > 0 && mapRef.current) {
+                updatePolygonLayers(mapRef.current, polygons);
+            }
+        });
+
+        // Update every 2 minutes
+        polygonUpdateIntervalRef.current = setInterval(async () => {
+            const polygons = await fetchPolygons();
+            if (polygons && mapRef.current) {
+                updatePolygonLayers(mapRef.current, polygons);
+            }
+        }, 120000); // 2 minutes
+    }, [fetchPolygons, updatePolygonLayers]);
 
     // Connect to WebSocket
     const connectWebSocket = useCallback(() => {
@@ -728,6 +1449,18 @@ const SfericMap = () => {
                     console.warn('⚠️ No subscription key found. Radar overlay disabled.');
                 }
 
+                // Add cloud layer if API key is available
+                if (CLOUDS_TILE_URL) {
+                    updateCloudLayer(map);
+                    console.log('☁️ Cloud layer initialized (OpenWeatherMap)');
+                    console.log('💡 If clouds don\'t appear, API key may need 1-2 hours to activate');
+                } else {
+                    console.warn('⚠️ No OpenWeather API key configured. Cloud layer disabled.');
+                }
+
+                // Start polygon updates
+                startPolygonUpdates();
+
                 // Request geolocation
                 if (navigator.geolocation) {
                     navigator.geolocation.getCurrentPosition(
@@ -831,6 +1564,10 @@ const SfericMap = () => {
                 clearInterval(radarUpdateIntervalRef.current);
                 radarUpdateIntervalRef.current = null;
             }
+            if (polygonUpdateIntervalRef.current) {
+                clearInterval(polygonUpdateIntervalRef.current);
+                polygonUpdateIntervalRef.current = null;
+            }
             if (demoIntervalRef.current) {
                 clearTimeout(demoIntervalRef.current);
                 demoIntervalRef.current = null;
@@ -898,10 +1635,15 @@ const SfericMap = () => {
 
             {/* Control Panel */}
             <div className="sferic-controls">
-                <h3>
-                    <MdFlashOn />
-                    ელვის მონიტორინგი
+                <h3 onClick={() => setIsMonitoringCollapsed(!isMonitoringCollapsed)} style={{ cursor: 'pointer', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <span style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                        <MdFlashOn />
+                        ელვის მონიტორინგი
+                    </span>
+                    {isMonitoringCollapsed ? <MdExpandMore /> : <MdExpandLess />}
                 </h3>
+                {!isMonitoringCollapsed && (
+                <>
                 <div className="sferic-stats">
                     {userLocation && (
                         <div className="sferic-stat location-info">
@@ -1076,6 +1818,64 @@ const SfericMap = () => {
                                 {showLabels ? '✓ ქალაქები ჩართულია' : '✗ ქალაქები გამორთულია'}
                             </button>
                         </div>
+
+                        {/* Polygon Toggle */}
+                        <div style={{marginTop: '15px'}}>
+                            <h4 style={{fontSize: '14px', marginBottom: '10px', display: 'flex', alignItems: 'center', gap: '8px'}}>
+                                ⚠️ ელვის პოლიგონები
+                            </h4>
+                            <button
+                                onClick={togglePolygons}
+                                className="demo-toggle-button"
+                                style={{
+                                    background: polygonsEnabled ? '#4CAF50' : '#666'
+                                }}
+                            >
+                                {polygonsEnabled ? '✓ პოლიგონები ჩართულია' : '✗ პოლიგონები გამორთულია'}
+                            </button>
+                            {polygonsData.length > 0 && (
+                                <div style={{fontSize: '11px', opacity: 0.7, marginTop: '5px'}}>
+                                    აქტიური: {polygonsData.length} პოლიგონი
+                                </div>
+                            )}
+                        </div>
+
+                        {/* Cloud Layer Controls */}
+                        {CLOUDS_TILE_URL && (
+                            <div style={{marginTop: '15px'}}>
+                                <h4 style={{fontSize: '14px', marginBottom: '10px', display: 'flex', alignItems: 'center', gap: '8px'}}>
+                                    ☁️ ღრუბლები (Clouds)
+                                </h4>
+
+                                <button
+                                    onClick={toggleClouds}
+                                    className="demo-toggle-button"
+                                    style={{
+                                        background: cloudsEnabled ? '#4CAF50' : '#666',
+                                        marginBottom: '10px'
+                                    }}
+                                >
+                                    {cloudsEnabled ? '✓ ღრუბლები ჩართულია' : '✗ ღრუბლები გამორთულია'}
+                                </button>
+
+                                {cloudsEnabled && (
+                                    <div className="opacity-control" style={{marginBottom: '10px'}}>
+                                        <label style={{fontSize: '12px', display: 'block', marginBottom: '5px'}}>
+                                            გამჭვირვალობა: {Math.round(cloudsOpacity * 100)}%
+                                        </label>
+                                        <input
+                                            type="range"
+                                            min="0"
+                                            max="1"
+                                            step="0.1"
+                                            value={cloudsOpacity}
+                                            onChange={(e) => updateCloudOpacity(parseFloat(e.target.value))}
+                                            style={{width: '100%'}}
+                                        />
+                                    </div>
+                                )}
+                            </div>
+                        )}
                     </>
                 )}
 
@@ -1089,11 +1889,18 @@ const SfericMap = () => {
                         ლოკაცია: {locationError}
                     </div>
                 )}
+                </>
+                )}
             </div>
 
             {/* Legend */}
             <div className="sferic-legend">
-                <div className="legend-title">ელვის დარტყმები</div>
+                <div className="legend-title" onClick={() => setIsLegendCollapsed(!isLegendCollapsed)} style={{ cursor: 'pointer', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <span>ელვის დარტყმები</span>
+                    {isLegendCollapsed ? <MdExpandMore /> : <MdExpandLess />}
+                </div>
+                {!isLegendCollapsed && (
+                <>
                 <div className="legend-items">
                     <div className="legend-item">
                         <div className="legend-dot new" />
@@ -1134,6 +1941,83 @@ const SfericMap = () => {
                             </div>
                         </div>
                     </>
+                )}
+
+                {/* Cloud Legend */}
+                {CLOUDS_TILE_URL && cloudsEnabled && (
+                    <>
+                        <div style={{marginTop: '15px', paddingTop: '15px', borderTop: '1px solid rgba(255,255,255,0.3)'}}>
+                            <div className="legend-title">ღრუბლები</div>
+                        </div>
+                        <div style={{fontSize: '11px', marginTop: '8px'}}>
+                            <div style={{display: 'flex', alignItems: 'center', marginBottom: '4px'}}>
+                                <div style={{width: '20px', height: '12px', background: 'rgba(255, 255, 255, 0.9)', marginRight: '8px', border: '1px solid rgba(255,255,255,0.5)'}}></div>
+                                <span>ღრუბლიანობა</span>
+                            </div>
+                            <div style={{fontSize: '10px', opacity: 0.8, marginTop: '5px'}}>
+                                წყარო: OpenWeatherMap
+                            </div>
+                            <div style={{fontSize: '9px', opacity: 0.6, marginTop: '3px', fontStyle: 'italic'}}>
+                                API key აქტივაციას 1-2 სთ სჭირდება
+                            </div>
+                        </div>
+                    </>
+                )}
+
+                {/* Polygon Legend */}
+                {polygonsEnabled && polygonsData.length > 0 && (
+                    <>
+                        <div style={{marginTop: '15px', paddingTop: '15px', borderTop: '1px solid rgba(255,255,255,0.3)'}}>
+                            <div className="legend-title">ელვის ზონები</div>
+                        </div>
+                        <div style={{fontSize: '11px', marginTop: '8px'}}>
+                            <div style={{display: 'flex', alignItems: 'center', marginBottom: '4px'}}>
+                                <div style={{width: '20px', height: '12px', background: '#81C784', marginRight: '8px', border: '2px solid #42A5F5'}}></div>
+                                <span>დაბალი (Low)</span>
+                            </div>
+                            <div style={{display: 'flex', alignItems: 'center', marginBottom: '4px'}}>
+                                <div style={{width: '20px', height: '12px', background: '#4CAF50', marginRight: '8px', border: '2px solid #2196F3'}}></div>
+                                <span>საშუალო (Medium)</span>
+                            </div>
+                            <div style={{display: 'flex', alignItems: 'center'}}>
+                                <div style={{width: '20px', height: '12px', background: '#66BB6A', marginRight: '8px', border: '2px solid #1976D2'}}></div>
+                                <span>მაღალი (High)</span>
+                            </div>
+                        </div>
+                    </>
+                )}
+
+                {/* Storm Movement Legend */}
+                {polygonsEnabled && polygonsData.some(p => p.direction && p.speed) && (
+                    <>
+                        <div style={{marginTop: '15px', paddingTop: '15px', borderTop: '1px solid rgba(255,255,255,0.3)'}}>
+                            <div className="legend-title">შტორმის მოძრაობა</div>
+                        </div>
+                        <div style={{fontSize: '11px', marginTop: '8px'}}>
+                            <div style={{display: 'flex', alignItems: 'center', marginBottom: '4px'}}>
+                                <div style={{width: '20px', height: '4px', background: '#00CED1', marginRight: '8px'}}></div>
+                                <span>მიმართულება (Cyan)</span>
+                            </div>
+                            <div style={{display: 'flex', alignItems: 'center', marginBottom: '4px'}}>
+                                <div style={{width: '12px', height: '12px', background: '#00CED1', marginRight: '8px', borderRadius: '50%', border: '2px solid #FFF'}}></div>
+                                <span>შტორმის ცენტრი</span>
+                            </div>
+                            <div style={{display: 'flex', alignItems: 'center', marginBottom: '4px'}}>
+                                <div style={{width: '20px', height: '12px', background: 'transparent', marginRight: '8px', border: '3px solid #00FF00', borderRadius: '50%', opacity: 0.8}}></div>
+                                <span>პროგნოზი 15 წთ (Green)</span>
+                            </div>
+                            <div style={{display: 'flex', alignItems: 'center', marginBottom: '4px'}}>
+                                <div style={{width: '20px', height: '12px', background: 'transparent', marginRight: '8px', border: '3px solid #00FF00', borderRadius: '50%', opacity: 0.8}}></div>
+                                <span>პროგნოზი 30 წთ</span>
+                            </div>
+                            <div style={{display: 'flex', alignItems: 'center'}}>
+                                <div style={{width: '20px', height: '12px', background: 'transparent', marginRight: '8px', border: '3px solid #00FF00', borderRadius: '50%', opacity: 0.8}}></div>
+                                <span>პროგნოზი 45 წთ</span>
+                            </div>
+                        </div>
+                    </>
+                )}
+                </>
                 )}
             </div>
         </div>
