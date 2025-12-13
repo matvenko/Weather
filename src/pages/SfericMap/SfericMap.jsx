@@ -1092,25 +1092,25 @@ const SfericMap = () => {
                     }
                 });
 
-                // Create forecast circles for 15, 30, 45 minutes
-                [15, 30, 45].forEach((minutes, minuteIndex) => {
-                    const forecastPos = calculateFuturePosition(center, polygon.direction, polygon.speed, minutes);
-                    const radiusKm = 8 + (minuteIndex * 3); // Larger circles: 8km, 11km, 14km
-
-                    forecastCircles.push({
-                        type: 'Feature',
-                        id: `forecast-${index}-${minutes}min`,
-                        properties: {
-                            identifier: polygon.identifier,
-                            minutes: minutes,
-                            radiusKm: radiusKm
-                        },
-                        geometry: {
-                            type: 'Point',
-                            coordinates: forecastPos
-                        }
-                    });
-                });
+                // Forecast circles removed per user request
+                // [15, 30, 45].forEach((minutes, minuteIndex) => {
+                //     const forecastPos = calculateFuturePosition(center, polygon.direction, polygon.speed, minutes);
+                //     const radiusKm = 8 + (minuteIndex * 3); // Larger circles: 8km, 11km, 14km
+                //
+                //     forecastCircles.push({
+                //         type: 'Feature',
+                //         id: `forecast-${index}-${minutes}min`,
+                //         properties: {
+                //             identifier: polygon.identifier,
+                //             minutes: minutes,
+                //             radiusKm: radiusKm
+                //         },
+                //         geometry: {
+                //             type: 'Point',
+                //             coordinates: forecastPos
+                //         }
+                //     });
+                // });
             }
         });
 
@@ -1215,51 +1215,51 @@ const SfericMap = () => {
             console.log(`🎯 Added ${stormCenters.length} storm center markers`);
         }
 
-        // Add forecast circle layers
-        if (forecastCircles.length > 0) {
-            const forecastSourceId = 'forecast-circles-source';
-            const forecastLayerId = 'forecast-circles-layer';
-
-            if (map.getLayer(forecastLayerId)) map.removeLayer(forecastLayerId);
-            if (map.getSource(forecastSourceId)) map.removeSource(forecastSourceId);
-
-            map.addSource(forecastSourceId, {
-                type: 'geojson',
-                data: {
-                    type: 'FeatureCollection',
-                    features: forecastCircles
-                }
-            });
-
-            map.addLayer({
-                id: forecastLayerId,
-                type: 'circle',
-                source: forecastSourceId,
-                paint: {
-                    // Much larger circles that scale with zoom (8-14km circles)
-                    'circle-radius': [
-                        'interpolate',
-                        ['linear'],
-                        ['zoom'],
-                        4, ['*', ['get', 'radiusKm'], 1],      // zoom 4: 1x
-                        6, ['*', ['get', 'radiusKm'], 3],      // zoom 6: 3x
-                        8, ['*', ['get', 'radiusKm'], 6],      // zoom 8: 6x
-                        10, ['*', ['get', 'radiusKm'], 10],    // zoom 10: 10x
-                        12, ['*', ['get', 'radiusKm'], 16]     // zoom 12: 16x (very large)
-                    ],
-                    'circle-color': '#00FF00',               // Green fill
-                    'circle-opacity': 0.02,                  // Nearly transparent fill
-                    'circle-stroke-width': 3,                // Visible stroke
-                    'circle-stroke-color': '#00FF00',        // Green stroke
-                    'circle-stroke-opacity': 0.9             // Strong visible stroke
-                },
-                layout: {
-                    visibility: polygonsEnabled ? 'visible' : 'none'
-                }
-            });
-
-            console.log(`⭕ Added ${forecastCircles.length} forecast circles`);
-        }
+        // Forecast circle layers removed per user request
+        // if (forecastCircles.length > 0) {
+        //     const forecastSourceId = 'forecast-circles-source';
+        //     const forecastLayerId = 'forecast-circles-layer';
+        //
+        //     if (map.getLayer(forecastLayerId)) map.removeLayer(forecastLayerId);
+        //     if (map.getSource(forecastSourceId)) map.removeSource(forecastSourceId);
+        //
+        //     map.addSource(forecastSourceId, {
+        //         type: 'geojson',
+        //         data: {
+        //             type: 'FeatureCollection',
+        //             features: forecastCircles
+        //         }
+        //     });
+        //
+        //     map.addLayer({
+        //         id: forecastLayerId,
+        //         type: 'circle',
+        //         source: forecastSourceId,
+        //         paint: {
+        //             // Much larger circles that scale with zoom (8-14km circles)
+        //             'circle-radius': [
+        //                 'interpolate',
+        //                 ['linear'],
+        //                 ['zoom'],
+        //                 4, ['*', ['get', 'radiusKm'], 1],      // zoom 4: 1x
+        //                 6, ['*', ['get', 'radiusKm'], 3],      // zoom 6: 3x
+        //                 8, ['*', ['get', 'radiusKm'], 6],      // zoom 8: 6x
+        //                 10, ['*', ['get', 'radiusKm'], 10],    // zoom 10: 10x
+        //                 12, ['*', ['get', 'radiusKm'], 16]     // zoom 12: 16x (very large)
+        //             ],
+        //             'circle-color': '#00FF00',               // Green fill
+        //             'circle-opacity': 0.02,                  // Nearly transparent fill
+        //             'circle-stroke-width': 3,                // Visible stroke
+        //             'circle-stroke-color': '#00FF00',        // Green stroke
+        //             'circle-stroke-opacity': 0.9             // Strong visible stroke
+        //         },
+        //         layout: {
+        //             visibility: polygonsEnabled ? 'visible' : 'none'
+        //         }
+        //     });
+        //
+        //     console.log(`⭕ Added ${forecastCircles.length} forecast circles`);
+        // }
 
         console.log('✅ Lightning polygons successfully added to map!', {
             polygonCount: polygonsArray.length,
@@ -1280,8 +1280,8 @@ const SfericMap = () => {
             'lightning-polygons-stroke',
             'direction-arrows-layer',
             'arrowheads-layer',           // Add arrowheads toggle
-            'storm-centers-layer',
-            'forecast-circles-layer'
+            'storm-centers-layer'
+            // 'forecast-circles-layer' removed per user request
         ];
 
         const fillLayerId = layers[0];
@@ -2001,18 +2001,6 @@ const SfericMap = () => {
                             <div style={{display: 'flex', alignItems: 'center', marginBottom: '4px'}}>
                                 <div style={{width: '12px', height: '12px', background: '#00CED1', marginRight: '8px', borderRadius: '50%', border: '2px solid #FFF'}}></div>
                                 <span>შტორმის ცენტრი</span>
-                            </div>
-                            <div style={{display: 'flex', alignItems: 'center', marginBottom: '4px'}}>
-                                <div style={{width: '20px', height: '12px', background: 'transparent', marginRight: '8px', border: '3px solid #00FF00', borderRadius: '50%', opacity: 0.8}}></div>
-                                <span>პროგნოზი 15 წთ (Green)</span>
-                            </div>
-                            <div style={{display: 'flex', alignItems: 'center', marginBottom: '4px'}}>
-                                <div style={{width: '20px', height: '12px', background: 'transparent', marginRight: '8px', border: '3px solid #00FF00', borderRadius: '50%', opacity: 0.8}}></div>
-                                <span>პროგნოზი 30 წთ</span>
-                            </div>
-                            <div style={{display: 'flex', alignItems: 'center'}}>
-                                <div style={{width: '20px', height: '12px', background: 'transparent', marginRight: '8px', border: '3px solid #00FF00', borderRadius: '50%', opacity: 0.8}}></div>
-                                <span>პროგნოზი 45 წთ</span>
                             </div>
                         </div>
                     </>
