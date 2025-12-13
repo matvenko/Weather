@@ -896,6 +896,66 @@ const SfericMap = () => {
         };
     }, [getPolygonStyle]);
 
+    // Convert cell_polygon data to GeoJSON format (storm cell polygon)
+    const cellPolygonToGeoJSON = useCallback((polygonsArray) => {
+        // Filter out items without cell_polygon data
+        const itemsWithCellPolygon = polygonsArray.filter(item => item.cell_polygon && item.cell_polygon.length > 0);
+
+        const features = itemsWithCellPolygon.map((item, index) => {
+            // Convert cell_polygon coordinates from {lat, lng} to [lng, lat] format
+            const coordinates = item.cell_polygon.map((coord, coordIndex) => {
+                const lat = parseFloat(coord.lat);
+                const lng = parseFloat(coord.lng);
+
+                // Auto-detect if lat/lng are swapped
+                const latIsInvalid = lat < -90 || lat > 90;
+                const lngIsInvalid = lng < -180 || lng > 180;
+                const lngAsLat = lng >= -90 && lng <= 90;
+
+                if (latIsInvalid && lngAsLat && !lngIsInvalid) {
+                    if (coordIndex === 0) {
+                        console.warn(`⚠️ Cell Polygon ${index + 1} (${item.identifier}): Detected swapped coordinates - auto-correcting`);
+                    }
+                    return [lat, lng];  // Swapped
+                }
+
+                if (latIsInvalid) {
+                    console.error(`❌ Cell Polygon ${index + 1}, coord ${coordIndex}: Invalid latitude ${lat}`);
+                }
+                if (lngIsInvalid) {
+                    console.error(`❌ Cell Polygon ${index + 1}, coord ${coordIndex}: Invalid longitude ${lng}`);
+                }
+
+                return [lng, lat];  // Normal GeoJSON format
+            });
+
+            // Cell polygon styling - distinct from alert area polygon
+            // Using magenta/purple colors to distinguish from yellow alert polygons
+            return {
+                type: 'Feature',
+                id: `cell-${item.identifier || `polygon-${index}`}`,
+                properties: {
+                    identifier: item.identifier,
+                    severity: item.severity,
+                    lightning_level: item.lightning_level,
+                    fillColor: '#FF00FF',      // Magenta fill
+                    fillOpacity: 0.15,          // Semi-transparent
+                    strokeColor: '#9C27B0',     // Purple stroke
+                    strokeOpacity: 0.9
+                },
+                geometry: {
+                    type: 'Polygon',
+                    coordinates: [coordinates]
+                }
+            };
+        });
+
+        return {
+            type: 'FeatureCollection',
+            features
+        };
+    }, []);
+
     // Add or update polygon layers on map
     const updatePolygonLayers = useCallback((map, polygonsArray) => {
         console.log('🗺️ updatePolygonLayers called with:', {
@@ -975,6 +1035,105 @@ const SfericMap = () => {
                 visibility: polygonsEnabled ? 'visible' : 'none'
             }
         }, map.getLayer('radius-circle-fill') ? 'radius-circle-fill' : undefined);
+
+        // ========== ADD CELL POLYGON LAYERS (Storm Cell) ==========
+        const cellSourceId = 'cell-polygons-source';
+        const cellFillLayerId = 'cell-polygons-fill';
+        const cellStrokeLayerId = 'cell-polygons-stroke';
+
+        // Remove existing cell polygon layers if present
+        if (map.getLayer(cellFillLayerId)) {
+            console.log('🗑️ Removing existing cell fill layer');
+            map.removeLayer(cellFillLayerId);
+        }
+        if (map.getLayer(cellStrokeLayerId)) {
+            console.log('🗑️ Removing existing cell stroke layer');
+            map.removeLayer(cellStrokeLayerId);
+        }
+        if (map.getSource(cellSourceId)) {
+            console.log('🗑️ Removing existing cell source');
+            map.removeSource(cellSourceId);
+        }
+
+        // Check if any polygons have cell_polygon data
+        const hasValidCellPolygons = polygonsArray.some(p => p.cell_polygon && p.cell_polygon.length > 0);
+
+        if (hasValidCellPolygons) {
+            // Convert cell polygons to GeoJSON
+            console.log('🔄 Converting cell polygons to GeoJSON...');
+            const cellGeojson = cellPolygonToGeoJSON(polygonsArray);
+            console.log('📐 Cell GeoJSON created:', {
+                type: cellGeojson.type,
+                featureCount: cellGeojson.features?.length
+            });
+
+            if (cellGeojson.features.length > 0) {
+                // Add cell polygon source
+                map.addSource(cellSourceId, {
+                    type: 'geojson',
+                    data: cellGeojson
+                });
+
+                // Add cell fill layer
+                map.addLayer({
+                    id: cellFillLayerId,
+                    type: 'fill',
+                    source: cellSourceId,
+                    paint: {
+                        'fill-color': ['get', 'fillColor'],
+                        'fill-opacity': ['get', 'fillOpacity']
+                    },
+                    layout: {
+                        visibility: polygonsEnabled ? 'visible' : 'none'
+                    }
+                }, map.getLayer('radius-circle-fill') ? 'radius-circle-fill' : undefined);
+
+                // Add cell stroke layer
+                map.addLayer({
+                    id: cellStrokeLayerId,
+                    type: 'line',
+                    source: cellSourceId,
+                    paint: {
+                        'line-color': ['get', 'strokeColor'],
+                        'line-width': 2,
+                        'line-opacity': ['get', 'strokeOpacity']
+                    },
+                    layout: {
+                        visibility: polygonsEnabled ? 'visible' : 'none'
+                    }
+                }, map.getLayer('radius-circle-fill') ? 'radius-circle-fill' : undefined);
+
+                // Add click handler for cell polygons
+                map.on('click', cellFillLayerId, (e) => {
+                    if (e.features && e.features.length > 0) {
+                        const properties = e.features[0].properties;
+                        const popup = new window.mapboxgl.Popup()
+                            .setLngLat(e.lngLat)
+                            .setHTML(`
+                                <div style="color: #000; padding: 5px;">
+                                    <h4 style="margin: 0 0 5px 0; font-size: 14px; color: #9C27B0;">⚡ Storm Cell</h4>
+                                    <p style="margin: 5px 0; font-size: 12px;"><strong>ID:</strong> ${properties.identifier || 'N/A'}</p>
+                                    <p style="margin: 5px 0; font-size: 12px;"><strong>Level:</strong> ${properties.lightning_level || 'Unknown'}</p>
+                                    <p style="margin: 5px 0; font-size: 11px; color: #666;">This is the core storm cell area</p>
+                                </div>
+                            `)
+                            .addTo(map);
+                    }
+                });
+
+                // Change cursor on hover
+                map.on('mouseenter', cellFillLayerId, () => {
+                    map.getCanvas().style.cursor = 'pointer';
+                });
+                map.on('mouseleave', cellFillLayerId, () => {
+                    map.getCanvas().style.cursor = '';
+                });
+
+                console.log(`✅ Cell polygons successfully added to map! Count: ${cellGeojson.features.length}`);
+            }
+        } else {
+            console.log('📭 No cell polygons to display');
+        }
 
         // Add click handler for polygons to show info
         map.on('click', fillLayerId, (e) => {
@@ -1268,7 +1427,7 @@ const SfericMap = () => {
             visibility: polygonsEnabled ? 'visible' : 'none',
             mapBounds: map.getBounds().toArray()
         });
-    }, [polygonToGeoJSON, polygonsEnabled, calculatePolygonCentroid, calculateFuturePosition]);
+    }, [polygonToGeoJSON, cellPolygonToGeoJSON, polygonsEnabled, calculatePolygonCentroid, calculateFuturePosition]);
 
     // Toggle polygon visibility
     const togglePolygons = useCallback(() => {
@@ -1278,10 +1437,11 @@ const SfericMap = () => {
         const layers = [
             'lightning-polygons-fill',
             'lightning-polygons-stroke',
+            'cell-polygons-fill',          // Cell polygon layers
+            'cell-polygons-stroke',
             'direction-arrows-layer',
-            'arrowheads-layer',           // Add arrowheads toggle
+            'arrowheads-layer',
             'storm-centers-layer'
-            // 'forecast-circles-layer' removed per user request
         ];
 
         const fillLayerId = layers[0];
@@ -1979,9 +2139,18 @@ const SfericMap = () => {
                                 <div style={{width: '20px', height: '12px', background: '#4CAF50', marginRight: '8px', border: '2px solid #2196F3'}}></div>
                                 <span>საშუალო (Medium)</span>
                             </div>
-                            <div style={{display: 'flex', alignItems: 'center'}}>
+                            <div style={{display: 'flex', alignItems: 'center', marginBottom: '4px'}}>
                                 <div style={{width: '20px', height: '12px', background: '#66BB6A', marginRight: '8px', border: '2px solid #1976D2'}}></div>
                                 <span>მაღალი (High)</span>
+                            </div>
+                            <div style={{marginTop: '10px', paddingTop: '10px', borderTop: '1px solid rgba(255,255,255,0.2)'}}>
+                                <div style={{display: 'flex', alignItems: 'center', marginBottom: '4px'}}>
+                                    <div style={{width: '20px', height: '12px', background: '#FF00FF', marginRight: '8px', border: '2px solid #9C27B0', opacity: 0.7}}></div>
+                                    <span>შტორმის სექტორი (Storm Cell)</span>
+                                </div>
+                                <div style={{fontSize: '10px', opacity: 0.7, marginLeft: '28px'}}>
+                                    ელვის აქტივობის ძირითადი ზონა
+                                </div>
                             </div>
                         </div>
                     </>
