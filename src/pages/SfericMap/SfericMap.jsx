@@ -815,17 +815,17 @@ const SfericMap = () => {
         let strokeOpacity = 0.8;
 
         if (lightning_level === 'High' || severity === 'Severe') {
-            fillColor = '#FF8C00'; // Dark orange
-            fillOpacity = 0.4;
-            strokeColor = '#FF4500'; // Orange red
+            fillColor = '#00ff00';
+            fillOpacity = 0.1;
+            strokeColor = '#670081'; // Orange red
         } else if (lightning_level === 'Medium' || severity === 'Moderate') {
-            fillColor = '#FFA500'; // Orange
-            fillOpacity = 0.35;
-            strokeColor = '#FF8C00'; // Dark orange
+            fillColor = '#00ff00'; // Orange
+            fillOpacity = 0.1;
+            strokeColor = '#FFA500'; // Dark orange
         } else {
             fillColor = '#FFD700'; // Gold
-            fillOpacity = 0.25;
-            strokeColor = '#FFA500'; // Orange
+            fillOpacity = 0.1;
+            strokeColor = '#00ff00'; // Orange
         }
 
         return { fillColor, fillOpacity, strokeColor, strokeOpacity };
