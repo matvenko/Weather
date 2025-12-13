@@ -896,6 +896,37 @@ const SfericMap = () => {
         };
     }, [getPolygonStyle]);
 
+    // Get cell polygon style based on severity
+    const getCellPolygonStyle = useCallback((item) => {
+        const severity = item.severity || 'Unknown';
+
+        let strokeColor, fillColor;
+
+        // Stroke color based on severity
+        switch(severity) {
+            case 'Severe':
+                strokeColor = '#9C27B0';  // Purple
+                break;
+            case 'Moderate':
+                strokeColor = '#FF9800';  // Orange
+                break;
+            case 'Unknown':
+            default:
+                strokeColor = '#FFEB3B';  // Yellow
+                break;
+        }
+
+        // Fill color - lighter version of stroke
+        fillColor = strokeColor;
+
+        return {
+            fillColor: fillColor,
+            fillOpacity: 0.15,
+            strokeColor: strokeColor,
+            strokeOpacity: 0.9
+        };
+    }, []);
+
     // Convert cell_polygon data to GeoJSON format (storm cell polygon)
     const cellPolygonToGeoJSON = useCallback((polygonsArray) => {
         // Filter out items without cell_polygon data
@@ -929,8 +960,9 @@ const SfericMap = () => {
                 return [lng, lat];  // Normal GeoJSON format
             });
 
-            // Cell polygon styling - distinct from alert area polygon
-            // Using magenta/purple colors to distinguish from yellow alert polygons
+            // Get cell polygon styling based on severity
+            const style = getCellPolygonStyle(item);
+
             return {
                 type: 'Feature',
                 id: `cell-${item.identifier || `polygon-${index}`}`,
@@ -938,10 +970,10 @@ const SfericMap = () => {
                     identifier: item.identifier,
                     severity: item.severity,
                     lightning_level: item.lightning_level,
-                    fillColor: '#FF00FF',      // Magenta fill
-                    fillOpacity: 0.15,          // Semi-transparent
-                    strokeColor: '#9C27B0',     // Purple stroke
-                    strokeOpacity: 0.9
+                    fillColor: style.fillColor,
+                    fillOpacity: style.fillOpacity,
+                    strokeColor: style.strokeColor,
+                    strokeOpacity: style.strokeOpacity
                 },
                 geometry: {
                     type: 'Polygon',
@@ -954,7 +986,7 @@ const SfericMap = () => {
             type: 'FeatureCollection',
             features
         };
-    }, []);
+    }, [getCellPolygonStyle]);
 
     // Add or update polygon layers on map
     const updatePolygonLayers = useCallback((map, polygonsArray) => {
@@ -1374,6 +1406,200 @@ const SfericMap = () => {
             console.log(`🎯 Added ${stormCenters.length} storm center markers`);
         }
 
+        // Add direction arrows for CELL POLYGONS (storm cells)
+        const cellDirectionArrows = [];
+        const cellArrowheads = [];
+        const cellStormCenters = [];
+
+        polygonsArray.forEach((polygon, index) => {
+            // Only process if cell_polygon exists and has direction/speed data
+            if (polygon.cell_polygon && polygon.cell_polygon.length > 0 && polygon.direction && polygon.speed) {
+                // Get cell polygon coordinates (handle coordinate swapping)
+                const cellCoords = polygon.cell_polygon.map((coord) => {
+                    const lat = parseFloat(coord.lat);
+                    const lng = parseFloat(coord.lng);
+                    const latIsInvalid = lat < -90 || lat > 90;
+                    const lngAsLat = lng >= -90 && lng <= 90;
+                    const lngIsInvalid = lng < -180 || lng > 180;
+
+                    if (latIsInvalid && lngAsLat && !lngIsInvalid) {
+                        return [lat, lng]; // swapped
+                    }
+                    return [lng, lat]; // normal
+                });
+
+                // Calculate cell polygon centroid
+                const cellCenter = calculatePolygonCentroid(cellCoords);
+
+                // Add cell storm center marker
+                cellStormCenters.push({
+                    type: 'Feature',
+                    id: `cell-storm-center-${index}`,
+                    properties: {
+                        identifier: polygon.identifier,
+                        speed: polygon.speed,
+                        direction: polygon.direction,
+                        severity: polygon.severity
+                    },
+                    geometry: {
+                        type: 'Point',
+                        coordinates: cellCenter
+                    }
+                });
+
+                // Calculate arrow end point (60 minutes in direction)
+                const cellArrowEnd = calculateFuturePosition(cellCenter, polygon.direction, polygon.speed, 60);
+
+                cellDirectionArrows.push({
+                    type: 'Feature',
+                    id: `cell-arrow-${index}`,
+                    properties: {
+                        identifier: polygon.identifier,
+                        speed: polygon.speed,
+                        direction: polygon.direction,
+                        severity: polygon.severity
+                    },
+                    geometry: {
+                        type: 'LineString',
+                        coordinates: [cellCenter, cellArrowEnd]
+                    }
+                });
+
+                // Create arrowhead triangle at the end
+                const directionRad = (parseFloat(polygon.direction) + 180) * (Math.PI / 180);
+                const arrowSize = 0.02; // Size in degrees (~2km)
+
+                // Three points of the triangle
+                const tipAngle = directionRad;
+                const leftAngle = directionRad + (2.5 * Math.PI / 3);  // 150 degrees left
+                const rightAngle = directionRad - (2.5 * Math.PI / 3); // 150 degrees right
+
+                const tip = cellArrowEnd;
+                const left = [
+                    cellArrowEnd[0] + arrowSize * Math.sin(leftAngle),
+                    cellArrowEnd[1] + arrowSize * Math.cos(leftAngle)
+                ];
+                const right = [
+                    cellArrowEnd[0] + arrowSize * Math.sin(rightAngle),
+                    cellArrowEnd[1] + arrowSize * Math.cos(rightAngle)
+                ];
+
+                cellArrowheads.push({
+                    type: 'Feature',
+                    id: `cell-arrowhead-${index}`,
+                    properties: {
+                        identifier: polygon.identifier,
+                        severity: polygon.severity
+                    },
+                    geometry: {
+                        type: 'Polygon',
+                        coordinates: [[tip, left, right, tip]]
+                    }
+                });
+            }
+        });
+
+        // Add cell direction arrow layers
+        if (cellDirectionArrows.length > 0) {
+            const cellArrowSourceId = 'cell-direction-arrows-source';
+            const cellArrowLayerId = 'cell-direction-arrows-layer';
+
+            if (map.getLayer(cellArrowLayerId)) map.removeLayer(cellArrowLayerId);
+            if (map.getSource(cellArrowSourceId)) map.removeSource(cellArrowSourceId);
+
+            map.addSource(cellArrowSourceId, {
+                type: 'geojson',
+                data: {
+                    type: 'FeatureCollection',
+                    features: cellDirectionArrows
+                }
+            });
+
+            map.addLayer({
+                id: cellArrowLayerId,
+                type: 'line',
+                source: cellArrowSourceId,
+                paint: {
+                    'line-color': '#FF1493', // Deep pink for cell arrows (distinct from cyan alert arrows)
+                    'line-width': 4,
+                    'line-opacity': 1.0
+                },
+                layout: {
+                    visibility: polygonsEnabled ? 'visible' : 'none',
+                    'line-cap': 'round'
+                }
+            });
+
+            console.log(`➡️ Added ${cellDirectionArrows.length} cell direction arrows`);
+        }
+
+        // Add cell arrowhead layer
+        if (cellArrowheads.length > 0) {
+            const cellArrowheadSourceId = 'cell-arrowheads-source';
+            const cellArrowheadLayerId = 'cell-arrowheads-layer';
+
+            if (map.getLayer(cellArrowheadLayerId)) map.removeLayer(cellArrowheadLayerId);
+            if (map.getSource(cellArrowheadSourceId)) map.removeSource(cellArrowheadSourceId);
+
+            map.addSource(cellArrowheadSourceId, {
+                type: 'geojson',
+                data: {
+                    type: 'FeatureCollection',
+                    features: cellArrowheads
+                }
+            });
+
+            map.addLayer({
+                id: cellArrowheadLayerId,
+                type: 'fill',
+                source: cellArrowheadSourceId,
+                paint: {
+                    'fill-color': '#FF1493', // Deep pink (matching cell arrow)
+                    'fill-opacity': 1.0
+                },
+                layout: {
+                    visibility: polygonsEnabled ? 'visible' : 'none'
+                }
+            });
+
+            console.log(`🔺 Added ${cellArrowheads.length} cell arrowheads`);
+        }
+
+        // Add cell storm center markers
+        if (cellStormCenters.length > 0) {
+            const cellCenterSourceId = 'cell-storm-centers-source';
+            const cellCenterLayerId = 'cell-storm-centers-layer';
+
+            if (map.getLayer(cellCenterLayerId)) map.removeLayer(cellCenterLayerId);
+            if (map.getSource(cellCenterSourceId)) map.removeSource(cellCenterSourceId);
+
+            map.addSource(cellCenterSourceId, {
+                type: 'geojson',
+                data: {
+                    type: 'FeatureCollection',
+                    features: cellStormCenters
+                }
+            });
+
+            map.addLayer({
+                id: cellCenterLayerId,
+                type: 'circle',
+                source: cellCenterSourceId,
+                paint: {
+                    'circle-radius': 6,
+                    'circle-color': '#FF1493', // Deep pink
+                    'circle-stroke-width': 2,
+                    'circle-stroke-color': '#FFFFFF',
+                    'circle-opacity': 0.9
+                },
+                layout: {
+                    visibility: polygonsEnabled ? 'visible' : 'none'
+                }
+            });
+
+            console.log(`🎯 Added ${cellStormCenters.length} cell storm center markers`);
+        }
+
         // Forecast circle layers removed per user request
         // if (forecastCircles.length > 0) {
         //     const forecastSourceId = 'forecast-circles-source';
@@ -1437,11 +1663,14 @@ const SfericMap = () => {
         const layers = [
             'lightning-polygons-fill',
             'lightning-polygons-stroke',
-            'cell-polygons-fill',          // Cell polygon layers
+            'cell-polygons-fill',
             'cell-polygons-stroke',
             'direction-arrows-layer',
             'arrowheads-layer',
-            'storm-centers-layer'
+            'storm-centers-layer',
+            'cell-direction-arrows-layer',  // Cell polygon direction arrows
+            'cell-arrowheads-layer',
+            'cell-storm-centers-layer'
         ];
 
         const fillLayerId = layers[0];
@@ -2144,11 +2373,20 @@ const SfericMap = () => {
                                 <span>მაღალი (High)</span>
                             </div>
                             <div style={{marginTop: '10px', paddingTop: '10px', borderTop: '1px solid rgba(255,255,255,0.2)'}}>
+                                <div style={{fontWeight: 'bold', marginBottom: '8px', fontSize: '11px'}}>შტორმის სექტორი (Storm Cell):</div>
                                 <div style={{display: 'flex', alignItems: 'center', marginBottom: '4px'}}>
-                                    <div style={{width: '20px', height: '12px', background: '#FF00FF', marginRight: '8px', border: '2px solid #9C27B0', opacity: 0.7}}></div>
-                                    <span>შტორმის სექტორი (Storm Cell)</span>
+                                    <div style={{width: '20px', height: '12px', background: '#FFEB3B', marginRight: '8px', border: '2px solid #FFEB3B', opacity: 0.7}}></div>
+                                    <span>Unknown (უცნობი)</span>
                                 </div>
-                                <div style={{fontSize: '10px', opacity: 0.7, marginLeft: '28px'}}>
+                                <div style={{display: 'flex', alignItems: 'center', marginBottom: '4px'}}>
+                                    <div style={{width: '20px', height: '12px', background: '#FF9800', marginRight: '8px', border: '2px solid #FF9800', opacity: 0.7}}></div>
+                                    <span>Moderate (ზომიერი)</span>
+                                </div>
+                                <div style={{display: 'flex', alignItems: 'center', marginBottom: '4px'}}>
+                                    <div style={{width: '20px', height: '12px', background: '#9C27B0', marginRight: '8px', border: '2px solid #9C27B0', opacity: 0.7}}></div>
+                                    <span>Severe (მძიმე)</span>
+                                </div>
+                                <div style={{fontSize: '10px', opacity: 0.7, marginTop: '6px'}}>
                                     ელვის აქტივობის ძირითადი ზონა
                                 </div>
                             </div>
@@ -2163,13 +2401,23 @@ const SfericMap = () => {
                             <div className="legend-title">შტორმის მოძრაობა</div>
                         </div>
                         <div style={{fontSize: '11px', marginTop: '8px'}}>
+                            <div style={{fontWeight: 'bold', marginBottom: '6px', fontSize: '11px'}}>Alert Area:</div>
                             <div style={{display: 'flex', alignItems: 'center', marginBottom: '4px'}}>
                                 <div style={{width: '20px', height: '4px', background: '#00CED1', marginRight: '8px'}}></div>
                                 <span>მიმართულება (Cyan)</span>
                             </div>
-                            <div style={{display: 'flex', alignItems: 'center', marginBottom: '4px'}}>
+                            <div style={{display: 'flex', alignItems: 'center', marginBottom: '8px'}}>
                                 <div style={{width: '12px', height: '12px', background: '#00CED1', marginRight: '8px', borderRadius: '50%', border: '2px solid #FFF'}}></div>
-                                <span>შტორმის ცენტრი</span>
+                                <span>ცენტრი</span>
+                            </div>
+                            <div style={{fontWeight: 'bold', marginBottom: '6px', fontSize: '11px', marginTop: '8px'}}>Storm Cell:</div>
+                            <div style={{display: 'flex', alignItems: 'center', marginBottom: '4px'}}>
+                                <div style={{width: '20px', height: '4px', background: '#FF1493', marginRight: '8px'}}></div>
+                                <span>მიმართულება (Pink)</span>
+                            </div>
+                            <div style={{display: 'flex', alignItems: 'center'}}>
+                                <div style={{width: '12px', height: '12px', background: '#FF1493', marginRight: '8px', borderRadius: '50%', border: '2px solid #FFF'}}></div>
+                                <span>ცენტრი</span>
                             </div>
                         </div>
                     </>
