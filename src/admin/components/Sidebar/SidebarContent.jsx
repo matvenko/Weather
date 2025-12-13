@@ -20,6 +20,7 @@ import {
   MdOutlineImagesearchRoller,
   MdWatch,
   MdOutlinePayments,
+  MdOutlineSubscriptions,
 } from "react-icons/md";
 import { TbBrandStackshare } from "react-icons/tb";
 import { usePermissions } from "@src/admin/providers/PermissionsProvider/index.js";
@@ -65,6 +66,12 @@ const SidebarContent = () => {
       icon: <MdOutlinePayments />,
       label: "გადარიცხვები",
       pageUrl: "transactions",
+    },
+    {
+      key: "/subscriptions",
+      icon: <MdOutlineSubscriptions />,
+      label: "გამოწერები",
+      pageUrl: "subscriptions",
     },
   ], []);
 

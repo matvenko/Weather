@@ -1,0 +1,115 @@
+.subscription-card {
+  position: relative;
+  height: 100%;
+  border-radius: 12px;
+  border: 2px solid #d9d9d9;
+  transition: all 0.3s ease;
+}
+
+.subscription-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+}
+
+.subscription-card.recommended {
+  border-width: 3px;
+  box-shadow: 0 4px 16px rgba(82, 196, 26, 0.15);
+}
+
+.subscription-card.current-plan {
+  background-color: #f6ffed;
+  border-color: #52c41a;
+}
+
+.recommended-tag,
+.current-tag {
+  position: absolute;
+  top: -12px;
+  right: 20px;
+  font-weight: 600;
+  font-size: 13px;
+  padding: 4px 12px;
+  border-radius: 12px;
+}
+
+.plan-header {
+  text-align: center;
+  padding-bottom: 20px;
+  border-bottom: 1px solid #f0f0f0;
+  margin-bottom: 20px;
+}
+
+.plan-name {
+  font-size: 24px;
+  font-weight: 700;
+  margin-bottom: 12px;
+  color: #262626;
+}
+
+.plan-price {
+  margin-bottom: 12px;
+}
+
+.plan-price .price {
+  font-size: 36px;
+  font-weight: 800;
+  color: #262626;
+}
+
+.plan-price .period {
+  font-size: 14px;
+  color: #8c8c8c;
+  margin-left: 4px;
+}
+
+.plan-description {
+  font-size: 14px;
+  color: #595959;
+  margin: 0;
+}
+
+.features-list {
+  margin-bottom: 20px;
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+.features-list .ant-list-item {
+  padding: 8px 0;
+  border-bottom: none;
+}
+
+.feature-item.included {
+  font-weight: 500;
+}
+
+.feature-item.excluded {
+  opacity: 0.6;
+}
+
+.card-actions {
+  margin-top: auto;
+  padding-top: 20px;
+}
+
+.card-actions .ant-btn {
+  font-weight: 600;
+  height: 44px;
+  font-size: 16px;
+  border-radius: 8px;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .plan-name {
+    font-size: 20px;
+  }
+
+  .plan-price .price {
+    font-size: 28px;
+  }
+
+  .features-list {
+    max-height: 300px;
+  }
+}

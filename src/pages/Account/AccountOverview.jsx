@@ -1,8 +1,11 @@
 import React from 'react';
+import SubscriptionPlans from './components/SubscriptionPlans';
 
 const AccountOverview = () => {
     return (
-        <div className="container section"><h2>მომხარებლის გვერდი</h2><p>შევსება მოგვიანებით…</p></div>
+        <div className="container section">
+            <SubscriptionPlans />
+        </div>
     );
 };
 

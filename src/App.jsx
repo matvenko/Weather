@@ -10,6 +10,7 @@ import AdminLayout from "./admin/components/AdminLayout.jsx";
 const DashboardContainer = lazy(() => import("./admin/components/Dashboard/DashboardContainer.jsx"));
 const UsersContainer = lazy(() => import("./admin/components/Users/UsersContainer.jsx"));
 const TransactionsContainer = lazy(() => import("./admin/components/Transactions/TransactionsContainer.jsx"));
+const SubscriptionsContainer = lazy(() => import("./admin/components/Subscriptions/SubscriptionsContainer.jsx"));
 const Login = lazy(() => import("./components/LoginForm/RegistrationAuthorizationModule.jsx"));
 const Registration = lazy(() => import("./components/Registration/Registration.jsx"));
 const Homepage = lazy(() => import("./pages/HomePage/HomePage.jsx"));
@@ -50,6 +51,7 @@ export default function App() {
                                     <Route path="admin" element={<DashboardContainer />} />
                                     <Route path="users" element={<UsersContainer />} />
                                     <Route path="transactions" element={<TransactionsContainer />} />
+                                    <Route path="subscriptions" element={<SubscriptionsContainer />} />
                                 </Route>
                             </Route>
 

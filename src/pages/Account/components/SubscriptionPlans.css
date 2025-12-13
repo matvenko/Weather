@@ -1,0 +1,54 @@
+.subscription-plans-container {
+  padding: 24px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.subscription-header {
+  text-align: center;
+  margin-bottom: 32px;
+}
+
+.subscription-header h2 {
+  margin-bottom: 12px;
+  font-size: 32px;
+  font-weight: 700;
+}
+
+.subscription-loading {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 400px;
+}
+
+.subscription-cards-row {
+  margin-bottom: 32px;
+}
+
+.subscription-footer {
+  margin-top: 48px;
+  padding-top: 24px;
+  border-top: 1px solid #f0f0f0;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .subscription-plans-container {
+    padding: 16px;
+  }
+
+  .subscription-header h2 {
+    font-size: 24px;
+  }
+
+  .subscription-cards-row {
+    margin-bottom: 24px;
+  }
+}
+
+@media (min-width: 1200px) {
+  .subscription-cards-row {
+    justify-content: center;
+  }
+}
