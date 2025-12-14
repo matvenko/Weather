@@ -1492,21 +1492,21 @@ const SfericMap = () => {
                 }
             });
 
-            map.addLayer({
-                id: cellCenterLayerId,
-                type: 'circle',
-                source: cellCenterSourceId,
-                paint: {
-                    'circle-radius': 6,
-                    'circle-color': '#FF1493', // Deep pink
-                    'circle-stroke-width': 2,
-                    'circle-stroke-color': '#FFFFFF',
-                    'circle-opacity': 0.9
-                },
-                layout: {
-                    visibility: polygonsEnabled ? 'visible' : 'none'
-                }
-            });
+            // map.addLayer({
+            //     id: cellCenterLayerId,
+            //     type: 'circle',
+            //     source: cellCenterSourceId,
+            //     paint: {
+            //         'circle-radius': 6,
+            //         'circle-color': '#FF1493', // Deep pink
+            //         'circle-stroke-width': 2,
+            //         'circle-stroke-color': '#FFFFFF',
+            //         'circle-opacity': 0.9
+            //     },
+            //     layout: {
+            //         visibility: polygonsEnabled ? 'visible' : 'none'
+            //     }
+            // });
 
             console.log(`🎯 Added ${cellStormCenters.length} cell storm center markers`);
         }
@@ -2337,11 +2337,11 @@ const SfericMap = () => {
                                 <div style={{width: '12px', height: '12px', background: '#00CED1', marginRight: '8px', borderRadius: '50%', border: '2px solid #FFF'}}></div>
                                 <span>ცენტრი</span>
                             </div>
-                            <div style={{fontWeight: 'bold', marginBottom: '6px', fontSize: '11px', marginTop: '8px'}}>Storm Cell:</div>
-                            <div style={{display: 'flex', alignItems: 'center'}}>
-                                <div style={{width: '12px', height: '12px', background: '#FF1493', marginRight: '8px', borderRadius: '50%', border: '2px solid #FFF'}}></div>
-                                <span>ცენტრი</span>
-                            </div>
+                            {/*<div style={{fontWeight: 'bold', marginBottom: '6px', fontSize: '11px', marginTop: '8px'}}>Storm Cell:</div>*/}
+                            {/*<div style={{display: 'flex', alignItems: 'center'}}>*/}
+                            {/*    <div style={{width: '12px', height: '12px', background: '#FF1493', marginRight: '8px', borderRadius: '50%', border: '2px solid #FFF'}}></div>*/}
+                            {/*    <span>ცენტრი</span>*/}
+                            {/*</div>*/}
                         </div>
                     </>
                 )}
