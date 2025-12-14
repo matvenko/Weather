@@ -1225,6 +1225,10 @@ const SfericMap = () => {
 
         polygonsArray.forEach((polygon, index) => {
             if (polygon.direction && polygon.speed) {
+                // Get polygon style to extract strokeColor from main polygon
+                const style = getPolygonStyle(polygon);
+                const strokeColor = style.strokeColor;
+
                 // Get polygon coordinates (already swapped if needed)
                 const coords = polygon.polygon.map((coord, coordIndex) => {
                     const lat = parseFloat(coord.lat);
@@ -1266,7 +1270,8 @@ const SfericMap = () => {
                     properties: {
                         identifier: polygon.identifier,
                         speed: polygon.speed,
-                        direction: polygon.direction
+                        direction: polygon.direction,
+                        strokeColor: strokeColor  // Add strokeColor for data-driven styling
                     },
                     geometry: {
                         type: 'LineString',
@@ -1298,7 +1303,8 @@ const SfericMap = () => {
                     type: 'Feature',
                     id: `arrowhead-${index}`,
                     properties: {
-                        identifier: polygon.identifier
+                        identifier: polygon.identifier,
+                        strokeColor: strokeColor  // Add strokeColor for data-driven styling
                     },
                     geometry: {
                         type: 'Polygon',
@@ -1349,7 +1355,7 @@ const SfericMap = () => {
                 type: 'line',
                 source: arrowSourceId,
                 paint: {
-                    'line-color': '#00CED1', // Cyan/turquoise arrows (matching sf7.png)
+                    'line-color': ['get', 'strokeColor'], // Use polygon's stroke color
                     'line-width': 4,
                     'line-opacity': 1.0
                 },
@@ -1383,7 +1389,7 @@ const SfericMap = () => {
                 type: 'fill',
                 source: arrowheadSourceId,
                 paint: {
-                    'fill-color': '#00CED1', // Cyan/turquoise (matching arrow)
+                    'fill-color': ['get', 'strokeColor'], // Use polygon's stroke color (matching arrow)
                     'fill-opacity': 1.0
                 },
                 layout: {
