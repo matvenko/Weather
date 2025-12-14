@@ -31,9 +31,9 @@ task.txt
 .temporary-images
 
 # Environment variables (contains API keys)
-.env
-.env.local
-.env.*.local
+#.env
+#.env.local
+#.env.*.local
 
 # Temporary files and documentation
 src/images/temp/
