@@ -934,30 +934,21 @@ const SfericMap = () => {
 
         const features = itemsWithCellPolygon.map((item, index) => {
             // Convert cell_polygon coordinates from {lat, lng} to [lng, lat] format
+            // IMPORTANT: The API ALWAYS returns cell_polygon with swapped field names:
+            // - coord.lat contains LONGITUDE values (e.g., -77.79)
+            // - coord.lng contains LATITUDE values (e.g., 23.38)
+            // This is different from the main "polygon" field which has correct lat/lng.
             const coordinates = item.cell_polygon.map((coord, coordIndex) => {
-                const lat = parseFloat(coord.lat);
-                const lng = parseFloat(coord.lng);
+                const lat = parseFloat(coord.lat);   // Actually longitude!
+                const lng = parseFloat(coord.lng);   // Actually latitude!
 
-                // Auto-detect if lat/lng are swapped
-                const latIsInvalid = lat < -90 || lat > 90;
-                const lngIsInvalid = lng < -180 || lng > 180;
-                const lngAsLat = lng >= -90 && lng <= 90;
-
-                if (latIsInvalid && lngAsLat && !lngIsInvalid) {
-                    if (coordIndex === 0) {
-                        console.warn(`⚠️ Cell Polygon ${index + 1} (${item.identifier}): Detected swapped coordinates - auto-correcting`);
-                    }
-                    return [lat, lng];  // Swapped
+                if (coordIndex === 0) {
+                    console.log(`📍 Cell ${index + 1} (${item.identifier}): coord.lat=${lat} (lng), coord.lng=${lng} (lat) → GeoJSON [${lat}, ${lng}]`);
                 }
 
-                if (latIsInvalid) {
-                    console.error(`❌ Cell Polygon ${index + 1}, coord ${coordIndex}: Invalid latitude ${lat}`);
-                }
-                if (lngIsInvalid) {
-                    console.error(`❌ Cell Polygon ${index + 1}, coord ${coordIndex}: Invalid longitude ${lng}`);
-                }
-
-                return [lng, lat];  // Normal GeoJSON format
+                // Since the API always has swapped field names for cell_polygon,
+                // return [lat, lng] which correctly maps to GeoJSON [longitude, latitude] format
+                return [lat, lng];
             });
 
             // Get cell polygon styling based on severity
@@ -1406,9 +1397,7 @@ const SfericMap = () => {
             console.log(`🎯 Added ${stormCenters.length} storm center markers`);
         }
 
-        // Add direction arrows for CELL POLYGONS (storm cells)
-        const cellDirectionArrows = [];
-        const cellArrowheads = [];
+        // Add cell storm center markers
         const cellStormCenters = [];
 
         polygonsArray.forEach((polygon, index) => {
@@ -1446,124 +1435,8 @@ const SfericMap = () => {
                         coordinates: cellCenter
                     }
                 });
-
-                // Calculate arrow end point (60 minutes in direction)
-                const cellArrowEnd = calculateFuturePosition(cellCenter, polygon.direction, polygon.speed, 60);
-
-                cellDirectionArrows.push({
-                    type: 'Feature',
-                    id: `cell-arrow-${index}`,
-                    properties: {
-                        identifier: polygon.identifier,
-                        speed: polygon.speed,
-                        direction: polygon.direction,
-                        severity: polygon.severity
-                    },
-                    geometry: {
-                        type: 'LineString',
-                        coordinates: [cellCenter, cellArrowEnd]
-                    }
-                });
-
-                // Create arrowhead triangle at the end
-                const directionRad = (parseFloat(polygon.direction) + 180) * (Math.PI / 180);
-                const arrowSize = 0.02; // Size in degrees (~2km)
-
-                // Three points of the triangle
-                const tipAngle = directionRad;
-                const leftAngle = directionRad + (2.5 * Math.PI / 3);  // 150 degrees left
-                const rightAngle = directionRad - (2.5 * Math.PI / 3); // 150 degrees right
-
-                const tip = cellArrowEnd;
-                const left = [
-                    cellArrowEnd[0] + arrowSize * Math.sin(leftAngle),
-                    cellArrowEnd[1] + arrowSize * Math.cos(leftAngle)
-                ];
-                const right = [
-                    cellArrowEnd[0] + arrowSize * Math.sin(rightAngle),
-                    cellArrowEnd[1] + arrowSize * Math.cos(rightAngle)
-                ];
-
-                cellArrowheads.push({
-                    type: 'Feature',
-                    id: `cell-arrowhead-${index}`,
-                    properties: {
-                        identifier: polygon.identifier,
-                        severity: polygon.severity
-                    },
-                    geometry: {
-                        type: 'Polygon',
-                        coordinates: [[tip, left, right, tip]]
-                    }
-                });
             }
         });
-
-        // Add cell direction arrow layers
-        if (cellDirectionArrows.length > 0) {
-            const cellArrowSourceId = 'cell-direction-arrows-source';
-            const cellArrowLayerId = 'cell-direction-arrows-layer';
-
-            if (map.getLayer(cellArrowLayerId)) map.removeLayer(cellArrowLayerId);
-            if (map.getSource(cellArrowSourceId)) map.removeSource(cellArrowSourceId);
-
-            map.addSource(cellArrowSourceId, {
-                type: 'geojson',
-                data: {
-                    type: 'FeatureCollection',
-                    features: cellDirectionArrows
-                }
-            });
-
-            map.addLayer({
-                id: cellArrowLayerId,
-                type: 'line',
-                source: cellArrowSourceId,
-                paint: {
-                    'line-color': '#FF1493', // Deep pink for cell arrows (distinct from cyan alert arrows)
-                    'line-width': 4,
-                    'line-opacity': 1.0
-                },
-                layout: {
-                    visibility: polygonsEnabled ? 'visible' : 'none',
-                    'line-cap': 'round'
-                }
-            });
-
-            console.log(`➡️ Added ${cellDirectionArrows.length} cell direction arrows`);
-        }
-
-        // Add cell arrowhead layer
-        if (cellArrowheads.length > 0) {
-            const cellArrowheadSourceId = 'cell-arrowheads-source';
-            const cellArrowheadLayerId = 'cell-arrowheads-layer';
-
-            if (map.getLayer(cellArrowheadLayerId)) map.removeLayer(cellArrowheadLayerId);
-            if (map.getSource(cellArrowheadSourceId)) map.removeSource(cellArrowheadSourceId);
-
-            map.addSource(cellArrowheadSourceId, {
-                type: 'geojson',
-                data: {
-                    type: 'FeatureCollection',
-                    features: cellArrowheads
-                }
-            });
-
-            map.addLayer({
-                id: cellArrowheadLayerId,
-                type: 'fill',
-                source: cellArrowheadSourceId,
-                paint: {
-                    'fill-color': '#FF1493', // Deep pink (matching cell arrow)
-                    'fill-opacity': 1.0
-                },
-                layout: {
-                    visibility: polygonsEnabled ? 'visible' : 'none'
-                }
-            });
-
-            console.log(`🔺 Added ${cellArrowheads.length} cell arrowheads`);
-        }
 
         // Add cell storm center markers
         if (cellStormCenters.length > 0) {
@@ -1668,8 +1541,6 @@ const SfericMap = () => {
             'direction-arrows-layer',
             'arrowheads-layer',
             'storm-centers-layer',
-            'cell-direction-arrows-layer',  // Cell polygon direction arrows
-            'cell-arrowheads-layer',
             'cell-storm-centers-layer'
         ];
 
@@ -2411,10 +2282,6 @@ const SfericMap = () => {
                                 <span>ცენტრი</span>
                             </div>
                             <div style={{fontWeight: 'bold', marginBottom: '6px', fontSize: '11px', marginTop: '8px'}}>Storm Cell:</div>
-                            <div style={{display: 'flex', alignItems: 'center', marginBottom: '4px'}}>
-                                <div style={{width: '20px', height: '4px', background: '#FF1493', marginRight: '8px'}}></div>
-                                <span>მიმართულება (Pink)</span>
-                            </div>
                             <div style={{display: 'flex', alignItems: 'center'}}>
                                 <div style={{width: '12px', height: '12px', background: '#FF1493', marginRight: '8px', borderRadius: '50%', border: '2px solid #FFF'}}></div>
                                 <span>ცენტრი</span>
