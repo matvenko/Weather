@@ -1,12 +1,15 @@
 import React, { useEffect, useRef, useState, useCallback } from "react";
 import { MdFlashOn, MdMyLocation, MdRefresh, MdPlayArrow, MdStop, MdExpandMore, MdExpandLess } from "react-icons/md";
 import localBrandLogo from "@src/images/meteo-logo-white.png";
+import lightningPlus from "@src/images/lightning-plus.png";
+import lightningMinus from "@src/images/lightning-minus.png";
+import lightningIC from "@src/images/lightning-ic.png";
 import privateAxios from "@src/api/privateAxios";
 import "./sfericMap.css";
 
 // WebSocket URL for Earth Networks lightning data - configurable via env
 const LIGHTNING_API_KEY = import.meta.env.VITE_SFERIC_API_KEY || "8E2A3C14-B44A-41AC-A0B8-74AA1123A912";
-const LIGHTNING_WS_URL = `wss://lx.wsapi.earthnetworks.com/ws/?p=${LIGHTNING_API_KEY}&f=json&t=pulse&l=all&k=on`;
+const LIGHTNING_WS_URL = `wss://lx.wsapi.earthnetworks.com/ws/?p=${LIGHTNING_API_KEY}&f=json&t=pulse&l=all&k=on&h=500`;
 
 // Radar API configuration
 const SUBSCRIPTION_KEY = import.meta.env.VITE_EARTH_NETWORKS_SUBSCRIPTION_KEY;
@@ -326,18 +329,32 @@ const SfericMap = () => {
         });
     }, []);
 
-    // Add lightning strike marker
+    // Add lightning strike marker with +/- or IC symbol
     const addLightningMarker = useCallback((lng, lat, data) => {
         if (!mapRef.current || !window.mapboxgl) return;
 
-        // Create marker element with inline styles to ensure proper rendering
+        // Determine lightning type icon
+        let iconImage;
+        if (data.type === 1 || (data.icMultiplicity && data.icMultiplicity > 0)) {
+            // In-Cloud (IC) lightning
+            iconImage = lightningIC;
+        } else {
+            // Cloud-to-Ground (CG) - use +/- based on peakCurrent
+            const isPositive = data.peakCurrent > 0;
+            iconImage = isPositive ? lightningPlus : lightningMinus;
+        }
+
+        // Create marker element with lightning symbol
         const el = document.createElement("div");
         el.style.width = "16px";
         el.style.height = "16px";
-        el.style.background = "#ffeb3b";
-        el.style.borderRadius = "50%";
-        el.style.boxShadow = "0 0 15px #ffeb3b, 0 0 30px #ff9800";
+        el.style.backgroundImage = `url(${iconImage})`;
+        el.style.backgroundSize = "contain";
+        el.style.backgroundPosition = "center";
+        el.style.backgroundRepeat = "no-repeat";
         el.style.pointerEvents = "none";
+        el.style.opacity = "1";
+        el.style.transition = "opacity 0.5s ease";
 
         // Create marker with center anchor
         const marker = new window.mapboxgl.Marker({
@@ -347,17 +364,18 @@ const SfericMap = () => {
             .setLngLat([lng, lat])
             .addTo(mapRef.current);
 
-        // Apply animation class after marker is added
-        el.className = "lightning-marker";
+        const timestamp = Date.now();
+        const markerData = {
+            marker,
+            element: el,
+            timestamp,
+            data,
+        };
 
         // Store marker with timestamp
-        markersRef.current.push({
-            marker,
-            timestamp: Date.now(),
-            data,
-        });
+        markersRef.current.push(markerData);
 
-        // Check if strike is within radius of user location (use ref to avoid dependency)
+        // Check if strike is within radius of user location
         let isInRadius = false;
         if (userLocationRef.current) {
             const distance = calculateDistance(userLocationRef.current.lat, userLocationRef.current.lng, lat, lng);
@@ -369,23 +387,18 @@ const SfericMap = () => {
             const now = Date.now();
             const fiveMinutesAgo = now - 5 * 60 * 1000;
 
-            // Check if there was a previous strike in the last 5 minutes
             if (lastRadiusStrikeRef.current && lastRadiusStrikeRef.current > fiveMinutesAgo) {
-                // Second or more strike within 5 minutes - danger (red)
                 setAlertLevel('danger');
             } else {
-                // First strike - warning (yellow)
                 setAlertLevel('warning');
             }
 
             lastRadiusStrikeRef.current = now;
 
-            // Clear existing reset timer
             if (alertResetTimerRef.current) {
                 clearTimeout(alertResetTimerRef.current);
             }
 
-            // Reset to normal after 5 minutes of no strikes in radius
             alertResetTimerRef.current = setTimeout(() => {
                 setAlertLevel('normal');
                 lastRadiusStrikeRef.current = null;
@@ -400,11 +413,16 @@ const SfericMap = () => {
             strikesInRadius: isInRadius ? prev.strikesInRadius + 1 : prev.strikesInRadius,
         }));
 
-        // Remove marker after animation
+        // Start fade-out animation after 7 minutes (fade for 1 minute before removal)
+        setTimeout(() => {
+            el.style.opacity = "0";
+        }, 7 * 60 * 1000);
+
+        // Remove marker after 8 minutes total
         setTimeout(() => {
             marker.remove();
             markersRef.current = markersRef.current.filter(m => m.marker !== marker);
-        }, 10000);
+        }, 8 * 60 * 1000);
     }, [calculateDistance]);
 
     // Lightning crack sound
@@ -482,7 +500,21 @@ const SfericMap = () => {
             const lat = centerLat + latOffset;
             const lng = centerLng + lngOffset;
 
-            addLightningMarker(lng, lat, { demo: true });
+            // Random lightning type for demo (33% IC, 33% CG+, 33% CG-)
+            const random = Math.random();
+            let demoData;
+            if (random < 0.33) {
+                // In-Cloud lightning
+                demoData = { demo: true, type: 1, icMultiplicity: 1, peakCurrent: 0 };
+            } else if (random < 0.66) {
+                // Cloud-to-Ground positive
+                demoData = { demo: true, type: 0, icMultiplicity: 0, peakCurrent: Math.random() * 30000 };
+            } else {
+                // Cloud-to-Ground negative
+                demoData = { demo: true, type: 0, icMultiplicity: 0, peakCurrent: -Math.random() * 30000 };
+            }
+
+            addLightningMarker(lng, lat, demoData);
 
             // Play electric zap sound
             playThunderSound();
@@ -1603,16 +1635,34 @@ const SfericMap = () => {
                 try {
                     const data = JSON.parse(event.data);
 
-                    // Handle lightning pulse data
-                    if (data.lat && data.lon) {
-                        addLightningMarker(data.lon, data.lat, data);
+                    // Handle lightning pulse data with new format (latitude/longitude)
+                    if (data.latitude !== undefined && data.longitude !== undefined) {
+                        addLightningMarker(data.longitude, data.latitude, data);
+
+                        // Also handle Pulses array if present
+                        if (data.Pulses && Array.isArray(data.Pulses)) {
+                            data.Pulses.forEach(pulse => {
+                                if (pulse.latitude !== undefined && pulse.longitude !== undefined) {
+                                    addLightningMarker(pulse.longitude, pulse.latitude, pulse);
+                                }
+                            });
+                        }
                     }
 
-                    // Handle array of pulses
+                    // Handle array of pulses (for historical data with h=500)
                     if (Array.isArray(data)) {
                         data.forEach(pulse => {
-                            if (pulse.lat && pulse.lon) {
-                                addLightningMarker(pulse.lon, pulse.lat, pulse);
+                            if (pulse.latitude !== undefined && pulse.longitude !== undefined) {
+                                addLightningMarker(pulse.longitude, pulse.latitude, pulse);
+
+                                // Handle nested Pulses array
+                                if (pulse.Pulses && Array.isArray(pulse.Pulses)) {
+                                    pulse.Pulses.forEach(subPulse => {
+                                        if (subPulse.latitude !== undefined && subPulse.longitude !== undefined) {
+                                            addLightningMarker(subPulse.longitude, subPulse.latitude, subPulse);
+                                        }
+                                    });
+                                }
                             }
                         });
                     }
