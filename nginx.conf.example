@@ -1,0 +1,28 @@
+# Nginx configuration for React SPA
+# Place this inside your server block
+
+server {
+    listen 80;
+    server_name weather.webmania.ge;
+    root /var/www/weather/dist;
+    index index.html;
+
+    # Serve static files with proper MIME types
+    location ~* \.(js|css|png|jpg|jpeg|gif|ico|svg|woff|woff2|ttf|eot)$ {
+        expires 1y;
+        add_header Cache-Control "public, immutable";
+        types {
+            application/javascript js mjs;
+            text/css css;
+        }
+    }
+
+    # SPA fallback - serve index.html for all routes
+    location / {
+        try_files $uri $uri/ /index.html;
+    }
+
+    # Gzip compression
+    gzip on;
+    gzip_types text/plain text/css application/json application/javascript text/xml application/xml application/xml+rss text/javascript;
+}
