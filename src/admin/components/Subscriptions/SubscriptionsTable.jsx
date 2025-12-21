@@ -4,6 +4,7 @@ import { Button, Space, Table, Tooltip, Tag } from "antd";
 import { FcCancel } from "react-icons/fc";
 import { usePermissions } from "@src/admin/providers/PermissionsProvider/index.js";
 import SubscriptionsFilter from "./Filter/SubscriptionsFilter.jsx";
+import {AiFillFileExcel} from "react-icons/ai";
 
 const SubscriptionsTable = ({
   subscriptions,
@@ -15,6 +16,8 @@ const SubscriptionsTable = ({
   onFilterChange,
   onSearch,
   onClearFilters,
+  onExport,
+  exportLoading,
 }) => {
   const { hasPermission } = usePermissions();
 
@@ -181,6 +184,16 @@ const SubscriptionsTable = ({
         <Title className="title" level={2}>
           Subscriptions
         </Title>
+
+          <Button
+              type="primary"
+              onClick={onExport}
+              loading={exportLoading}
+              className="bpg-arial-caps-webfont"
+              icon={<AiFillFileExcel />}
+          >
+              <span>Excel-ში ექსპორტი</span>
+          </Button>
       </div>
 
       <SubscriptionsFilter

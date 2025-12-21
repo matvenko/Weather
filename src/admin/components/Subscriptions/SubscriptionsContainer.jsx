@@ -8,6 +8,7 @@ import SidebarContent from "../Sidebar/SidebarContent.jsx";
 import SubscriptionsTable from "./SubscriptionsTable.jsx";
 import { useSubscriptions } from "./Hooks/useSubscriptions.js";
 import { useCancelSubscription } from "./Hooks/useCancelSubscription.js";
+import { useExportSubscribers } from "./Hooks/useExportSubscribers.js";
 import { selectCurrentState } from "../../../features/app/appSlice.js";
 import "../../css/admin.css";
 
@@ -52,6 +53,9 @@ const SubscriptionsContainer = () => {
   // Cancel subscription mutation
   const { mutate: cancelSubscription, isPending: isCanceling } = useCancelSubscription();
 
+  // Export subscriptions mutation
+  const { mutate: exportSubscribers, isPending: isExporting } = useExportSubscribers();
+
   // Modal state
   const [cancelModalVisible, setCancelModalVisible] = useState(false);
   const [selectedSubscription, setSelectedSubscription] = useState(null);
@@ -86,6 +90,14 @@ const SubscriptionsContainer = () => {
     setFilters(emptyFilters);
     setAppliedFilters(emptyFilters);
     setPage(1);
+  };
+
+  const handleExport = () => {
+    exportSubscribers({
+      ...appliedFilters,
+      page,
+      per_page: pageSize,
+    });
   };
 
   const handleCancel = (record) => {
@@ -195,6 +207,8 @@ const SubscriptionsContainer = () => {
                       onFilterChange={handleFilterChange}
                       onSearch={handleSearch}
                       onClearFilters={handleClearFilters}
+                      onExport={handleExport}
+                      exportLoading={isExporting}
                     />
                   )}
                 </Content>
