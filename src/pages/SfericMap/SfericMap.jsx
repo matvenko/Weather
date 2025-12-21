@@ -1955,7 +1955,11 @@ const SfericMap = () => {
 
     return (
         <>
-            <MapPageHeader forceHide={controlsDrawerOpen || isHoveringControlsButton} />
+            <MapPageHeader
+                forceHide={controlsDrawerOpen || isHoveringControlsButton}
+                onOpenControls={() => setControlsDrawerOpen(true)}
+                isControlsDrawerOpen={controlsDrawerOpen}
+            />
             <div className="sferic-map-wrap">
                 <div ref={containerRef} className="sferic-map-container" />
 
