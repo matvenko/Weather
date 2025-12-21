@@ -1,7 +1,7 @@
 // src/pages/WeatherMaps.jsx
 import React, {useEffect, useRef} from "react";
 import "./weatherMaps.css"
-import localBrandLogo from "@src/images/meteo-logo.png";
+import localBrandLogo from "@src/images/meteo-logo-white.png";
 
 
 function loadScript(src, attrs = {}) {
