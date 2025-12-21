@@ -2,6 +2,7 @@
 import React, {useEffect, useRef} from "react";
 import "./weatherMaps.css"
 import localBrandLogo from "@src/images/meteo-logo-white.png";
+import MapPageHeader from "@src/components/MapPageHeader/MapPageHeader.jsx";
 
 
 function loadScript(src, attrs = {}) {
@@ -200,6 +201,7 @@ const WeatherMaps = ({
 
     return (
         <>
+            <MapPageHeader />
             <div className="wx-map-wrap">
                 <div ref={containerRef} className="wx-map-container"/>
             </div>

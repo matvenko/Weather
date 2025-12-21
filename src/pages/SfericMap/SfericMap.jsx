@@ -5,6 +5,7 @@ import lightningPlus from "@src/images/lightning-plus.png";
 import lightningMinus from "@src/images/lightning-minus.png";
 import lightningIC from "@src/images/lightning-ic.png";
 import privateAxios from "@src/api/privateAxios";
+import MapPageHeader from "@src/components/MapPageHeader/MapPageHeader.jsx";
 import "./sfericMap.css";
 
 // WebSocket URL for Earth Networks lightning data - configurable via env
@@ -1934,8 +1935,10 @@ const SfericMap = () => {
     }, [isDemoMode, startDemoMode, stopDemoMode]);
 
     return (
-        <div className="sferic-map-wrap">
-            <div ref={containerRef} className="sferic-map-container" />
+        <>
+            <MapPageHeader />
+            <div className="sferic-map-wrap">
+                <div ref={containerRef} className="sferic-map-container" />
 
             {isLoading && (
                 <div className="sferic-loading">
@@ -2349,6 +2352,7 @@ const SfericMap = () => {
                 )}
             </div>
         </div>
+        </>
     );
 };
 

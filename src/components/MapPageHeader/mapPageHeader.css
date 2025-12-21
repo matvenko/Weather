@@ -1,0 +1,147 @@
+/* Map Page Header - Auto-hide header for map pages */
+.map-page-header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 1000;
+    background: rgba(26, 26, 46, 0.85);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    transition: transform 0.3s ease-in-out, opacity 0.3s ease-in-out;
+    height: var(--wx-header-h);
+    padding: 0;
+}
+
+.map-page-header.hidden {
+    transform: translateY(-100%);
+    opacity: 0;
+    pointer-events: none;
+}
+
+.map-page-header.visible {
+    transform: translateY(0);
+    opacity: 1;
+    pointer-events: auto;
+}
+
+/* Ensure the header bar styling works */
+.map-page-header .wx-bar {
+    margin: 0 auto;
+    padding: 14px 16px;
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    align-items: center;
+    gap: 12px;
+}
+
+.map-page-header .wx-left {
+    display: flex;
+    align-items: center;
+}
+
+.map-page-header .wx-right {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 10px;
+}
+
+.map-page-header .wx-brand {
+    margin: 0;
+    padding: 0;
+    font-size: 38px;
+    font-weight: 700;
+    color: #fff;
+    font-family: 'Nunito', sans-serif !important;
+}
+
+.map-page-header .wx-brand .logo {
+    height: clamp(20px, 4vw, 32px);
+    margin: clamp(25px, 40px, 30px);
+    width: auto;
+    display: block;
+}
+
+.map-page-header .wx-menu {
+    background: transparent !important;
+    border-bottom: none !important;
+    justify-content: center;
+    min-width: 0;
+}
+
+.map-page-header .wx-menu .ant-menu-item a {
+    font-size: 16px;
+    color: rgba(255, 255, 255, 0.9);
+    text-decoration: none;
+    transition: all 0.5s ease;
+    padding: 14px 0 10px;
+    font-weight: 400;
+    position: relative;
+    text-transform: capitalize;
+    display: block;
+}
+
+.map-page-header .wx-menu .ant-menu-item-selected a,
+.map-page-header .wx-menu .ant-menu-item:hover a {
+    color: var(--secondary-color, #fa9f1e) !important;
+}
+
+.map-page-header .wx-menu .ant-menu-item:hover::after,
+.map-page-header .wx-menu .ant-menu-item::after {
+    display: none !important;
+}
+
+.map-page-header .wx-cta-btn.ant-btn-primary,
+.map-page-header .wx-cta-btn:hover,
+.map-page-header .ant-btn-primary:hover {
+    border-radius: 6px;
+    background-color: var(--secondary-color, #fa9f1e) !important;
+}
+
+.map-page-header .wx-burger {
+    width: 40px;
+    height: 36px;
+    border-radius: 10px;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    background: transparent;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    gap: 4px;
+    padding: 0;
+}
+
+.map-page-header .wx-burger-bar {
+    width: 18px;
+    height: 2px;
+    background: #fff;
+    display: block;
+    transition: transform 0.2s ease, opacity 0.2s ease;
+}
+
+.map-page-header .wx-burger.is-open .wx-burger-bar:nth-child(1) {
+    transform: translateY(6px) rotate(45deg);
+}
+
+.map-page-header .wx-burger.is-open .wx-burger-bar:nth-child(2) {
+    opacity: 0;
+}
+
+.map-page-header .wx-burger.is-open .wx-burger-bar:nth-child(3) {
+    transform: translateY(-6px) rotate(-45deg);
+}
+
+/* Responsive layout */
+@media (max-width: 991.98px) {
+    .map-page-header .wx-bar {
+        grid-template-columns: auto 1fr;
+    }
+
+    .map-page-header .wx-menu {
+        display: none;
+    }
+}
