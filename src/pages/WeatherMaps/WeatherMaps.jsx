@@ -204,7 +204,7 @@ const WeatherMaps = ({
 
     return (
         <>
-            {isHeaderVisible && <MapPageHeader />}
+            {isHeaderVisible && <MapPageHeader disableAutoShow={true} />}
 
             {/* Header Toggle Button */}
             <Button
@@ -213,18 +213,16 @@ const WeatherMaps = ({
                 onClick={() => setIsHeaderVisible(!isHeaderVisible)}
                 style={{
                     position: 'fixed',
-                    top: isHeaderVisible ? 'auto' : '0px',
-                    bottom: isHeaderVisible ? '0px' : 'auto',
+                    top: isHeaderVisible ? '120px' : '0px',
                     left: '50%',
-                    transform: isHeaderVisible ? 'translateX(-50%)' : 'translateX(-50%)',
+                    transform: 'translateX(-50%)',
                     zIndex: 1100,
-                    borderRadius: isHeaderVisible ? '8px 8px 0 0' : '0 0 8px 8px',
-                    background: 'rgba(26, 26, 46, 0.9)',
+                    borderRadius: isHeaderVisible ? '0 0 8px 8px' : '0 0 8px 8px',
+                    background: 'rgba(26, 26, 46, 0.5)',
                     border: '1px solid rgba(255, 255, 255, 0.1)',
-                    backdropFilter: 'blur(10px)',
-                    padding: '8px 12px',
+                    padding: '0px 9px',
                     height: 'auto',
-                    minWidth: 'auto'
+                    width: '80'
                 }}
             />
 
