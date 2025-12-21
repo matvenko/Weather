@@ -1970,7 +1970,7 @@ const SfericMap = () => {
                     style={{
                         position: 'absolute',
                         top: '50%',
-                        right: '20px',
+                        right: '0px',
                         transform: 'translateY(-50%)',
                         zIndex: 1100,
                         borderRadius: '8px 0 0 8px',
