@@ -1,11 +1,14 @@
 import React, { useEffect, useRef, useState, useCallback } from "react";
 import { MdFlashOn, MdMyLocation, MdRefresh, MdPlayArrow, MdStop, MdExpandMore, MdExpandLess } from "react-icons/md";
+import { Drawer, Button } from "antd";
+import { MdSettings } from "react-icons/md";
 import localBrandLogo from "@src/images/meteo-logo-white.png";
 import lightningPlus from "@src/images/lightning-plus.png";
 import lightningMinus from "@src/images/lightning-minus.png";
 import lightningIC from "@src/images/lightning-ic.png";
 import privateAxios from "@src/api/privateAxios";
 import MapPageHeader from "@src/components/MapPageHeader/MapPageHeader.jsx";
+import SfericControls from "./components/SfericControls.jsx";
 import "./sfericMap.css";
 
 // WebSocket URL for Earth Networks lightning data - configurable via env
@@ -226,6 +229,10 @@ const SfericMap = () => {
     // Map style state
     const [showLabels, setShowLabels] = useState(true);
     const [mapStyle, setMapStyle] = useState('satellite'); // 'satellite' or 'streets'
+
+    // Controls drawer state
+    const [controlsDrawerOpen, setControlsDrawerOpen] = useState(false);
+    const [isHoveringControlsButton, setIsHoveringControlsButton] = useState(false);
 
     // Polygon state
     const [polygonsEnabled, setPolygonsEnabled] = useState(true);
@@ -1936,7 +1943,7 @@ const SfericMap = () => {
 
     return (
         <>
-            <MapPageHeader />
+            <MapPageHeader forceHide={controlsDrawerOpen || isHoveringControlsButton} />
             <div className="sferic-map-wrap">
                 <div ref={containerRef} className="sferic-map-container" />
 
@@ -1952,265 +1959,76 @@ const SfericMap = () => {
                 <img src={localBrandLogo} alt="Meteo360" />
             </a>
 
-            {/* Control Panel */}
-            <div className="sferic-controls">
-                <h3 onClick={() => setIsMonitoringCollapsed(!isMonitoringCollapsed)} style={{ cursor: 'pointer', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <span style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                        <MdFlashOn />
-                        ელვის მონიტორინგი
-                    </span>
-                    {isMonitoringCollapsed ? <MdExpandMore /> : <MdExpandLess />}
-                </h3>
-                {!isMonitoringCollapsed && (
-                <>
-                <div className="sferic-stats">
-                    {userLocation && (
-                        <div className="sferic-stat location-info">
-                            <MdMyLocation style={{ color: "#4fc3f7" }} />
-                            <span>{RADIUS_KM} კმ რადიუსი</span>
-                        </div>
-                    )}
-                    {userLocation && (
-                        <div className="sferic-stat">
-                            <span>რადიუსში:</span>
-                            <span className="sferic-stat-value highlight">{stats.strikesInRadius}</span>
-                        </div>
-                    )}
-                    <div className="sferic-stat">
-                        <span>სულ დარტყმები:</span>
-                        <span className="sferic-stat-value">{stats.totalStrikes}</span>
-                    </div>
-                    <div className="sferic-stat">
-                        <span>ბოლო წუთში:</span>
-                        <span className="sferic-stat-value">{stats.lastMinute}</span>
-                    </div>
-                    {stats.lastStrikeTime && (
-                        <div className="sferic-stat">
-                            <span>ბოლო დარტყმა:</span>
-                            <span className="sferic-stat-value">{stats.lastStrikeTime}</span>
-                        </div>
-                    )}
-                </div>
-                <div className="connection-status">
-                    <div className={`status-dot ${isConnected ? "connected" : isDemoMode ? "demo" : ""}`} />
-                    <span className="status-text">
-                        {isConnected
-                            ? "კავშირი აქტიურია"
-                            : isDemoMode
-                                ? "დემო რეჟიმი"
-                                : wsError
-                                    ? "კავშირი ვერ დამყარდა"
-                                    : "კავშირის მოლოდინი..."}
-                    </span>
-                    {(wsError || isDemoMode) && (
-                        <button
-                            className="retry-button"
-                            onClick={handleRetryConnection}
-                            title="ხელახლა ცდა"
-                        >
-                            <MdRefresh />
-                        </button>
-                    )}
-                </div>
-                {isDemoMode && (
-                    <div className="demo-notice">
-                        სიმულაციური მონაცემები
-                    </div>
-                )}
-                {/* Demo mode toggle button */}
-                <button
-                    className={`demo-toggle-button ${isDemoMode ? "active" : ""}`}
-                    onClick={handleToggleDemo}
-                    title={isDemoMode ? "დემო გამორთვა" : "დემო ჩართვა"}
+            {/* Controls Toggle Button */}
+            {!controlsDrawerOpen && (
+                <Button
+                    type="primary"
+                    icon={<MdSettings />}
+                    onClick={() => setControlsDrawerOpen(true)}
+                    onMouseEnter={() => setIsHoveringControlsButton(true)}
+                    onMouseLeave={() => setIsHoveringControlsButton(false)}
+                    style={{
+                        position: 'absolute',
+                        top: '20px',
+                        right: '20px',
+                        zIndex: 1100,
+                        borderRadius: '8px',
+                        background: 'rgba(26, 26, 46, 0.9)',
+                        border: '1px solid rgba(255, 255, 255, 0.1)',
+                        backdropFilter: 'blur(10px)'
+                    }}
+                    size="large"
                 >
-                    {isDemoMode ? <MdStop /> : <MdPlayArrow />}
-                    <span>{isDemoMode ? "დემო გამორთვა" : "დემო ჩართვა"}</span>
-                </button>
+                    პარამეტრები
+                </Button>
+            )}
 
-                {/* Radar Controls */}
-                {SUBSCRIPTION_KEY && (
-                    <>
-                        <div style={{margin: '15px 0', borderTop: '1px solid rgba(255,255,255,0.2)'}} />
-
-                        <div className="radar-controls">
-                            <h4 style={{fontSize: '14px', marginBottom: '10px', display: 'flex', alignItems: 'center', gap: '8px'}}>
-                                📡 რადარი (PulseRad)
-                            </h4>
-
-                            <button
-                                onClick={toggleRadar}
-                                className="demo-toggle-button"
-                                style={{
-                                    background: radarEnabled ? '#4CAF50' : '#666',
-                                    marginBottom: '10px'
-                                }}
-                            >
-                                {radarEnabled ? '✓ რადარი ჩართულია' : '✗ რადარი გამორთულია'}
-                            </button>
-
-                            {radarEnabled && (
-                                <>
-                                    <div className="opacity-control" style={{marginBottom: '10px'}}>
-                                        <label style={{fontSize: '12px', display: 'block', marginBottom: '5px'}}>
-                                            გამჭვირვალობა: {Math.round(radarOpacity * 100)}%
-                                        </label>
-                                        <input
-                                            type="range"
-                                            min="0"
-                                            max="1"
-                                            step="0.1"
-                                            value={radarOpacity}
-                                            onChange={(e) => updateRadarOpacity(parseFloat(e.target.value))}
-                                            style={{width: '100%'}}
-                                        />
-                                    </div>
-                                    <button
-                                        onClick={() => {
-                                            setShowContours(!showContours);
-                                            // Force radar layer refresh
-                                            if (mapRef.current && currentTimeSlot) {
-                                                updateRadarLayer(mapRef.current, currentTimeSlot);
-                                            }
-                                        }}
-                                        className="demo-toggle-button"
-                                        style={{
-                                            background: showContours ? '#FF9800' : '#666',
-                                            marginBottom: '10px',
-                                            fontSize: '12px'
-                                        }}
-                                    >
-                                        {showContours ? '✓ კონტურები' : '○ კონტურები'}
-                                    </button>
-                                </>
-                            )}
-
-                            {currentTimeSlot && (
-                                <div style={{fontSize: '11px', opacity: 0.7}}>
-                                    ბოლო განახლება: {new Date(currentTimeSlot * 1000).toLocaleTimeString('ka-GE')}
-                                </div>
-                            )}
-                        </div>
-
-                        {/* Map Style Toggle */}
-                        <div style={{marginTop: '15px'}}>
-                            <h4 style={{fontSize: '14px', marginBottom: '10px', display: 'flex', alignItems: 'center', gap: '8px'}}>
-                                🗺️ რუკის ტიპი
-                            </h4>
-                            <div style={{display: 'flex', gap: '5px'}}>
-                                <button
-                                    onClick={() => setMapStyle('satellite')}
-                                    className="demo-toggle-button"
-                                    style={{
-                                        background: mapStyle === 'satellite' ? '#4CAF50' : '#666',
-                                        flex: 1,
-                                        padding: '8px 12px'
-                                    }}
-                                >
-                                    🛰️ სატელიტი
-                                </button>
-                                <button
-                                    onClick={() => setMapStyle('streets')}
-                                    className="demo-toggle-button"
-                                    style={{
-                                        background: mapStyle === 'streets' ? '#4CAF50' : '#666',
-                                        flex: 1,
-                                        padding: '8px 12px'
-                                    }}
-                                >
-                                    🗺️ ქუჩები
-                                </button>
-                            </div>
-                        </div>
-
-                        {/* Labels Toggle */}
-                        <div style={{marginTop: '15px'}}>
-                            <h4 style={{fontSize: '14px', marginBottom: '10px', display: 'flex', alignItems: 'center', gap: '8px'}}>
-                                📍 ლეიბლები
-                            </h4>
-                            <button
-                                onClick={() => setShowLabels(!showLabels)}
-                                className="demo-toggle-button"
-                                style={{
-                                    background: showLabels ? '#4CAF50' : '#666'
-                                }}
-                            >
-                                {showLabels ? '✓ ქალაქები ჩართულია' : '✗ ქალაქები გამორთულია'}
-                            </button>
-                        </div>
-
-                        {/* Polygon Toggle */}
-                        <div style={{marginTop: '15px'}}>
-                            <h4 style={{fontSize: '14px', marginBottom: '10px', display: 'flex', alignItems: 'center', gap: '8px'}}>
-                                ⚠️ ელვის პოლიგონები
-                            </h4>
-                            <button
-                                onClick={togglePolygons}
-                                className="demo-toggle-button"
-                                style={{
-                                    background: polygonsEnabled ? '#4CAF50' : '#666'
-                                }}
-                            >
-                                {polygonsEnabled ? '✓ პოლიგონები ჩართულია' : '✗ პოლიგონები გამორთულია'}
-                            </button>
-                            {polygonsData.length > 0 && (
-                                <div style={{fontSize: '11px', opacity: 0.7, marginTop: '5px'}}>
-                                    აქტიური: {polygonsData.length} პოლიგონი
-                                </div>
-                            )}
-                        </div>
-
-                        {/* Cloud Layer Controls */}
-                        {CLOUDS_TILE_URL && (
-                            <div style={{marginTop: '15px'}}>
-                                <h4 style={{fontSize: '14px', marginBottom: '10px', display: 'flex', alignItems: 'center', gap: '8px'}}>
-                                    ☁️ ღრუბლები (Clouds)
-                                </h4>
-
-                                <button
-                                    onClick={toggleClouds}
-                                    className="demo-toggle-button"
-                                    style={{
-                                        background: cloudsEnabled ? '#4CAF50' : '#666',
-                                        marginBottom: '10px'
-                                    }}
-                                >
-                                    {cloudsEnabled ? '✓ ღრუბლები ჩართულია' : '✗ ღრუბლები გამორთულია'}
-                                </button>
-
-                                {cloudsEnabled && (
-                                    <div className="opacity-control" style={{marginBottom: '10px'}}>
-                                        <label style={{fontSize: '12px', display: 'block', marginBottom: '5px'}}>
-                                            გამჭვირვალობა: {Math.round(cloudsOpacity * 100)}%
-                                        </label>
-                                        <input
-                                            type="range"
-                                            min="0"
-                                            max="1"
-                                            step="0.1"
-                                            value={cloudsOpacity}
-                                            onChange={(e) => updateCloudOpacity(parseFloat(e.target.value))}
-                                            style={{width: '100%'}}
-                                        />
-                                    </div>
-                                )}
-                            </div>
-                        )}
-                    </>
-                )}
-
-                {wsError && !isDemoMode && (
-                    <div className="location-error">
-                        {wsError}
-                    </div>
-                )}
-                {locationError && (
-                    <div className="location-error">
-                        ლოკაცია: {locationError}
-                    </div>
-                )}
-                </>
-                )}
-            </div>
+            {/* Controls Drawer */}
+            <Drawer
+                title="კონტროლის პანელი"
+                placement="right"
+                onClose={() => setControlsDrawerOpen(false)}
+                open={controlsDrawerOpen}
+                width={360}
+                styles={{
+                    body: { padding: 0, background: 'rgba(26, 26, 46, 0.95)' },
+                    header: { background: 'rgba(26, 26, 46, 0.95)', borderBottom: '1px solid rgba(255, 255, 255, 0.1)', color: '#fff' }
+                }}
+            >
+                <SfericControls
+                    stats={stats}
+                    userLocation={userLocation}
+                    RADIUS_KM={RADIUS_KM}
+                    isConnected={isConnected}
+                    isDemoMode={isDemoMode}
+                    wsError={wsError}
+                    handleRetryConnection={handleRetryConnection}
+                    handleToggleDemo={handleToggleDemo}
+                    SUBSCRIPTION_KEY={SUBSCRIPTION_KEY}
+                    radarEnabled={radarEnabled}
+                    toggleRadar={toggleRadar}
+                    radarOpacity={radarOpacity}
+                    updateRadarOpacity={updateRadarOpacity}
+                    showContours={showContours}
+                    setShowContours={setShowContours}
+                    currentTimeSlot={currentTimeSlot}
+                    mapRef={mapRef}
+                    updateRadarLayer={updateRadarLayer}
+                    mapStyle={mapStyle}
+                    setMapStyle={setMapStyle}
+                    showLabels={showLabels}
+                    setShowLabels={setShowLabels}
+                    polygonsEnabled={polygonsEnabled}
+                    togglePolygons={togglePolygons}
+                    polygonsData={polygonsData}
+                    cloudsEnabled={cloudsEnabled}
+                    toggleClouds={toggleClouds}
+                    CLOUDS_TILE_URL={CLOUDS_TILE_URL}
+                    cloudsOpacity={cloudsOpacity}
+                    updateCloudOpacity={updateCloudOpacity}
+                    locationError={locationError}
+                />
+            </Drawer>
 
             {/* Legend */}
             <div className="sferic-legend">

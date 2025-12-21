@@ -15,7 +15,7 @@ import "./mapPageHeader.css";
 const { Header } = Layout;
 const { useBreakpoint } = Grid;
 
-export default function MapPageHeader() {
+export default function MapPageHeader({ forceHide = false }) {
     const { t } = useTranslation();
     const screens = useBreakpoint();
     const navigate = useNavigate();
@@ -31,6 +31,12 @@ export default function MapPageHeader() {
         let hideTimer;
 
         const handleMouseMove = (e) => {
+            // If forceHide is true, don't show header
+            if (forceHide) {
+                setIsVisible(false);
+                return;
+            }
+
             // Show header when mouse is in top 80px
             if (e.clientY <= 80) {
                 setIsVisible(true);
@@ -52,7 +58,7 @@ export default function MapPageHeader() {
             window.removeEventListener("mousemove", handleMouseMove);
             if (hideTimer) clearTimeout(hideTimer);
         };
-    }, []);
+    }, [forceHide]);
 
     const handleLogout = async (e) => {
         dispatch(logOut());
