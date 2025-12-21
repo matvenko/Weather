@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState, useRef } from "react";
 import { Layout, Menu, Button, Grid, Tooltip } from "antd";
 import { NavLink, useLocation, useNavigate } from "react-router-dom";
 import { FiUser } from "react-icons/fi";
@@ -25,29 +25,39 @@ export default function MapPageHeader({ forceHide = false }) {
     const [open, setOpen] = useState(false);
     const [isVisible, setIsVisible] = useState(false);
     const isUserAuthorized = isAuthorized();
+    const hideTimerRef = useRef(null);
 
     // Mouse move detection to show/hide header
     useEffect(() => {
-        let hideTimer;
-
         const handleMouseMove = (e) => {
             // If forceHide is true, don't show header
             if (forceHide) {
                 setIsVisible(false);
+                // Clear any pending hide timer
+                if (hideTimerRef.current) {
+                    clearTimeout(hideTimerRef.current);
+                    hideTimerRef.current = null;
+                }
                 return;
             }
 
             // Show header when mouse is in top 80px
             if (e.clientY <= 80) {
-                setIsVisible(true);
                 // Clear any existing hide timer
-                if (hideTimer) {
-                    clearTimeout(hideTimer);
+                if (hideTimerRef.current) {
+                    clearTimeout(hideTimerRef.current);
+                    hideTimerRef.current = null;
                 }
+                setIsVisible(true);
             } else if (e.clientY > 150) {
+                // Clear any existing hide timer before setting a new one
+                if (hideTimerRef.current) {
+                    clearTimeout(hideTimerRef.current);
+                }
                 // Hide header when mouse leaves top area (with delay)
-                hideTimer = setTimeout(() => {
+                hideTimerRef.current = setTimeout(() => {
                     setIsVisible(false);
+                    hideTimerRef.current = null;
                 }, 500);
             }
         };
@@ -56,7 +66,10 @@ export default function MapPageHeader({ forceHide = false }) {
 
         return () => {
             window.removeEventListener("mousemove", handleMouseMove);
-            if (hideTimer) clearTimeout(hideTimer);
+            if (hideTimerRef.current) {
+                clearTimeout(hideTimerRef.current);
+                hideTimerRef.current = null;
+            }
         };
     }, [forceHide]);
 
