@@ -2,7 +2,6 @@ import React, { useEffect, useMemo, useState } from "react";
 import { Layout, Menu, Button, Grid, Tooltip } from "antd";
 import { NavLink, useLocation, useNavigate } from "react-router-dom";
 import { FiUser } from "react-icons/fi";
-import { MdSettings } from "react-icons/md";
 import { useTranslation } from "react-i18next";
 import MobileNavigationDrawer from "../MobileNavigation/MobileNavigationDrawer.jsx";
 import LanguageSelector from "../header/languageSelector/LanguageSelector.jsx";
@@ -16,7 +15,7 @@ import "./mapPageHeader.css";
 const { Header } = Layout;
 const { useBreakpoint } = Grid;
 
-export default function MapPageHeader({ forceHide = false, onOpenControls = null, isControlsDrawerOpen = false }) {
+export default function MapPageHeader({ forceHide = false }) {
     const { t } = useTranslation();
     const screens = useBreakpoint();
     const navigate = useNavigate();
@@ -139,21 +138,6 @@ export default function MapPageHeader({ forceHide = false, onOpenControls = null
                 )}
 
                 <div className="wx-right">
-                    {onOpenControls && !isControlsDrawerOpen && (
-                        <Tooltip title="პარამეტრები">
-                            <Button
-                                type="primary"
-                                icon={<MdSettings />}
-                                onClick={onOpenControls}
-                                style={{
-                                    marginRight: '12px',
-                                    borderRadius: '8px'
-                                }}
-                            >
-                                {screens.md ? 'პარამეტრები' : null}
-                            </Button>
-                        </Tooltip>
-                    )}
                     {screens.lg && <LanguageSelector />}
                     {screens.lg && showButton}
 

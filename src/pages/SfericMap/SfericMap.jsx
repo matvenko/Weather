@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState, useCallback } from "react";
 import { MdFlashOn, MdMyLocation, MdRefresh, MdPlayArrow, MdStop, MdExpandMore, MdExpandLess } from "react-icons/md";
 import { Drawer, Button } from "antd";
-import { MdSettings, MdClose } from "react-icons/md";
+import { MdSettings, MdClose, MdChevronLeft } from "react-icons/md";
 import localBrandLogo from "@src/images/meteo-logo-white.png";
 import lightningPlus from "@src/images/lightning-plus.png";
 import lightningMinus from "@src/images/lightning-minus.png";
@@ -233,7 +233,6 @@ const SfericMap = () => {
     // Controls drawer state
     const [controlsDrawerOpen, setControlsDrawerOpen] = useState(false);
     const [isHoveringControlsButton, setIsHoveringControlsButton] = useState(false);
-    const [isHeaderVisible, setIsHeaderVisible] = useState(false);
 
     // Polygon state
     const [polygonsEnabled, setPolygonsEnabled] = useState(true);
@@ -1942,24 +1941,9 @@ const SfericMap = () => {
         }
     }, [isDemoMode, startDemoMode, stopDemoMode]);
 
-    // Track mouse position to determine header visibility
-    useEffect(() => {
-        const handleMouseMove = (e) => {
-            // Header is visible when mouse is in top 80px
-            setIsHeaderVisible(e.clientY <= 80);
-        };
-
-        window.addEventListener("mousemove", handleMouseMove);
-        return () => window.removeEventListener("mousemove", handleMouseMove);
-    }, []);
-
     return (
         <>
-            <MapPageHeader
-                forceHide={controlsDrawerOpen || isHoveringControlsButton}
-                onOpenControls={() => setControlsDrawerOpen(true)}
-                isControlsDrawerOpen={controlsDrawerOpen}
-            />
+            <MapPageHeader forceHide={controlsDrawerOpen || isHoveringControlsButton} />
             <div className="sferic-map-wrap">
                 <div ref={containerRef} className="sferic-map-container" />
 
@@ -1976,27 +1960,28 @@ const SfericMap = () => {
             </a>
 
             {/* Controls Toggle Button */}
-            {!controlsDrawerOpen && !isHeaderVisible && (
+            {!controlsDrawerOpen && (
                 <Button
                     type="primary"
-                    icon={<MdSettings />}
+                    icon={<MdChevronLeft style={{ fontSize: '24px' }} />}
                     onClick={() => setControlsDrawerOpen(true)}
                     onMouseEnter={() => setIsHoveringControlsButton(true)}
                     onMouseLeave={() => setIsHoveringControlsButton(false)}
                     style={{
                         position: 'absolute',
-                        top: '20px',
+                        top: '50%',
                         right: '20px',
+                        transform: 'translateY(-50%)',
                         zIndex: 1100,
-                        borderRadius: '8px',
+                        borderRadius: '8px 0 0 8px',
                         background: 'rgba(26, 26, 46, 0.9)',
                         border: '1px solid rgba(255, 255, 255, 0.1)',
-                        backdropFilter: 'blur(10px)'
+                        backdropFilter: 'blur(10px)',
+                        padding: '12px 8px',
+                        height: 'auto',
+                        minWidth: 'auto'
                     }}
-                    size="large"
-                >
-                    პარამეტრები
-                </Button>
+                />
             )}
 
             {/* Controls Drawer */}
