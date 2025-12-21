@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState, useCallback } from "react";
 import { MdFlashOn, MdMyLocation, MdRefresh, MdPlayArrow, MdStop, MdExpandMore, MdExpandLess } from "react-icons/md";
 import { Drawer, Button } from "antd";
-import { MdSettings } from "react-icons/md";
+import { MdSettings, MdClose } from "react-icons/md";
 import localBrandLogo from "@src/images/meteo-logo-white.png";
 import lightningPlus from "@src/images/lightning-plus.png";
 import lightningMinus from "@src/images/lightning-minus.png";
@@ -233,6 +233,7 @@ const SfericMap = () => {
     // Controls drawer state
     const [controlsDrawerOpen, setControlsDrawerOpen] = useState(false);
     const [isHoveringControlsButton, setIsHoveringControlsButton] = useState(false);
+    const [isHeaderVisible, setIsHeaderVisible] = useState(false);
 
     // Polygon state
     const [polygonsEnabled, setPolygonsEnabled] = useState(true);
@@ -1941,6 +1942,17 @@ const SfericMap = () => {
         }
     }, [isDemoMode, startDemoMode, stopDemoMode]);
 
+    // Track mouse position to determine header visibility
+    useEffect(() => {
+        const handleMouseMove = (e) => {
+            // Header is visible when mouse is in top 80px
+            setIsHeaderVisible(e.clientY <= 80);
+        };
+
+        window.addEventListener("mousemove", handleMouseMove);
+        return () => window.removeEventListener("mousemove", handleMouseMove);
+    }, []);
+
     return (
         <>
             <MapPageHeader forceHide={controlsDrawerOpen || isHoveringControlsButton} />
@@ -1960,7 +1972,7 @@ const SfericMap = () => {
             </a>
 
             {/* Controls Toggle Button */}
-            {!controlsDrawerOpen && (
+            {!controlsDrawerOpen && !isHeaderVisible && (
                 <Button
                     type="primary"
                     icon={<MdSettings />}
@@ -1987,9 +1999,14 @@ const SfericMap = () => {
             <Drawer
                 title="კონტროლის პანელი"
                 placement="right"
-                onClose={() => setControlsDrawerOpen(false)}
+                onClose={() => {
+                    setControlsDrawerOpen(false);
+                    setIsHoveringControlsButton(false);
+                }}
                 open={controlsDrawerOpen}
                 width={360}
+                mask={false}
+                closeIcon={<MdClose style={{ color: '#fff', fontSize: '20px' }} />}
                 styles={{
                     body: { padding: 0, background: 'rgba(26, 26, 46, 0.95)' },
                     header: { background: 'rgba(26, 26, 46, 0.95)', borderBottom: '1px solid rgba(255, 255, 255, 0.1)', color: '#fff' }
