@@ -1,5 +1,7 @@
 // src/pages/WeatherMaps.jsx
-import React, {useEffect, useRef} from "react";
+import React, {useEffect, useRef, useState} from "react";
+import { Button } from "antd";
+import { MdExpandMore, MdExpandLess } from "react-icons/md";
 import "./weatherMaps.css"
 import localBrandLogo from "@src/images/meteo-logo-white.png";
 import MapPageHeader from "@src/components/MapPageHeader/MapPageHeader.jsx";
@@ -47,6 +49,7 @@ const WeatherMaps = ({
                      }) => {
     const containerRef = useRef(null);
     const mapRef = useRef(null);
+    const [isHeaderVisible, setIsHeaderVisible] = useState(false);
 
     function getLogo(href, src, title = "Meteo360", map) {
         const link = document.createElement('a');
@@ -201,7 +204,30 @@ const WeatherMaps = ({
 
     return (
         <>
-            <MapPageHeader />
+            {isHeaderVisible && <MapPageHeader />}
+
+            {/* Header Toggle Button */}
+            <Button
+                type="primary"
+                icon={isHeaderVisible ? <MdExpandLess style={{ fontSize: '24px' }} /> : <MdExpandMore style={{ fontSize: '24px' }} />}
+                onClick={() => setIsHeaderVisible(!isHeaderVisible)}
+                style={{
+                    position: 'fixed',
+                    top: isHeaderVisible ? 'auto' : '0px',
+                    bottom: isHeaderVisible ? '0px' : 'auto',
+                    left: '50%',
+                    transform: isHeaderVisible ? 'translateX(-50%)' : 'translateX(-50%)',
+                    zIndex: 1100,
+                    borderRadius: isHeaderVisible ? '8px 8px 0 0' : '0 0 8px 8px',
+                    background: 'rgba(26, 26, 46, 0.9)',
+                    border: '1px solid rgba(255, 255, 255, 0.1)',
+                    backdropFilter: 'blur(10px)',
+                    padding: '8px 12px',
+                    height: 'auto',
+                    minWidth: 'auto'
+                }}
+            />
+
             <div className="wx-map-wrap">
                 <div ref={containerRef} className="wx-map-container"/>
             </div>
