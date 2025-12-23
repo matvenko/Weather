@@ -45,7 +45,7 @@
 
 .wx-bar {
     margin: 0 auto;
-    padding: 14px 16px;
+    padding: 14px 0;
     display: grid;
     grid-template-columns: auto 1fr auto;
     align-items: center;

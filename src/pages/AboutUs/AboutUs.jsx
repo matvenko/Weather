@@ -11,22 +11,7 @@ export default function About() {
     const {t} = useTranslation();
 
     return (<>
-            <div className="w3l-breadcrumb py-5">
-                <div className="container py-xl-5 py-md-4 mt-5 AboutPageBanner">
-                    <h4 className="inner-text-title font-weight-bold mb-sm-2">
-                        {t('nav.about')}</h4>
-
-                    <ul className="breadcrumbs-custom-path AllBreadcrumbs">
-                        <a href="https://wp.w3layouts.com/cafephile"
-                           rel="nofollow">{t('nav.home')}</a>
-                        <span className="secondary-breadcrumbs-name">
-                           &nbsp;&nbsp;»&nbsp;&nbsp; {t('nav.about')}
-                        </span>
-                    </ul>
-                </div>
-            </div>
-
-            <div className="white-wrapper">
+            <div className="white-wrapper" style={{borderTopLeftRadius: "10px", borderTopRightRadius: "10px"}}>
                 <section className="container AboutPageAbout">
 
                     <Row className="row about-row">

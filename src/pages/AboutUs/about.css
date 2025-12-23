@@ -103,7 +103,6 @@ h4.inner-text-title {
 /* container fallback */
 .AboutPageAbout.container {
     width: min(90vw, 1400px);
-    margin: 110px auto 0;
     padding: 24px;
     background: #FFF;
 }

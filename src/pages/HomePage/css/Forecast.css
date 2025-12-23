@@ -48,7 +48,6 @@
 }
 
 .gw-hero-inner {
-    flex: 1;
     display: grid;
     grid-template-columns: 1.1fr .4fr;
     gap: 12px;

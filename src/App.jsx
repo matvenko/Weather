@@ -18,7 +18,6 @@ const AboutUsPage = lazy(() => import("./pages/AboutUs/AboutUs.jsx"));
 const AccountPage = lazy(() => import("./pages/Account/AccountOverview.jsx"));
 const MapsPage = lazy(() => import("./pages/WeatherMaps/WeatherMaps.jsx"));
 const SfericMapPage = lazy(() => import("./pages/SfericMap/SfericMap.jsx"));
-const ContactPage = lazy(() => import("./pages/Contacts/Contacts.jsx"));
 
 export default function App() {
     return (
@@ -37,7 +36,6 @@ export default function App() {
                                 <Route index element={<Homepage />} />
                                 <Route path="about" element={<AboutUsPage />} />
                                 <Route path="account" element={<AccountPage />} />
-                                <Route path="contact" element={<ContactPage />} />
                                 <Route path="login" element={<Login />} />
                                 <Route path="register" element={<Registration />} />
                             </Route>

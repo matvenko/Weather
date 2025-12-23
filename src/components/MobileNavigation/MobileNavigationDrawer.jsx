@@ -16,7 +16,6 @@ const MobileNavigationDrawer = ({ open, onClose, isUserAuthorized, onLogout }) =
         { key: "/about",      label: <NavLink to="/about">{t("nav.about")}</NavLink> },
         { key: "/maps",       label: <NavLink to="/maps">{t("nav.maps")}</NavLink> },
         { key: "/sferic-map", label: <NavLink to="/sferic-map">Sferic Map</NavLink> },
-        { key: "/contact",    label: <NavLink to="/contact">{t("nav.contact")}</NavLink> },
     ]), [t]);
 
     const selectedKeys = useMemo(() => {

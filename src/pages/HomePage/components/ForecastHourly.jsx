@@ -1,4 +1,4 @@
-import React, {useMemo} from "react";
+import React, {useMemo, useEffect} from "react";
 import {motion} from "framer-motion";
 import {fadeUp, stagger} from "@src/ui/motion/variants.js";
 import HourlyRangeToggle from "@src/pages/HomePage/components/HourlyRangeToggle.jsx";
@@ -50,6 +50,33 @@ const ForecastHourly = ({
         // Check if it's the same day and hour
         return cardDate.toDateString() === now.toDateString() && cardHour === currentHour;
     };
+
+    // Auto-scroll to current hour card when component loads or data changes
+    useEffect(() => {
+        if (!selectedHourly || selectedHourly.length === 0) return;
+
+        // Wait a bit for the DOM to render and animations to start
+        const timer = setTimeout(() => {
+            const currentHourCard = dragRef.current?.querySelector('.is-current-hour');
+            if (currentHourCard && dragRef.current) {
+                // Calculate the scroll position to center the card
+                const container = dragRef.current;
+                const cardLeft = currentHourCard.offsetLeft;
+                const cardWidth = currentHourCard.offsetWidth;
+                const containerWidth = container.offsetWidth;
+
+                // Scroll to center the card
+                const scrollTo = cardLeft - (containerWidth / 2) + (cardWidth / 2);
+
+                container.scrollTo({
+                    left: scrollTo,
+                    behavior: 'smooth'
+                });
+            }
+        }, 300); // Wait 300ms for animations
+
+        return () => clearTimeout(timer);
+    }, [selectedHourly, dragRef]);
 
     return (
         <motion.div className="gw-stats glass-soft" variants={fadeUp}>
