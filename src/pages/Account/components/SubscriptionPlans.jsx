@@ -61,8 +61,6 @@ const SubscriptionPlans = () => {
 
     // Cancel subscription
     if (currentPackage?.id) {
-      console.log('Cancelling subscription with ID:', currentPackage.id);
-      console.log('Full currentPackage object:', currentPackage);
       closeMutation.mutate(currentPackage.id);
     }
 
@@ -91,8 +89,17 @@ const SubscriptionPlans = () => {
 
       {/* Current Subscription Status */}
       {currentPackage && parseFloat(currentPackage.package?.price || 0) > 0 && (
-        <Card style={{ marginBottom: 24, background: '#f0f7ff', borderColor: '#1890ff' }}>
-          <Title level={4}>
+        <Card
+          style={{
+            marginBottom: 32,
+            background: 'linear-gradient(135deg, #e6f7ff 0%, #bae7ff 100%)',
+            borderColor: '#1890ff',
+            borderRadius: '16px',
+            borderWidth: '2px',
+            boxShadow: '0 4px 12px rgba(24, 144, 255, 0.1)'
+          }}
+        >
+          <Title level={4} style={{ color: '#0050b3', marginBottom: 16 }}>
             {isGeorgian ? 'მიმდინარე პაკეტი' : 'Current Subscription'}
           </Title>
           <Paragraph>
@@ -130,7 +137,7 @@ const SubscriptionPlans = () => {
         </Card>
       )}
 
-      <Row gutter={[24, 24]} className="subscription-cards-row">
+      <Row gutter={[32, 32]} className="subscription-cards-row">
         {packagesData && packagesData.map((apiPackage) => {
           const isCurrentPlan = apiPackage.id === currentPlanId;
 
@@ -148,7 +155,7 @@ const SubscriptionPlans = () => {
             nameGe: apiPackage.descriptionDictionaryKey || apiPackage.name,
             price: priceValue,
             priceGe: `${apiPackage.price} ₾`,
-            priceEn: `$${apiPackage.price}`,
+            priceEn: `${apiPackage.price} ₾`,
           };
 
           return (

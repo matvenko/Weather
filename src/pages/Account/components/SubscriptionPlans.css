@@ -1,6 +1,6 @@
 .subscription-plans-container {
-  padding: 24px;
-  max-width: 1200px;
+  padding: 32px;
+  max-width: 1400px;
   margin: 0 auto;
 }
 
@@ -23,7 +23,8 @@
 }
 
 .subscription-cards-row {
-  margin-bottom: 32px;
+  margin-bottom: 48px;
+  margin-top: 32px;
 }
 
 .subscription-footer {
