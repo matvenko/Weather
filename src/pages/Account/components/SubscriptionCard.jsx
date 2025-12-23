@@ -4,7 +4,7 @@ import { CheckOutlined, CloseOutlined, CrownOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 import './SubscriptionCard.css';
 
-const SubscriptionCard = ({ plan, isCurrentPlan, onSelect, onRenew }) => {
+const SubscriptionCard = ({ plan, isCurrentPlan, onSelect, onCancel }) => {
   const { i18n } = useTranslation();
   const isGeorgian = i18n.language === 'ka';
 
@@ -22,12 +22,6 @@ const SubscriptionCard = ({ plan, isCurrentPlan, onSelect, onRenew }) => {
       {plan.recommended && (
         <Tag color="gold" className="recommended-tag">
           <CrownOutlined /> {isGeorgian ? 'რეკომენდირებული' : 'Recommended'}
-        </Tag>
-      )}
-
-      {isCurrentPlan && (
-        <Tag color="green" className="current-tag">
-          <CheckOutlined /> {isGeorgian ? 'თქვენი პაკეტი' : 'Current Plan'}
         </Tag>
       )}
 
@@ -63,16 +57,7 @@ const SubscriptionCard = ({ plan, isCurrentPlan, onSelect, onRenew }) => {
       />
 
       <div className="card-actions">
-        {isCurrentPlan ? (
-          <Button
-            type="default"
-            size="large"
-            block
-            onClick={() => onRenew && onRenew(plan)}
-          >
-            {isGeorgian ? 'პაკეტის განახლება' : 'Renew Plan'}
-          </Button>
-        ) : (
+        {!isCurrentPlan && plan.price > 0 && (
           <Button
             type="primary"
             size="large"
@@ -80,8 +65,13 @@ const SubscriptionCard = ({ plan, isCurrentPlan, onSelect, onRenew }) => {
             onClick={() => onSelect && onSelect(plan)}
             style={{ backgroundColor: plan.color, borderColor: plan.color }}
           >
-            {isGeorgian ? 'არჩევა' : 'Select Plan'}
+            {isGeorgian ? 'შეძენა' : 'Buy Plan'}
           </Button>
+        )}
+        {isCurrentPlan && (
+          <Tag color="green" style={{ width: '100%', textAlign: 'center', padding: '8px', fontSize: '14px' }}>
+            <CheckOutlined /> {isGeorgian ? 'აქტიური პაკეტი' : 'Active Plan'}
+          </Tag>
         )}
       </div>
     </Card>

@@ -1,10 +1,12 @@
-import React, { useState } from 'react';
-import { Row, Col, Alert, Typography, Divider, Modal } from 'antd';
+import React, { useState, useMemo } from 'react';
+import { Row, Col, Alert, Typography, Divider, Modal, Spin, Card, Button } from 'antd';
 import { useTranslation } from 'react-i18next';
 import SubscriptionCard from './SubscriptionCard';
+import { usePackages } from '../hooks/usePackages';
+import { useCurrentSubscription } from '../hooks/useCurrentSubscription';
+import { useBuyPackage } from '../hooks/useBuyPackage';
+import { useCloseSubscription } from '../hooks/useCloseSubscription';
 import { SUBSCRIPTION_PLANS } from '../constants/subscriptionPlans';
-import { useSubscribePlan } from '../hooks/useSubscribePlan';
-import { useRenewSubscription } from '../hooks/useRenewSubscription';
 import { getUserEmail } from '@src/utils/auth';
 import './SubscriptionPlans.css';
 
@@ -15,57 +17,53 @@ const SubscriptionPlans = () => {
   const isGeorgian = i18n.language === 'ka';
   const [selectedPlan, setSelectedPlan] = useState(null);
   const [isModalVisible, setIsModalVisible] = useState(false);
-  const [modalType, setModalType] = useState('subscribe'); // 'subscribe' or 'renew'
+  const [modalType, setModalType] = useState('buy'); // 'buy' or 'cancel'
 
   // Get current user's email
   const userEmail = getUserEmail() || '';
 
-  // Mutations
-  const subscribeMutation = useSubscribePlan();
-  const renewMutation = useRenewSubscription();
+  // Fetch data
+  const { data: packagesData, isLoading: packagesLoading } = usePackages();
+  const { data: currentSubData, isLoading: currentSubLoading } = useCurrentSubscription();
 
-  // TODO: Get current plan from different backend endpoint
-  const currentPlanId = 'free'; // Default to free for now
+  // Mutations
+  const buyMutation = useBuyPackage();
+  const closeMutation = useCloseSubscription();
+
+  // Get current and next packages
+  const currentPackage = currentSubData?.current;
+  const nextPackage = currentSubData?.next;
+
+  // Determine if subscription will be cancelled
+  const willBeCancelled = useMemo(() => {
+    if (!currentPackage || !nextPackage) return false;
+    return currentPackage.packageId !== nextPackage.packageId;
+  }, [currentPackage, nextPackage]);
+
+  // Get current plan ID (for active subscription)
+  const currentPlanId = currentPackage?.packageId || null;
 
   const handleSelectPlan = (plan) => {
-    if (plan.id === 'free') {
-      // Free plan - no payment needed
-      subscribeMutation.mutate({
-        email: userEmail,
-        packageId: plan.id,
-        packageName: plan.name,
-      });
-    } else {
-      // Paid plan - show confirmation modal
-      setSelectedPlan(plan);
-      setModalType('subscribe');
-      setIsModalVisible(true);
-    }
+    // Buy package directly - redirect to payment
+    buyMutation.mutate({
+      packageId: plan.id,
+    });
   };
 
-  const handleRenewPlan = (plan) => {
+  const handleCancelSubscription = (plan) => {
     setSelectedPlan(plan);
-    setModalType('renew');
+    setModalType('cancel');
     setIsModalVisible(true);
   };
 
   const handleModalOk = () => {
     if (!selectedPlan) return;
 
-    if (modalType === 'subscribe') {
-      subscribeMutation.mutate({
-        email: userEmail,
-        packageId: selectedPlan.id,
-        packageName: selectedPlan.name,
-        price: selectedPlan.price,
-        period: selectedPlan.period,
-      });
-    } else if (modalType === 'renew') {
-      renewMutation.mutate({
-        email: userEmail,
-        packageId: selectedPlan.id,
-        packageName: selectedPlan.name,
-      });
+    // Cancel subscription
+    if (currentPackage?.id) {
+      console.log('Cancelling subscription with ID:', currentPackage.id);
+      console.log('Full currentPackage object:', currentPackage);
+      closeMutation.mutate(currentPackage.id);
     }
 
     setIsModalVisible(false);
@@ -77,32 +75,89 @@ const SubscriptionPlans = () => {
     setSelectedPlan(null);
   };
 
+  // Show loading state
+  if (packagesLoading || currentSubLoading) {
+    return (
+      <div style={{ textAlign: 'center', padding: '50px' }}>
+        <Spin size="large" />
+      </div>
+    );
+  }
+
   return (
     <div className="subscription-plans-container">
-      <div className="subscription-header">
-        <Title level={2}>
-          {isGeorgian ? 'გამოწერის პაკეტები' : 'Subscription Plans'}
-        </Title>
-        <Paragraph type="secondary" style={{ fontSize: '16px' }}>
-          {isGeorgian
-            ? 'აირჩიეთ თქვენთვის შესაფერისი პაკეტი და მიიღეთ წვდომა მოწინავე ფუნქციებზე'
-            : 'Choose the plan that fits your needs and get access to advanced features'}
-        </Paragraph>
-      </div>
 
       <Divider />
 
+      {/* Current Subscription Status */}
+      {currentPackage && parseFloat(currentPackage.package?.price || 0) > 0 && (
+        <Card style={{ marginBottom: 24, background: '#f0f7ff', borderColor: '#1890ff' }}>
+          <Title level={4}>
+            {isGeorgian ? 'მიმდინარე პაკეტი' : 'Current Subscription'}
+          </Title>
+          <Paragraph>
+            <strong>{isGeorgian ? 'პაკეტი:' : 'Package:'}</strong>{' '}
+            {currentPackage.package?.name}
+          </Paragraph>
+          <Paragraph>
+            <strong>{isGeorgian ? 'მოქმედია:' : 'Active until:'}</strong>{' '}
+            {new Date(currentPackage.endDate).toLocaleDateString(isGeorgian ? 'ka-GE' : 'en-US')}
+          </Paragraph>
+
+          {willBeCancelled && (
+            <Alert
+              message={isGeorgian ? 'გაუქმება დაგეგმილია' : 'Cancellation Scheduled'}
+              description={
+                isGeorgian
+                  ? `თქვენი გამოწერა გაუქმდება ${new Date(currentPackage.endDate).toLocaleDateString('ka-GE')}-მდე და შემდეგ გადაერთვება "${nextPackage?.package?.name}" პაკეტზე`
+                  : `Your subscription will be cancelled by ${new Date(currentPackage.endDate).toLocaleDateString('en-US')} and switch to "${nextPackage?.package?.name}" package`
+              }
+              type="warning"
+              showIcon
+              style={{ marginTop: 16 }}
+            />
+          )}
+
+          {!willBeCancelled && (
+            <Button
+              danger
+              onClick={() => handleCancelSubscription(currentPackage.package)}
+              style={{ marginTop: 16 }}
+            >
+              {isGeorgian ? 'გამოწერის გაუქმება' : 'Cancel Subscription'}
+            </Button>
+          )}
+        </Card>
+      )}
+
       <Row gutter={[24, 24]} className="subscription-cards-row">
-        {SUBSCRIPTION_PLANS.map((plan) => {
-          const isCurrentPlan = plan.id === currentPlanId;
+        {packagesData && packagesData.map((apiPackage) => {
+          const isCurrentPlan = apiPackage.id === currentPlanId;
+
+          // Find matching template from SUBSCRIPTION_PLANS based on price
+          const priceValue = parseFloat(apiPackage.price);
+          const templatePlan = priceValue === 0
+            ? SUBSCRIPTION_PLANS.find(p => p.type === 'FREE')
+            : SUBSCRIPTION_PLANS.find(p => p.type === 'PRO');
+
+          // Merge API data with template data
+          const formattedPlan = {
+            ...templatePlan, // Get all features and descriptions from template
+            id: apiPackage.id, // Override with API id
+            name: apiPackage.name, // Override with API name
+            nameGe: apiPackage.descriptionDictionaryKey || apiPackage.name,
+            price: priceValue,
+            priceGe: `${apiPackage.price} ₾`,
+            priceEn: `$${apiPackage.price}`,
+          };
 
           return (
-            <Col key={plan.id} xs={24} sm={24} md={12} lg={12} xl={12}>
+            <Col key={apiPackage.id} xs={24} sm={24} md={12} lg={12} xl={12}>
               <SubscriptionCard
-                plan={plan}
+                plan={formattedPlan}
                 isCurrentPlan={isCurrentPlan}
                 onSelect={handleSelectPlan}
-                onRenew={handleRenewPlan}
+                onCancel={handleCancelSubscription}
               />
             </Col>
           );
@@ -117,57 +172,35 @@ const SubscriptionPlans = () => {
         </Paragraph>
       </div>
 
-      {/* Confirmation Modal */}
+      {/* Cancel Subscription Modal */}
       <Modal
-        title={
-          modalType === 'subscribe'
-            ? isGeorgian
-              ? 'პაკეტის არჩევის დადასტურება'
-              : 'Confirm Plan Selection'
-            : isGeorgian
-            ? 'პაკეტის განახლების დადასტურება'
-            : 'Confirm Plan Renewal'
-        }
+        title={isGeorgian ? 'გამოწერის გაუქმება' : 'Cancel Subscription'}
         open={isModalVisible}
         onOk={handleModalOk}
         onCancel={handleModalCancel}
-        okText={isGeorgian ? 'დადასტურება' : 'Confirm'}
-        cancelText={isGeorgian ? 'გაუქმება' : 'Cancel'}
-        confirmLoading={subscribeMutation.isLoading || renewMutation.isLoading}
+        okText={isGeorgian ? 'გაუქმება' : 'Cancel Subscription'}
+        cancelText={isGeorgian ? 'უკან' : 'Back'}
+        confirmLoading={closeMutation.isPending}
+        okButtonProps={{ danger: true }}
       >
-        {selectedPlan && (
-          <div>
-            <p>
-              <strong>{isGeorgian ? 'პაკეტი:' : 'Plan:'}</strong>{' '}
-              {isGeorgian ? selectedPlan.nameGe : selectedPlan.name}
-            </p>
-            <p>
-              <strong>{isGeorgian ? 'ფასი:' : 'Price:'}</strong>{' '}
-              {isGeorgian ? selectedPlan.priceGe : selectedPlan.priceEn} /{' '}
-              {isGeorgian ? selectedPlan.periodGe : selectedPlan.periodEn}
-            </p>
-            <p>
-              {modalType === 'subscribe'
-                ? isGeorgian
-                  ? 'ნამდვილად გსურთ ამ პაკეტზე გამოწერა?'
-                  : 'Are you sure you want to subscribe to this plan?'
-                : isGeorgian
-                ? 'ნამდვილად გსურთ პაკეტის განახლება?'
-                : 'Are you sure you want to renew this plan?'}
-            </p>
-            <Alert
-              message={isGeorgian ? 'შენიშვნა' : 'Note'}
-              description={
-                isGeorgian
-                  ? 'გადახდის სისტემა მალე დაემატება. ამჯერად, ეს არის დემო ვერსია.'
-                  : 'Payment integration will be added soon. This is a demo version for now.'
-              }
-              type="info"
-              showIcon
-              style={{ marginTop: 16 }}
-            />
-          </div>
-        )}
+        <div>
+          <p>
+            {isGeorgian
+              ? 'ნამდვილად გსურთ გამოწერის გაუქმება?'
+              : 'Are you sure you want to cancel your subscription?'}
+          </p>
+          <Alert
+            message={isGeorgian ? 'გაფრთხილება' : 'Warning'}
+            description={
+              isGeorgian
+                ? 'გამოწერის გაუქმების შემდეგ, თქვენ კვლავ ექნებათ წვდომა მიმდინარე პერიოდის დასრულებამდე.'
+                : 'After cancellation, you will still have access until the end of your current billing period.'
+            }
+            type="warning"
+            showIcon
+            style={{ marginTop: 16 }}
+          />
+        </div>
       </Modal>
     </div>
   );
