@@ -62,6 +62,12 @@
     }
 }
 
+@media (max-width: 768px){
+    .wx-content {
+        padding: 0;
+    }
+}
+
 
 
 

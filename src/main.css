@@ -60,6 +60,22 @@ a:hover { text-decoration: none; }
     padding-inline: var(--space-4);
 }
 
+@media (max-width: 768px) {
+    .container {
+        width: calc(100vw - 32px);
+        max-width: calc(100vw - 32px);
+        padding-inline: var(--space-3);
+    }
+}
+
+@media (max-width: 480px) {
+    .container {
+        width: calc(100vw - 24px);
+        max-width: calc(100vw - 24px);
+        padding-inline: var(--space-2);
+    }
+}
+
 /* 5) ტიპოგრაფია */
 h1,h2,h3,h4,h5,h6 { margin: 0 0 var(--space-3); line-height: 1.25; }
 h1 { font-size: clamp(24px, 3vw, 32px); }
@@ -119,8 +135,22 @@ label { display: inline-block; margin-bottom: 6px; color: #434343; }
 
 /* Responsive */
 @media (max-width: 768px){
-    .app { padding: var(--space-4) 0; }
+    .app { padding: var(--space-2) 0; }
     .row { flex-direction: column; }
+    .card {
+        padding: var(--space-3);
+        border-radius: var(--radius);
+    }
+    .section {
+        padding: var(--space-4) 0;
+    }
+}
+
+@media (max-width: 480px){
+    .app { padding: var(--space-1) 0; }
+    .card {
+        padding: var(--space-2);
+    }
 }
 
 /* (არასავალდებულო) Dark mode — თუ სისტემაში ბნელ თემას გამოიყენებენ */

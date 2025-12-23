@@ -522,6 +522,86 @@
     }
 }
 
+@media (max-width: 768px) {
+    .gw-hero {
+        margin: 20px;
+        min-height: 400px;
+    }
+
+    .gw-hero-inner {
+        padding: 12px;
+        border-radius: 18px;
+    }
+
+    .gw-stats {
+        padding: 12px;
+        min-height: auto;
+    }
+
+    .gw-side {
+        padding: 18px;
+    }
+
+    .stat-item {
+        min-width: 125px;
+        min-height: 200px;
+    }
+
+    .side-temp {
+        font-size: 56px;
+    }
+}
+
+@media (max-width: 480px) {
+    .gw-hero {
+        margin: 20px 12px;
+        min-height: 380px;
+    }
+
+    .gw-hero-inner {
+        padding: 12px;
+        border-radius: 16px;
+    }
+
+    .gw-hero-text {
+        padding: 10px 4px 16px 6px;
+    }
+
+    .gw-hero-text h1 {
+        font-size: clamp(26px, 5vw, 42px);
+    }
+
+    .gw-stats {
+        padding: 14px;
+    }
+
+    .gw-side {
+        padding: 16px;
+    }
+
+    .stat-item {
+        min-width: 120px;
+        min-height: 195px;
+    }
+
+    .s-icon {
+        font-size: 36px;
+    }
+
+    .s-temp-val {
+        font-size: 22px;
+    }
+
+    .side-temp {
+        font-size: 54px;
+    }
+
+    .stat-cards--scroll {
+        gap: 10px;
+        padding: 16px 0;
+    }
+}
+
 /* --- Motion-friendly tweaks & prefers-reduced-motion --- */
 @media (prefers-reduced-motion: reduce) {
     * {

@@ -212,7 +212,7 @@
 }
 
 .wx-brand .logo {
-    height: clamp(20px, 4vw, 32px);
+    height: clamp(32px, 4vw, 32px);
     margin: clamp(25px, 40px, 30px);
     width: auto;
     display: block;
@@ -222,6 +222,7 @@
 @media (max-width: 991.98px) {
     .wx-bar {
         grid-template-columns: auto 1fr;
+        padding:10px 0;
     }
 
     .wx-menu {
