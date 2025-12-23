@@ -2,9 +2,48 @@
 import React from "react";
 import { IoIosThunderstorm } from "react-icons/io";
 
+/**
+ * Helper function to determine if a time is during night (20:00 - 06:00)
+ * @param {string} timeStr - ISO time string
+ * @returns {boolean} - true if night time
+ */
+export function isNightTime(timeStr) {
+    if (!timeStr) return false;
+    const date = new Date(timeStr);
+    const hour = date.getHours();
+    // Night is from 20:00 (8 PM) to 06:00 (6 AM)
+    return hour >= 20 || hour < 6;
+}
+
 // JSX-ის ნაცვლად ვიყენებთ React.createElement-ს, რომ ბილდერს JSX ტრანსფორმი არ დასჭირდეს.
-export function iconByCode(code) {
+export function iconByCode(code, isNight = false) {
     const c = Number(code);
+
+    // Night time icons
+    if (isNight) {
+        if (c === 1) return "🌙";           // Clear night - moon
+        if (c === 2) return "🌙";           // Few clouds night
+        if (c === 3) return "☁️🌙";         // Partly cloudy night
+        if (c === 4) return "☁️";           // Overcast (same)
+        if (c === 5) return "🌫️";          // Fog (same)
+        if (c === 6) return "🌧️";          // Rain (same)
+        if (c === 7) return "🌦️";          // Showers (same)
+        if (c === 8) return React.createElement(IoIosThunderstorm, {}); // Thunderstorms (same)
+        if (c === 9) return "🌨️";          // Snow (same)
+        if (c === 10) return "🌨️";         // Snow showers (same)
+        if (c === 11) return "🌧️❄️";       // Mixed snow/rain (same)
+        if (c === 12) return "🌧️";         // Occasional rain (same)
+        if (c === 13) return "🌨️";         // Occasional snow (same)
+        if (c === 14) return "🌧️";         // Rain (same)
+        if (c === 15) return "🌨️";         // Snow (same)
+        if (c === 16) return "🌧️";         // Occasional rain (same)
+        if (c === 17) return "🌨️";         // Occasional snow (same)
+        if (c === 20) return "☁️";          // Mostly cloudy (same)
+        if (c === 21 || c === 22 || c === 23 || c === 24 || c === 25) {
+            return React.createElement(IoIosThunderstorm, {}); // Thunderstorms (same)
+        }
+        return "☁️"; // Default night
+    }
 
     // Daily pictocodes (1-25)
     if (c === 1) return "☀️";           // Clear

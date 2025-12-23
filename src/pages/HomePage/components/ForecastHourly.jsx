@@ -10,7 +10,7 @@ import {
     fmtPrecipMm,
     msToKmh,
 } from "@src/pages/HomePage/utils/homepage-utils.js";
-import {iconByCode} from "@src/pages/HomePage/utils/weather-icons.js";
+import {iconByCode, isNightTime} from "@src/pages/HomePage/utils/weather-icons.js";
 import {useTranslation} from "react-i18next";
 import {
     WindDirectionIcon,
@@ -94,15 +94,17 @@ const ForecastHourly = ({
                 className={`stat-cards stat-cards--scroll drag-scroll ${dragging ? "is-dragging" : ""}`}
                 variants={stagger(0.05, 0.05)}
             >
-                {(selectedHourly || []).map((h, i) => (
-                    <motion.div
-                        key={`${h.time}-${i}`}
-                        className={`stat-item ${isCurrentHour(h.time) ? "is-current-hour" : ""}`}
-                        variants={fadeUp}
-                    >
-                        <div className="s-icon" title={String(h.pictocode)}>
-                            {iconByCode(h.pictocode)}
-                        </div>
+                {(selectedHourly || []).map((h, i) => {
+                    const isNight = isNightTime(h.time);
+                    return (
+                        <motion.div
+                            key={`${h.time}-${i}`}
+                            className={`stat-item ${isCurrentHour(h.time) ? "is-current-hour" : ""} ${isNight ? "is-night" : "is-day"}`}
+                            variants={fadeUp}
+                        >
+                            <div className="s-icon" title={String(h.pictocode)}>
+                                {iconByCode(h.pictocode, isNight)}
+                            </div>
 
                         <div className="s-temp-val" style={{
                             color: getTemperatureColor(Number(h.temperature))
@@ -137,9 +139,10 @@ const ForecastHourly = ({
                                 </div>
                             </motion.div>
                         )}
-                        <div className="s-time">{fmtHour(h.time)}</div>
-                    </motion.div>
-                ))}
+                            <div className="s-time">{fmtHour(h.time)}</div>
+                        </motion.div>
+                    );
+                })}
             </motion.div>
         </motion.div>
     );
