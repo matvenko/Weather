@@ -85,7 +85,7 @@ export default function Forecast({
     }, [dailyArr]);
 
     return (
-        <Row>
+        <Row style={{display: "block"}}>
             <motion.div className="gw-wrap" initial="hidden" animate="show" variants={staggerCol}>
                 {/* LEFT column */}
                 <div className="gw-hero">
