@@ -24,24 +24,19 @@ export default function Forecast({
                                      setSelectedLocation,
                                      subline = "The low temperature will reach 25° on this gloomy day",
                                      dailyData = {},
-                                     hourlyData = {},
+                                     hourly = [],
                                  }) {
     const { ref: dragRef, dragging } = useDragScroll();
     const { i18n } = useTranslation();
     const [dailyRange, setDailyRange] = useState("7d"); // "7d" | "14d"
-    const [step, setStep] = useState("1h"); // "1h" | "3h"
 
-    // Extract arrays from new API response structure for daily data
+    // Extract arrays from new API response structure
     const sevenDayData = Array.isArray(dailyData?.["7day"]) ? dailyData["7day"] : [];
     const fourteenDayData = Array.isArray(dailyData?.["14day"]) ? dailyData["14day"] : [];
 
-    // Extract arrays from new API response structure for hourly data
-    const oneHourData = Array.isArray(hourlyData?.["1h"]) ? hourlyData["1h"] : [];
-    const threeHourData = Array.isArray(hourlyData?.["3h"]) ? hourlyData["3h"] : [];
-
-    // Choose the appropriate array based on dailyRange and step
+    // Choose the appropriate array based on dailyRange
     const dailyArr = dailyRange === "14d" ? fourteenDayData : sevenDayData;
-    const hourlyArr = step === "3h" ? threeHourData : oneHourData;
+    const hourlyArr = Array.isArray(hourly) ? hourly : [];
 
     // Check if 14-day data is available
     const has14DayData = fourteenDayData.length > 0;
@@ -53,6 +48,7 @@ export default function Forecast({
 
     const [selectedDay, setSelectedDay] = useState(dailyArr?.[0] ?? null);
     const [selectedDayTime, setSelectedDayTime] = useState(initialDay);
+    const [step, setStep] = useState("1h"); // "1h" | "3h"
 
     // როცა daily იცვლება, გადააყვანინე არჩევანი პირველ დღეზე
     useEffect(() => {
@@ -68,13 +64,13 @@ export default function Forecast({
     // ამორჩეული დღის საათობრივი სია (ან pseudo-hourly თუ ვერ მივაგენით)
     const selectedHourly = useMemo(() => {
         if (hourlyByDate.size && selectedDayTime && hourlyByDate.get(selectedDayTime)?.length) {
-            // API უკვე აბრუნებს გაფილტრულ მონაცემებს (1h ან 3h)
-            return hourlyByDate.get(selectedDayTime);
+            let list = hourlyByDate.get(selectedDayTime);
+            if (step === "3h") list = list.filter((_, i) => i % 3 === 0);
+            return list;
         }
         const d = (dailyArr || []).find((x) => x.time === selectedDayTime) || dailyArr?.[0];
         if (!d) return [];
         const pseudo = buildPseudoHourlyForDay(d, 10);
-        // pseudo data-სთვის კვლავ ვაკეთებთ ფილტრაციას
         return step === "3h" ? pseudo.filter((_, i) => i % 3 === 0) : pseudo;
     }, [hourlyByDate, selectedDayTime, step, dailyArr]);
 
