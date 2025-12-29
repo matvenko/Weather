@@ -26,10 +26,11 @@ import RainspotBadge from "@src/pages/HomePage/components/RainspotBadge.jsx";
  * - step: "1h" | "3h"
  * - onChangeStep: (val) => void
  * - selectedHourly: array of hourly points
+ * - has1HourData: boolean - whether 1h data is available
  */
 const ForecastHourly = ({
                             step = "1h", onChangeStep = () => {
-    }, selectedHourly = []
+    }, selectedHourly = [], has1HourData = false
                         }) => {
     const {ref: dragRef, dragging} = useDragScroll();
     const {t} = useTranslation();
@@ -82,7 +83,7 @@ const ForecastHourly = ({
         <motion.div className="gw-stats glass-soft" variants={fadeUp}>
             <div className="hourly-wrapper">
                 <div className="stats-title">{t('hourly_forecast')}</div>
-                <HourlyRangeToggle value={step} onChange={onChangeStep}/>
+                <HourlyRangeToggle value={step} onChange={onChangeStep} has1HourData={has1HourData}/>
             </div>
 
             {/* Sparkline */}
