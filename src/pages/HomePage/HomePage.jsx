@@ -53,7 +53,7 @@ export default function HomePage() {
                         (responseDailyForecast?.["7day"]?.[0]?.temperature_min ?? 25)
                     )}° on this gloomy day`}
                     dailyData={responseDailyForecast}
-                    hourly={responseHourlyForecast || []}
+                    hourlyData={responseHourlyForecast}
                 />
             )}
         </div>
