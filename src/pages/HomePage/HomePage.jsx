@@ -50,9 +50,9 @@ export default function HomePage() {
                     selectedLocation={selectedLocation}
                     setSelectedLocation={setSelectedLocation}
                     subline={`The low temperature will reach ${Math.round(
-                        (responseDailyForecast?.[0]?.temperature_min ?? 25)
+                        (responseDailyForecast?.["7day"]?.[0]?.temperature_min ?? 25)
                     )}° on this gloomy day`}
-                    daily={responseDailyForecast || []}
+                    dailyData={responseDailyForecast}
                     hourly={responseHourlyForecast || []}
                 />
             )}

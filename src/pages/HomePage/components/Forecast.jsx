@@ -23,15 +23,23 @@ export default function Forecast({
                                      selectedLocation,
                                      setSelectedLocation,
                                      subline = "The low temperature will reach 25° on this gloomy day",
-                                     daily = [],
+                                     dailyData = {},
                                      hourly = [],
                                  }) {
     const { ref: dragRef, dragging } = useDragScroll();
     const { i18n } = useTranslation();
+    const [dailyRange, setDailyRange] = useState("7d"); // "7d" | "14d"
 
-    // Robust arrays (თუ ჯერ undefined/obj მოდის)
-    const dailyArr = Array.isArray(daily) ? daily : [];
+    // Extract arrays from new API response structure
+    const sevenDayData = Array.isArray(dailyData?.["7day"]) ? dailyData["7day"] : [];
+    const fourteenDayData = Array.isArray(dailyData?.["14day"]) ? dailyData["14day"] : [];
+
+    // Choose the appropriate array based on dailyRange
+    const dailyArr = dailyRange === "14d" ? fourteenDayData : sevenDayData;
     const hourlyArr = Array.isArray(hourly) ? hourly : [];
+
+    // Check if 14-day data is available
+    const has14DayData = fourteenDayData.length > 0;
 
     // Default selection
     const initialDay =
@@ -41,7 +49,6 @@ export default function Forecast({
     const [selectedDay, setSelectedDay] = useState(dailyArr?.[0] ?? null);
     const [selectedDayTime, setSelectedDayTime] = useState(initialDay);
     const [step, setStep] = useState("1h"); // "1h" | "3h"
-    const [dailyRange, setDailyRange] = useState("7d"); // "7d" | "14d"
 
     // როცა daily იცვლება, გადააყვანინე არჩევანი პირველ დღეზე
     useEffect(() => {
@@ -67,12 +74,10 @@ export default function Forecast({
         return step === "3h" ? pseudo.filter((_, i) => i % 3 === 0) : pseudo;
     }, [hourlyByDate, selectedDayTime, step, dailyArr]);
 
-    // მარჯვენა სია: პირველი 7 ან 14 დღე
+    // მარჯვენა სია: dailyArr უკვე შეიცავს სწორ მონაცემებს (7day ან 14day)
     const rightDays = useMemo(() => {
-        const arr = Array.isArray(dailyArr) ? dailyArr : [];
-        const count = dailyRange === "14d" ? 14 : 7;
-        return arr.filter(Boolean).slice(0, count);
-    }, [dailyArr, dailyRange]);
+        return dailyArr.filter(Boolean);
+    }, [dailyArr]);
 
     return (
         <Row>
@@ -105,6 +110,7 @@ export default function Forecast({
                     }}
                     dailyRange={dailyRange}
                     onChangeStep={setDailyRange}
+                    has14DayData={has14DayData}
                     renderLabel={(d) => {
                         const weatherText = getWeatherText(d.pictocode, i18n.language);
                         return (
