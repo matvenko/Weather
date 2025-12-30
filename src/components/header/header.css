@@ -136,7 +136,7 @@
 
 
 .language-switch.ant-switch-checked {
-    background-color: var(--shadow) /* მწვანე როცა ჩართულია */
+    background-color: #fa9f1e !important; /* ყვითელი როცა ინგლისურია */
 }
 
 .language-switch .ant-switch-inner {
@@ -145,15 +145,15 @@
 }
 
 .ant-switch-inner-checked {
-    color: black !important;
+    color: black;
 }
 
-.language-switch.ant-switch-checked:hover, .language-switch .ant-switch-inner:hover{
-    background-color: inherit;
+.language-switch.ant-switch-checked:hover{
+    background-color: #fa9f1e !important;
 }
 
 .ant-switch.ant-switch-checked:hover:not(.ant-switch-disabled) {
-    background-color: inherit;
+    background-color: #fa9f1e !important;
 }
 
     /* Burger (mobile) */
