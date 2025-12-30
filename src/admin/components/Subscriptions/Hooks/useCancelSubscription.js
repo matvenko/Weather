@@ -7,11 +7,9 @@ import privateAxios from "@src/api/privateAxios.jsx";
  */
 export const useCancelSubscription = () => {
   const cancelSubscription = async (subscriptionId) => {
-    const response = await privateAxios.get(
+    const response = await privateAxios.post(
       "/api/v1/subscription/close-user-subscription",
-      {
-        params: { subscriptionId }
-      }
+      { subscriptionId }
     );
     return response.data;
   };
