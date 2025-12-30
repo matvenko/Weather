@@ -29,7 +29,6 @@ export default function Forecast({
     const { ref: dragRef, dragging } = useDragScroll();
     const { i18n } = useTranslation();
     const [dailyRange, setDailyRange] = useState("7d"); // "7d" | "14d"
-    const [step, setStep] = useState("1h"); // "1h" | "3h"
 
     // Extract arrays from new API response structure for daily data
     const sevenDayData = Array.isArray(dailyData?.["7day"]) ? dailyData["7day"] : [];
@@ -39,13 +38,16 @@ export default function Forecast({
     const oneHourData = Array.isArray(hourlyData?.["1h"]) ? hourlyData["1h"] : [];
     const threeHourData = Array.isArray(hourlyData?.["3h"]) ? hourlyData["3h"] : [];
 
-    // Choose the appropriate array based on dailyRange and step
-    const dailyArr = dailyRange === "14d" ? fourteenDayData : sevenDayData;
-    const hourlyArr = step === "3h" ? threeHourData : oneHourData;
-
     // Check if 14-day and 1-hour data are available
     const has14DayData = fourteenDayData.length > 0;
     const has1HourData = oneHourData.length > 0;
+
+    // Default to "3h" if "1h" data is not available, otherwise "1h"
+    const [step, setStep] = useState(() => has1HourData ? "1h" : "3h");
+
+    // Choose the appropriate array based on dailyRange and step
+    const dailyArr = dailyRange === "14d" ? fourteenDayData : sevenDayData;
+    const hourlyArr = step === "3h" ? threeHourData : oneHourData;
 
     // Default selection
     const initialDay =
@@ -62,6 +64,16 @@ export default function Forecast({
             setSelectedDayTime(dailyArr[0].time);
         }
     }, [dailyArr]);
+
+    // როცა 1h მონაცემები ხელმისაწვდომი ხდება, გადართე 1h-ზე
+    useEffect(() => {
+        if (has1HourData && step === "3h") {
+            setStep("1h");
+        } else if (!has1HourData && step === "1h") {
+            // თუ 1h მონაცემები აღარ არის, დაბრუნდი 3h-ზე
+            setStep("3h");
+        }
+    }, [has1HourData]);
 
     // ჯგუფდება საათობრივი მონაცემები
     const hourlyByDate = useMemo(() => groupHourlyByDate(hourlyArr), [hourlyArr]);
