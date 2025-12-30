@@ -7,7 +7,7 @@
     "contact": "კონტაქტი"
   },
   "auth": {
-    "login": "შესვლა",
+    "login": "ავტორიზირება",
     "or_continue_with": "ან",
     "google_sign_in": "Google-ით ავტორიზაცია",
     "facebook_sign_in": "Facebook-ით ავტორიზაცია",
@@ -35,5 +35,9 @@
   "require_email_verification_title": "საჭიროა ელფოსტის დადასტურება",
   "resend": "თავიდან გაგზავნა",
   "cancel": "გაუქმება",
-  "logout": "გასვლა"
+  "logout": "გასვლა",
+  "text.premium_package_desc": "პრემუმ პაკეტი",
+  "recommended": "რეკომენდირებული",
+  "buy_plan": "შეძენა",
+  "active_package": "აქტიური პაკეტი"
 }

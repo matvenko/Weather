@@ -23,12 +23,6 @@ const MobileNavigationDrawer = ({ open, onClose, isUserAuthorized, onLogout }) =
         return root === "/" ? ["/"] : [root];
     }, [location.pathname]);
 
-    const Brand = (
-        <NavLink to="/" className="wx-brand">
-            <span className="wx-brand-main">Meteo</span>
-            <span className="wx-brand-sub">360</span>
-        </NavLink>
-    );
 
     const handleLogout = () => {
         onClose();
@@ -44,9 +38,6 @@ const MobileNavigationDrawer = ({ open, onClose, isUserAuthorized, onLogout }) =
             bodyStyle={{ padding: 0 }}
             className="wx-drawer"
         >
-            <div className="wx-drawer-head">
-                {Brand}
-            </div>
             <div className="wx-drawer-body">
                 <Menu
                     mode="inline"

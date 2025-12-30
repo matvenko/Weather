@@ -144,6 +144,10 @@
     font-size: 12px;
 }
 
+.ant-switch-inner-checked {
+    color: black !important;
+}
+
 .language-switch.ant-switch-checked:hover, .language-switch .ant-switch-inner:hover{
     background-color: inherit;
 }

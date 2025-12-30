@@ -4,8 +4,9 @@ import { CheckOutlined, CloseOutlined, CrownOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 import './SubscriptionCard.css';
 
-const SubscriptionCard = ({ plan, isCurrentPlan, onSelect, onCancel }) => {
+const SubscriptionCard = ({ plan, isCurrentPlan, onSelect, onCancel, hasActiveSubscription }) => {
   const { i18n } = useTranslation();
+  const {t} = useTranslation()
   const isGeorgian = i18n.language === 'ka';
 
   const planName = isGeorgian ? plan.nameGe : plan.name;
@@ -19,14 +20,14 @@ const SubscriptionCard = ({ plan, isCurrentPlan, onSelect, onCancel }) => {
       hoverable={!isCurrentPlan}
       style={{ borderColor: plan.color }}
     >
-      {plan.recommended && (
+      {plan.recommended && !hasActiveSubscription && (
         <Tag color="gold" className="recommended-tag">
-          <CrownOutlined /> {isGeorgian ? 'რეკომენდირებული' : 'Recommended'}
+          <CrownOutlined /> {t("recommended")}
         </Tag>
       )}
 
       <div className="plan-header">
-        <h2 className="plan-name">{planName}</h2>
+        <h2 className="plan-name">{t("planName")}</h2>
         <div className="plan-price">
           <span className="price">{planPrice}</span>
           {plan.price > 0 && <span className="period">/ {planPeriod}</span>}
@@ -65,12 +66,12 @@ const SubscriptionCard = ({ plan, isCurrentPlan, onSelect, onCancel }) => {
             onClick={() => onSelect && onSelect(plan)}
             style={{ backgroundColor: plan.color, borderColor: plan.color }}
           >
-            {isGeorgian ? 'შეძენა' : 'Buy Plan'}
+            {t("buy_plan")}
           </Button>
         )}
         {isCurrentPlan && (
           <Tag color="green" style={{ width: '100%', textAlign: 'center', padding: '8px', fontSize: '14px' }}>
-            <CheckOutlined /> {isGeorgian ? 'აქტიური პაკეტი' : 'Active Plan'}
+            <CheckOutlined /> {t("active_package")}
           </Tag>
         )}
       </div>

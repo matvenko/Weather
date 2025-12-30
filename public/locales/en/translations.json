@@ -35,5 +35,8 @@
   "require_email_verification_title": "Email Verification Required",
   "resend": "resend",
   "cancel": "cancel",
-  "logout": "log out"
+  "logout": "log out",
+  "recommended": "Recommended",
+  "buy_plan": "Buy Plan",
+  "active_package": "Active Package"
 }

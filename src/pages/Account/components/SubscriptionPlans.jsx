@@ -43,6 +43,9 @@ const SubscriptionPlans = () => {
   // Get current plan ID (for active subscription)
   const currentPlanId = currentPackage?.packageId || null;
 
+  // Check if user has any active paid subscription
+  const hasActiveSubscription = currentPackage && parseFloat(currentPackage.package?.price || 0) > 0;
+
   const handleSelectPlan = (plan) => {
     // Buy package directly - redirect to payment
     buyMutation.mutate({
@@ -165,6 +168,7 @@ const SubscriptionPlans = () => {
                 isCurrentPlan={isCurrentPlan}
                 onSelect={handleSelectPlan}
                 onCancel={handleCancelSubscription}
+                hasActiveSubscription={hasActiveSubscription}
               />
             </Col>
           );

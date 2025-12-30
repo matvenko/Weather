@@ -25,11 +25,11 @@ export default function About() {
                                     მაღალი გარჩევადობის მოდელებს, რომ მიიღოთ ჰიპერლოკალური პროგნოზი
                                     თქვენი მისამართისთვის…
                                 </p>
-                                <div className="w3banner-content-btns">
-                                    <a href="/contact" className="btn about-btn btn-primary me-2">
-                                        დაგვიკავშირდით <span className="arrow">→</span>
-                                    </a>
-                                </div>
+                                {/*<div className="w3banner-content-btns">*/}
+                                {/*    <a href="/contact" className="btn about-btn btn-primary me-2">*/}
+                                {/*        დაგვიკავშირდით <span className="arrow">→</span>*/}
+                                {/*    </a>*/}
+                                {/*</div>*/}
                             </div>
                         </Col>
 
