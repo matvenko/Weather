@@ -11,6 +11,7 @@
     height: 100%;
     overflow: hidden;
     z-index: -1;       /* ყველა სხვა კონტენტი ზემოდან */               /* რომ არაფერი გადმოიღვაროს */
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); /* fallback background */
 }
 
 /* VIDEO როგორც ფონი — შენთან class="myVideo" */

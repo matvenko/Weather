@@ -1,9 +1,14 @@
 // VideoBannerContainer.jsx
-import React, { useEffect, useRef, useMemo } from "react";
+import React, { useEffect, useRef, useMemo, useState } from "react";
 import "./VideoBanner.css";
 import fallbackVideo from "./Mp4/main.mp4"; // fallback
 import { useSelector } from "react-redux";
 import { selectCurrentBackgroundFile } from "@src/features/app/appSlice.js";
+
+// Detect if device is mobile
+function isMobileDevice() {
+    return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+}
 
 // 1) აგროვებს build-ის დროს ყველა mp4/webm/ogg ფაილს ამ დირექტორიიდან (და ქვე-ფოლდერებიდან)
 const videoRegistry = import.meta.glob("./Mp4/**/*.{mp4,webm,ogg}", {
@@ -55,6 +60,11 @@ function resolveVideoSrc(raw) {
 export default function VideoBannerContainer() {
     const backgroundFile = useSelector(selectCurrentBackgroundFile);
     const videoRef = useRef(null);
+    const [isMobile, setIsMobile] = useState(false);
+
+    useEffect(() => {
+        setIsMobile(isMobileDevice());
+    }, []);
 
     const src = useMemo(() => {
         const resolved = resolveVideoSrc(backgroundFile);
@@ -62,6 +72,8 @@ export default function VideoBannerContainer() {
     }, [backgroundFile]);
 
     useEffect(() => {
+        if (isMobile) return; // Skip video logic on mobile
+
         const v = videoRef.current;
         if (!v) return;
 
@@ -83,22 +95,23 @@ export default function VideoBannerContainer() {
             }
         };
         play();
-    }, [src]);
+    }, [src, isMobile]);
 
     return (
         <div className="banner-layer">
-            <video
-                key={src}                 // გარანტირებული re-mount, როცა იცვლება
-                ref={videoRef}
-                src={src}                 // პირდაპირ video.src ვიყენებთ
-                autoPlay
-                muted
-                loop
-                playsInline
-                preload="auto"
-                className="w-full h-[60vh] object-cover rounded-2xl myVideo"
-                poster="/video-poster.jpg"
-            />
+            {!isMobile && (
+                <video
+                    key={src}                 // გარანტირებული re-mount, როცა იცვლება
+                    ref={videoRef}
+                    src={src}                 // პირდაპირ video.src ვიყენებთ
+                    autoPlay
+                    muted
+                    loop
+                    playsInline
+                    preload="auto"
+                    className="w-full h-[60vh] object-cover rounded-2xl myVideo"
+                />
+            )}
             <div className="main-content-top"></div>
         </div>
     );
