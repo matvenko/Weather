@@ -233,6 +233,9 @@ const SfericMap = () => {
     // Controls drawer state
     const [controlsDrawerOpen, setControlsDrawerOpen] = useState(false);
 
+    // Legend drawer state
+    const [legendDrawerOpen, setLegendDrawerOpen] = useState(false);
+
     // Header visibility state
     const [isHeaderVisible, setIsHeaderVisible] = useState(true);
 
@@ -1982,6 +1985,52 @@ const SfericMap = () => {
                 <img src={localBrandLogo} alt="Meteo360" />
             </a>
 
+            {/* Legend Toggle Button - Open Drawer */}
+            {!legendDrawerOpen && (
+                <Button
+                    type="primary"
+                    icon={<MdChevronLeft style={{ fontSize: '24px', transform: 'rotate(180deg)' }} />}
+                    onClick={() => setLegendDrawerOpen(true)}
+                    style={{
+                        position: 'absolute',
+                        top: '50%',
+                        left: '0px',
+                        transform: 'translateY(-50%)',
+                        zIndex: 1100,
+                        borderRadius: '0 8px 8px 0',
+                        background: 'rgba(26, 26, 46, 0.9)',
+                        border: '1px solid rgba(255, 255, 255, 0.1)',
+                        backdropFilter: 'blur(10px)',
+                        padding: '12px 8px',
+                        height: 'auto',
+                        minWidth: 'auto'
+                    }}
+                />
+            )}
+
+            {/* Legend Toggle Button - Close Drawer */}
+            {legendDrawerOpen && (
+                <Button
+                    type="primary"
+                    icon={<MdChevronLeft style={{ fontSize: '24px' }} />}
+                    onClick={() => setLegendDrawerOpen(false)}
+                    style={{
+                        position: 'absolute',
+                        top: '50%',
+                        left: '360px',
+                        transform: 'translateY(-50%)',
+                        zIndex: 1100,
+                        borderRadius: '0 8px 8px 0',
+                        background: 'rgba(26, 26, 46, 0.9)',
+                        border: '1px solid rgba(255, 255, 255, 0.1)',
+                        backdropFilter: 'blur(10px)',
+                        padding: '12px 8px',
+                        height: 'auto',
+                        minWidth: 'auto'
+                    }}
+                />
+            )}
+
             {/* Controls Toggle Button - Open Drawer */}
             {!controlsDrawerOpen && (
                 <Button
@@ -2027,6 +2076,155 @@ const SfericMap = () => {
                     }}
                 />
             )}
+
+            {/* Legend Drawer */}
+            <Drawer
+                title="ლეგენდები"
+                placement="left"
+                onClose={() => setLegendDrawerOpen(false)}
+                open={legendDrawerOpen}
+                width={360}
+                mask={false}
+                closeIcon={null}
+                styles={{
+                    body: { padding: '16px', background: 'rgba(26, 26, 46, 0.95)' },
+                    header: { background: 'rgba(26, 26, 46, 0.95)', borderBottom: '1px solid rgba(255, 255, 255, 0.1)', color: '#fff' }
+                }}
+            >
+                <div style={{ color: '#fff' }}>
+                    <div className="legend-title" onClick={() => setIsLegendCollapsed(!isLegendCollapsed)} style={{ cursor: 'pointer', display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
+                        <span>ელვის დარტყმები</span>
+                        {isLegendCollapsed ? <MdExpandMore /> : <MdExpandLess />}
+                    </div>
+                    {!isLegendCollapsed && (
+                    <>
+                    <div className="legend-items">
+                        <div className="legend-item">
+                            <div className="legend-dot new" />
+                            <span>ახალი</span>
+                        </div>
+                        <div className="legend-item">
+                            <div className="legend-dot recent" />
+                            <span>ბოლო 5 წთ</span>
+                        </div>
+                    </div>
+
+                    {/* Radar Legend */}
+                    {SUBSCRIPTION_KEY && radarEnabled && (
+                        <>
+                            <div style={{marginTop: '15px', paddingTop: '15px', borderTop: '1px solid rgba(255,255,255,0.3)'}}>
+                                <div className="legend-title">რადარი (ნალექი)</div>
+                            </div>
+                            <div style={{fontSize: '11px', marginTop: '8px'}}>
+                                <div style={{display: 'flex', alignItems: 'center', marginBottom: '4px'}}>
+                                    <div style={{width: '20px', height: '12px', background: '#4444FF', marginRight: '8px', border: '1px solid rgba(255,255,255,0.3)'}}></div>
+                                    <span>სუსტი</span>
+                                </div>
+                                <div style={{display: 'flex', alignItems: 'center', marginBottom: '4px'}}>
+                                    <div style={{width: '20px', height: '12px', background: '#00FF00', marginRight: '8px', border: '1px solid rgba(255,255,255,0.3)'}}></div>
+                                    <span>ზომიერი</span>
+                                </div>
+                                <div style={{display: 'flex', alignItems: 'center', marginBottom: '4px'}}>
+                                    <div style={{width: '20px', height: '12px', background: '#FFFF00', marginRight: '8px', border: '1px solid rgba(255,255,255,0.3)'}}></div>
+                                    <span>ძლიერი</span>
+                                </div>
+                                <div style={{display: 'flex', alignItems: 'center', marginBottom: '4px'}}>
+                                    <div style={{width: '20px', height: '12px', background: '#FF6600', marginRight: '8px', border: '1px solid rgba(255,255,255,0.3)'}}></div>
+                                    <span>ძალიან ძლიერი</span>
+                                </div>
+                                <div style={{display: 'flex', alignItems: 'center'}}>
+                                    <div style={{width: '20px', height: '12px', background: '#FF0000', marginRight: '8px', border: '1px solid rgba(255,255,255,0.3)'}}></div>
+                                    <span>უკიდურესი</span>
+                                </div>
+                            </div>
+                        </>
+                    )}
+
+                    {/* Cloud Legend */}
+                    {CLOUDS_TILE_URL && cloudsEnabled && (
+                        <>
+                            <div style={{marginTop: '15px', paddingTop: '15px', borderTop: '1px solid rgba(255,255,255,0.3)'}}>
+                                <div className="legend-title">ღრუბლები</div>
+                            </div>
+                            <div style={{fontSize: '11px', marginTop: '8px'}}>
+                                <div style={{display: 'flex', alignItems: 'center', marginBottom: '4px'}}>
+                                    <div style={{width: '20px', height: '12px', background: 'rgba(255, 255, 255, 0.9)', marginRight: '8px', border: '1px solid rgba(255,255,255,0.5)'}}></div>
+                                    <span>ღრუბლიანობა</span>
+                                </div>
+                                <div style={{fontSize: '10px', opacity: 0.8, marginTop: '5px'}}>
+                                    წყარო: OpenWeatherMap
+                                </div>
+                                <div style={{fontSize: '9px', opacity: 0.6, marginTop: '3px', fontStyle: 'italic'}}>
+                                    API key აქტივაციას 1-2 სთ სჭირდება
+                                </div>
+                            </div>
+                        </>
+                    )}
+
+                    {/* Polygon Legend */}
+                    {polygonsEnabled && polygonsData.length > 0 && (
+                        <>
+                            <div style={{marginTop: '15px', paddingTop: '15px', borderTop: '1px solid rgba(255,255,255,0.3)'}}>
+                                <div className="legend-title">ელვის ზონები</div>
+                            </div>
+                            <div style={{fontSize: '11px', marginTop: '8px'}}>
+                                <div style={{display: 'flex', alignItems: 'center', marginBottom: '4px'}}>
+                                    <div style={{width: '20px', height: '12px', background: '#00ff00', marginRight: '8px', border: '2px solid #42A5F5'}}></div>
+                                    <span>დაბალი (Low)</span>
+                                </div>
+                                <div style={{display: 'flex', alignItems: 'center', marginBottom: '4px'}}>
+                                    <div style={{width: '20px', height: '12px', background: '#FFA500', marginRight: '8px', border: '2px solid #2196F3'}}></div>
+                                    <span>საშუალო (Medium)</span>
+                                </div>
+                                <div style={{display: 'flex', alignItems: 'center', marginBottom: '4px'}}>
+                                    <div style={{width: '20px', height: '12px', background: '#670081', marginRight: '8px', border: '2px solid #1976D2'}}></div>
+                                    <span>მაღალი (High)</span>
+                                </div>
+                                <div style={{marginTop: '10px', paddingTop: '10px', borderTop: '1px solid rgba(255,255,255,0.2)'}}>
+                                    <div style={{fontWeight: 'bold', marginBottom: '8px', fontSize: '11px'}}>შტორმის სექტორი (Storm Cell):</div>
+                                    <div style={{display: 'flex', alignItems: 'center', marginBottom: '4px'}}>
+                                        <div style={{width: '20px', height: '12px', background: '#FFEB3B', marginRight: '8px', border: '2px solid #FFEB3B', opacity: 0.7}}></div>
+                                        <span>Unknown (უცნობი)</span>
+                                    </div>
+                                    <div style={{display: 'flex', alignItems: 'center', marginBottom: '4px'}}>
+                                        <div style={{width: '20px', height: '12px', background: '#FF9800', marginRight: '8px', border: '2px solid #FF9800', opacity: 0.7}}></div>
+                                        <span>Moderate (ზომიერი)</span>
+                                    </div>
+                                    <div style={{display: 'flex', alignItems: 'center', marginBottom: '4px'}}>
+                                        <div style={{width: '20px', height: '12px', background: '#9C27B0', marginRight: '8px', border: '2px solid #9C27B0', opacity: 0.7}}></div>
+                                        <span>Severe (მძიმე)</span>
+                                    </div>
+                                    <div style={{fontSize: '10px', opacity: 0.7, marginTop: '6px'}}>
+                                        ელვის აქტივობის ძირითადი ზონა
+                                    </div>
+                                </div>
+                            </div>
+                        </>
+                    )}
+
+                    {/* Storm Movement Legend */}
+                    {polygonsEnabled && polygonsData.some(p => p.direction && p.speed) && (
+                        <>
+                            <div style={{marginTop: '15px', paddingTop: '15px', borderTop: '1px solid rgba(255,255,255,0.3)'}}>
+                                <div className="legend-title">შტორმის მოძრაობა</div>
+                            </div>
+                            <div style={{fontSize: '11px', marginTop: '8px'}}>
+                                <div style={{fontWeight: 'bold', marginBottom: '6px', fontSize: '11px'}}>Alert Area:</div>
+                                <div style={{display: 'flex', alignItems: 'center', marginBottom: '4px'}}>
+                                    <div style={{width: '20px', height: '4px', background: '#00CED1', marginRight: '8px'}}></div>
+                                    <span>მიმართულება (Cyan)</span>
+                                </div>
+                                <div style={{display: 'flex', alignItems: 'center', marginBottom: '8px'}}>
+                                    <div style={{width: '12px', height: '12px', background: '#00CED1', marginRight: '8px', borderRadius: '50%', border: '2px solid #FFF'}}></div>
+                                    <span>ცენტრი</span>
+                                </div>
+                            </div>
+                        </>
+                    )}
+                    </>
+                    )}
+                </div>
+            </Drawer>
 
             {/* Controls Drawer */}
             <Drawer
@@ -2076,146 +2274,6 @@ const SfericMap = () => {
                     locationError={locationError}
                 />
             </Drawer>
-
-            {/* Legend */}
-            <div className="sferic-legend">
-                <div className="legend-title" onClick={() => setIsLegendCollapsed(!isLegendCollapsed)} style={{ cursor: 'pointer', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <span>ელვის დარტყმები</span>
-                    {isLegendCollapsed ? <MdExpandMore /> : <MdExpandLess />}
-                </div>
-                {!isLegendCollapsed && (
-                <>
-                <div className="legend-items">
-                    <div className="legend-item">
-                        <div className="legend-dot new" />
-                        <span>ახალი</span>
-                    </div>
-                    <div className="legend-item">
-                        <div className="legend-dot recent" />
-                        <span>ბოლო 5 წთ</span>
-                    </div>
-                </div>
-
-                {/* Radar Legend */}
-                {SUBSCRIPTION_KEY && radarEnabled && (
-                    <>
-                        <div style={{marginTop: '15px', paddingTop: '15px', borderTop: '1px solid rgba(255,255,255,0.3)'}}>
-                            <div className="legend-title">რადარი (ნალექი)</div>
-                        </div>
-                        <div style={{fontSize: '11px', marginTop: '8px'}}>
-                            <div style={{display: 'flex', alignItems: 'center', marginBottom: '4px'}}>
-                                <div style={{width: '20px', height: '12px', background: '#4444FF', marginRight: '8px', border: '1px solid rgba(255,255,255,0.3)'}}></div>
-                                <span>სუსტი</span>
-                            </div>
-                            <div style={{display: 'flex', alignItems: 'center', marginBottom: '4px'}}>
-                                <div style={{width: '20px', height: '12px', background: '#00FF00', marginRight: '8px', border: '1px solid rgba(255,255,255,0.3)'}}></div>
-                                <span>ზომიერი</span>
-                            </div>
-                            <div style={{display: 'flex', alignItems: 'center', marginBottom: '4px'}}>
-                                <div style={{width: '20px', height: '12px', background: '#FFFF00', marginRight: '8px', border: '1px solid rgba(255,255,255,0.3)'}}></div>
-                                <span>ძლიერი</span>
-                            </div>
-                            <div style={{display: 'flex', alignItems: 'center', marginBottom: '4px'}}>
-                                <div style={{width: '20px', height: '12px', background: '#FF6600', marginRight: '8px', border: '1px solid rgba(255,255,255,0.3)'}}></div>
-                                <span>ძალიან ძლიერი</span>
-                            </div>
-                            <div style={{display: 'flex', alignItems: 'center'}}>
-                                <div style={{width: '20px', height: '12px', background: '#FF0000', marginRight: '8px', border: '1px solid rgba(255,255,255,0.3)'}}></div>
-                                <span>უკიდურესი</span>
-                            </div>
-                        </div>
-                    </>
-                )}
-
-                {/* Cloud Legend */}
-                {CLOUDS_TILE_URL && cloudsEnabled && (
-                    <>
-                        <div style={{marginTop: '15px', paddingTop: '15px', borderTop: '1px solid rgba(255,255,255,0.3)'}}>
-                            <div className="legend-title">ღრუბლები</div>
-                        </div>
-                        <div style={{fontSize: '11px', marginTop: '8px'}}>
-                            <div style={{display: 'flex', alignItems: 'center', marginBottom: '4px'}}>
-                                <div style={{width: '20px', height: '12px', background: 'rgba(255, 255, 255, 0.9)', marginRight: '8px', border: '1px solid rgba(255,255,255,0.5)'}}></div>
-                                <span>ღრუბლიანობა</span>
-                            </div>
-                            <div style={{fontSize: '10px', opacity: 0.8, marginTop: '5px'}}>
-                                წყარო: OpenWeatherMap
-                            </div>
-                            <div style={{fontSize: '9px', opacity: 0.6, marginTop: '3px', fontStyle: 'italic'}}>
-                                API key აქტივაციას 1-2 სთ სჭირდება
-                            </div>
-                        </div>
-                    </>
-                )}
-
-                {/* Polygon Legend */}
-                {polygonsEnabled && polygonsData.length > 0 && (
-                    <>
-                        <div style={{marginTop: '15px', paddingTop: '15px', borderTop: '1px solid rgba(255,255,255,0.3)'}}>
-                            <div className="legend-title">ელვის ზონები</div>
-                        </div>
-                        <div style={{fontSize: '11px', marginTop: '8px'}}>
-                            <div style={{display: 'flex', alignItems: 'center', marginBottom: '4px'}}>
-                                <div style={{width: '20px', height: '12px', background: '#81C784', marginRight: '8px', border: '2px solid #42A5F5'}}></div>
-                                <span>დაბალი (Low)</span>
-                            </div>
-                            <div style={{display: 'flex', alignItems: 'center', marginBottom: '4px'}}>
-                                <div style={{width: '20px', height: '12px', background: '#4CAF50', marginRight: '8px', border: '2px solid #2196F3'}}></div>
-                                <span>საშუალო (Medium)</span>
-                            </div>
-                            <div style={{display: 'flex', alignItems: 'center', marginBottom: '4px'}}>
-                                <div style={{width: '20px', height: '12px', background: '#66BB6A', marginRight: '8px', border: '2px solid #1976D2'}}></div>
-                                <span>მაღალი (High)</span>
-                            </div>
-                            <div style={{marginTop: '10px', paddingTop: '10px', borderTop: '1px solid rgba(255,255,255,0.2)'}}>
-                                <div style={{fontWeight: 'bold', marginBottom: '8px', fontSize: '11px'}}>შტორმის სექტორი (Storm Cell):</div>
-                                <div style={{display: 'flex', alignItems: 'center', marginBottom: '4px'}}>
-                                    <div style={{width: '20px', height: '12px', background: '#FFEB3B', marginRight: '8px', border: '2px solid #FFEB3B', opacity: 0.7}}></div>
-                                    <span>Unknown (უცნობი)</span>
-                                </div>
-                                <div style={{display: 'flex', alignItems: 'center', marginBottom: '4px'}}>
-                                    <div style={{width: '20px', height: '12px', background: '#FF9800', marginRight: '8px', border: '2px solid #FF9800', opacity: 0.7}}></div>
-                                    <span>Moderate (ზომიერი)</span>
-                                </div>
-                                <div style={{display: 'flex', alignItems: 'center', marginBottom: '4px'}}>
-                                    <div style={{width: '20px', height: '12px', background: '#9C27B0', marginRight: '8px', border: '2px solid #9C27B0', opacity: 0.7}}></div>
-                                    <span>Severe (მძიმე)</span>
-                                </div>
-                                <div style={{fontSize: '10px', opacity: 0.7, marginTop: '6px'}}>
-                                    ელვის აქტივობის ძირითადი ზონა
-                                </div>
-                            </div>
-                        </div>
-                    </>
-                )}
-
-                {/* Storm Movement Legend */}
-                {polygonsEnabled && polygonsData.some(p => p.direction && p.speed) && (
-                    <>
-                        <div style={{marginTop: '15px', paddingTop: '15px', borderTop: '1px solid rgba(255,255,255,0.3)'}}>
-                            <div className="legend-title">შტორმის მოძრაობა</div>
-                        </div>
-                        <div style={{fontSize: '11px', marginTop: '8px'}}>
-                            <div style={{fontWeight: 'bold', marginBottom: '6px', fontSize: '11px'}}>Alert Area:</div>
-                            <div style={{display: 'flex', alignItems: 'center', marginBottom: '4px'}}>
-                                <div style={{width: '20px', height: '4px', background: '#00CED1', marginRight: '8px'}}></div>
-                                <span>მიმართულება (Cyan)</span>
-                            </div>
-                            <div style={{display: 'flex', alignItems: 'center', marginBottom: '8px'}}>
-                                <div style={{width: '12px', height: '12px', background: '#00CED1', marginRight: '8px', borderRadius: '50%', border: '2px solid #FFF'}}></div>
-                                <span>ცენტრი</span>
-                            </div>
-                            {/*<div style={{fontWeight: 'bold', marginBottom: '6px', fontSize: '11px', marginTop: '8px'}}>Storm Cell:</div>*/}
-                            {/*<div style={{display: 'flex', alignItems: 'center'}}>*/}
-                            {/*    <div style={{width: '12px', height: '12px', background: '#FF1493', marginRight: '8px', borderRadius: '50%', border: '2px solid #FFF'}}></div>*/}
-                            {/*    <span>ცენტრი</span>*/}
-                            {/*</div>*/}
-                        </div>
-                    </>
-                )}
-                </>
-                )}
-            </div>
         </div>
         </>
     );
