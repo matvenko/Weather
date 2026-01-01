@@ -66,7 +66,6 @@ const WeatherMaps = ({
         logo.alt = title;
         link.appendChild(logo);
 
-        // --- რუკის ინტერაქციების დროებითი გათიშვა, როცა ლოგოზე ვართ ---
         const disable = () => {
             try {
                 map?.dragPan?.disable();
@@ -95,8 +94,6 @@ const WeatherMaps = ({
         link.addEventListener('touchstart', disable, {passive: true});
         link.addEventListener('touchend', enable);
 
-
-        // down/start-ზე ვბლოკავთ დეფოლტს, რომ რუკამ არ გააკეთს drag
         const killDown = (e) => {
             e.preventDefault();
             e.stopPropagation();
@@ -106,7 +103,6 @@ const WeatherMaps = ({
             logo.addEventListener(evt, killDown);
         });
 
-        // click-ზე დეფოლტს აღარ ვჭამთ! ვაჭერით — უნდა გადიდეს URL.
         const stopOnly = (e) => {
             e.stopPropagation();
         };

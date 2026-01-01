@@ -31,7 +31,7 @@ export const SUBSCRIPTION_PLANS = [
       { text: 'Saved locations', textGe: 'შენახული ლოკაციები', included: false },
       { text: 'Weather alerts', textGe: 'ამინდის გაფრთხილებები', included: false },
       { text: 'Weather maps', textGe: 'ამინდის რუკები', included: false },
-      { text: 'Sferic/Lightning maps', textGe: 'შტერიქ/ელვის რუკები', included: false },
+      { text: 'Sferic/Lightning maps', textGe: 'სფერიქ/ელვის რუკები', included: false },
       { text: 'Data export (CSV/PDF)', textGe: 'მონაცემთა ექსპორტი', included: false },
       { text: 'High-resolution maps', textGe: 'მაღალი რეზოლუციის რუკები', included: false },
       { text: 'Ad-free mode', textGe: 'რეკლამის გარეშე რეჟიმი', included: false }

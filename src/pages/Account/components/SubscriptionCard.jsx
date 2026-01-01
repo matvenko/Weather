@@ -27,7 +27,7 @@ const SubscriptionCard = ({ plan, isCurrentPlan, onSelect, onCancel, hasActiveSu
       )}
 
       <div className="plan-header">
-        <h2 className="plan-name">{t("planName")}</h2>
+        <h2 className="plan-name">{planName}</h2>
         <div className="plan-price">
           <span className="price">{planPrice}</span>
           {plan.price > 0 && <span className="period">/ {planPeriod}</span>}

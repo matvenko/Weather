@@ -1,6 +1,6 @@
 {
   "nav": {
-    "home": "მთავარი",
+    "home": "პროგნოზი",
     "about": "ჩვენ შესახებ",
     "maps": "რუკები",
     "service": "ჩვენი სერვისი",
@@ -25,12 +25,12 @@
     }
   },
   "my_account": "ჩემი გვერდი",
-  "hourly_forecast": "საათობრივი ფორქასთი",
-  "next_day_forecast": "შემდეგი დღეების ფორქასთი",
-  "one_week_forcast_view": "7 დღის ფორქასთი",
-  "two_week_forcast_view": "14 დღის ფორქასთი",
-  "hourly_view": "საათობრივი ხედვა",
-  "3_hourly_view": "3 საათიანი ხედვა",
+  "hourly_forecast": "საათობრივი პროგნოზი",
+  "next_day_forecast": "შემდეგი დღეების პროგნოზი",
+  "one_week_forcast_view": "7 დღიანი",
+  "two_week_forcast_view": "14 დღიანი",
+  "hourly_view": "1 საათიანი",
+  "3_hourly_view": "3 საათიანი",
   "require_email_verification_text": "თქვენი ელფოსტის მისამართი ჯერ არ არის დადასტურებული. გსურთ, რომ ხელახლა გამოგიგზავნოთ ელფოსტა დადასტურებისთვის",
   "require_email_verification_title": "საჭიროა ელფოსტის დადასტურება",
   "resend": "თავიდან გაგზავნა",

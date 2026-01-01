@@ -110,9 +110,6 @@ export default function About() {
                                 <h1 className="hero-title">
                                     ძლიერი ეკონომიკისთვის,<br/> ჯანმრთელი მომავლით
                                 </h1>
-                                <Button type={"text"} className={"btn-style"}>
-                                    შემოგვიერთდით
-                                </Button>
                             </div>
                         </Col>
 
