@@ -2013,21 +2013,7 @@ const SfericMap = () => {
                 open={controlsDrawerOpen}
                 width={360}
                 mask={false}
-                closeIcon={
-                    <Button
-                        type="primary"
-                        icon={<MdChevronLeft style={{ fontSize: '24px', transform: 'rotate(180deg)' }} />}
-                        style={{
-                            borderRadius: '8px',
-                            background: 'rgba(26, 26, 46, 0.9)',
-                            border: '1px solid rgba(255, 255, 255, 0.1)',
-                            backdropFilter: 'blur(10px)',
-                            padding: '8px',
-                            height: 'auto',
-                            minWidth: 'auto'
-                        }}
-                    />
-                }
+                closeIcon={<MdClose style={{ color: '#fff', fontSize: '20px' }} />}
                 styles={{
                     body: { padding: 0, background: 'rgba(26, 26, 46, 0.95)' },
                     header: { background: 'rgba(26, 26, 46, 0.95)', borderBottom: '1px solid rgba(255, 255, 255, 0.1)', color: '#fff' }
