@@ -50,12 +50,11 @@ export const msToKmh = (ms) => {
 
 export const fmtHour = (d) => {
     const date = toDate(d);
-    let h = date.getHours();
+    const h = date.getHours();
     const m = date.getMinutes();
-    const ampm = h >= 12 ? "PM" : "AM";
-    h = h % 12 || 12;
+    const hh = String(h).padStart(2, "0");
     const mm = String(m).padStart(2, "0");
-    return `${String(h).padStart(2, "0")}:${mm} ${ampm}`;
+    return `${hh}:${mm}`;
 };
 
 export const fmtPrecipMm = (mm) => {

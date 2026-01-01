@@ -49,7 +49,7 @@ const WeatherMaps = ({
                      }) => {
     const containerRef = useRef(null);
     const mapRef = useRef(null);
-    const [isHeaderVisible, setIsHeaderVisible] = useState(false);
+    const [isHeaderVisible, setIsHeaderVisible] = useState(true);
 
     function getLogo(href, src, title = "Meteo360", map) {
         const link = document.createElement('a');
