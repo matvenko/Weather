@@ -232,7 +232,9 @@ const SfericMap = () => {
 
     // Controls drawer state
     const [controlsDrawerOpen, setControlsDrawerOpen] = useState(false);
-    const [isHoveringControlsButton, setIsHoveringControlsButton] = useState(false);
+
+    // Header visibility state
+    const [isHeaderVisible, setIsHeaderVisible] = useState(true);
 
     // Polygon state
     const [polygonsEnabled, setPolygonsEnabled] = useState(true);
@@ -1943,7 +1945,28 @@ const SfericMap = () => {
 
     return (
         <>
-            <MapPageHeader forceHide={controlsDrawerOpen || isHoveringControlsButton} />
+            {isHeaderVisible && <MapPageHeader disableAutoShow={true} />}
+
+            {/* Header Toggle Button */}
+            <Button
+                type="primary"
+                icon={isHeaderVisible ? <MdExpandLess style={{ fontSize: '24px' }} /> : <MdExpandMore style={{ fontSize: '24px' }} />}
+                onClick={() => setIsHeaderVisible(!isHeaderVisible)}
+                style={{
+                    position: 'fixed',
+                    top: isHeaderVisible ? '120px' : '0px',
+                    left: '50%',
+                    transform: 'translateX(-50%)',
+                    zIndex: 1100,
+                    borderRadius: isHeaderVisible ? '0 0 8px 8px' : '0 0 8px 8px',
+                    background: 'rgba(26, 26, 46, 0.5)',
+                    border: '1px solid rgba(255, 255, 255, 0.1)',
+                    padding: '0px 9px',
+                    height: 'auto',
+                    width: '80'
+                }}
+            />
+
             <div className="sferic-map-wrap">
                 <div ref={containerRef} className="sferic-map-container" />
 
@@ -1965,8 +1988,6 @@ const SfericMap = () => {
                     type="primary"
                     icon={<MdChevronLeft style={{ fontSize: '24px' }} />}
                     onClick={() => setControlsDrawerOpen(true)}
-                    onMouseEnter={() => setIsHoveringControlsButton(true)}
-                    onMouseLeave={() => setIsHoveringControlsButton(false)}
                     style={{
                         position: 'absolute',
                         top: '50%',
@@ -1988,10 +2009,7 @@ const SfericMap = () => {
             <Drawer
                 title="კონტროლის პანელი"
                 placement="right"
-                onClose={() => {
-                    setControlsDrawerOpen(false);
-                    setIsHoveringControlsButton(false);
-                }}
+                onClose={() => setControlsDrawerOpen(false)}
                 open={controlsDrawerOpen}
                 width={360}
                 mask={false}
