@@ -10,7 +10,7 @@ import {
     fmtPrecipMm,
     msToKmh,
 } from "@src/pages/HomePage/utils/homepage-utils.js";
-import {iconByCode, isNightTime} from "@src/pages/HomePage/utils/weather-icons.js";
+import {getWeatherText, iconByCode, isNightTime} from "@src/pages/HomePage/utils/weather-icons.js";
 import {useTranslation} from "react-i18next";
 import {
     WindDirectionIcon,
@@ -39,6 +39,7 @@ const ForecastHourly = ({
         () => (selectedHourly || []).map(h => Number(h.temperature)).filter(Number.isFinite),
         [selectedHourly]
     );
+    const { i18n } = useTranslation();
 
     // Function to check if the hour matches current time
     const isCurrentHour = (timeStr) => {
@@ -97,13 +98,14 @@ const ForecastHourly = ({
             >
                 {(selectedHourly || []).map((h, i) => {
                     const isNight = isNightTime(h.time);
+                    const weatherText = getWeatherText(h.pictocode, i18n.language);
                     return (
                         <motion.div
                             key={`${h.time}-${i}`}
                             className={`stat-item ${isCurrentHour(h.time) ? "is-current-hour" : ""} ${isNight ? "is-night" : "is-day"}`}
                             variants={fadeUp}
                         >
-                            <div className="s-icon" title={String(h.pictocode)}>
+                            <div className="s-icon" title={weatherText.desc}>
                                 {iconByCode(h.pictocode, isNight)}
                             </div>
 

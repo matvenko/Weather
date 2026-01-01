@@ -23,7 +23,7 @@ export function iconByCode(code, isNight = false) {
     if (isNight) {
         if (c === 1) return "🌙";           // Clear night - moon
         if (c === 2) return "🌙";           // Few clouds night
-        if (c === 3) return "☁️🌙";         // Partly cloudy night
+        if (c === 3) return React.createElement('span', {}, "☁️", React.createElement('span', { style: { marginLeft: '2px' } }, "🌙"));
         if (c === 4) return "☁️";           // Overcast (same)
         if (c === 5) return "🌫️";          // Fog (same)
         if (c === 6) return "🌧️";          // Rain (same)
@@ -31,7 +31,7 @@ export function iconByCode(code, isNight = false) {
         if (c === 8) return React.createElement(IoIosThunderstorm, {}); // Thunderstorms (same)
         if (c === 9) return "🌨️";          // Snow (same)
         if (c === 10) return "🌨️";         // Snow showers (same)
-        if (c === 11) return "🌧️❄️";       // Mixed snow/rain (same)
+        if (c === 11) return React.createElement('span', {}, "🌧️", React.createElement('span', { style: { marginLeft: '2px' } }, "❄️"));
         if (c === 12) return "🌧️";         // Occasional rain (same)
         if (c === 13) return "🌨️";         // Occasional snow (same)
         if (c === 14) return "🌧️";         // Rain (same)
@@ -42,6 +42,17 @@ export function iconByCode(code, isNight = false) {
         if (c === 21 || c === 22 || c === 23 || c === 24 || c === 25) {
             return React.createElement(IoIosThunderstorm, {}); // Thunderstorms (same)
         }
+        // Hourly pictocodes (26-35) for night
+        if (c === 26) return "🌦️";         // Light rain showers
+        if (c === 27) return "🌧️";         // Heavy rain showers
+        if (c === 28) return "🌨️";         // Light snow showers
+        if (c === 29) return "🌨️";         // Heavy snow showers
+        if (c === 30) return React.createElement('span', {}, "🌧️", React.createElement('span', { style: { marginLeft: '2px' } }, "❄️")); // Sleet
+        if (c === 31) return "🌧️";         // Light rain
+        if (c === 32) return "🌧️";         // Heavy rain
+        if (c === 33) return "🌨️";         // Light snow
+        if (c === 34) return "🌨️";         // Heavy snow
+        if (c === 35) return React.createElement('span', {}, "🌧️", React.createElement('span', { style: { marginLeft: '2px' } }, "❄️")); // Sleet/mixed
         return "☁️"; // Default night
     }
 
@@ -56,7 +67,7 @@ export function iconByCode(code, isNight = false) {
     if (c === 8) return React.createElement(IoIosThunderstorm, {}); // Thunderstorms
     if (c === 9) return "🌨️";          // Snow
     if (c === 10) return "🌨️";         // Snow showers
-    if (c === 11) return "🌧️❄️";       // Mixed snow/rain
+    if (c === 11) return React.createElement('span', {}, "🌧️", React.createElement('span', { style: { marginLeft: '2px' } }, "❄️"));
     if (c === 12) return "🌧️";         // Occasional rain
     if (c === 13) return "🌨️";         // Occasional snow
     if (c === 14) return "🌧️";         // Rain
@@ -67,6 +78,18 @@ export function iconByCode(code, isNight = false) {
     if (c === 21 || c === 22 || c === 23 || c === 24 || c === 25) {
         return React.createElement(IoIosThunderstorm, {}); // Thunderstorms
     }
+
+    // Hourly pictocodes (26-35) - additional codes for hourly data
+    if (c === 26) return "🌦️";         // Light rain showers
+    if (c === 27) return "🌧️";         // Heavy rain showers
+    if (c === 28) return "🌨️";         // Light snow showers
+    if (c === 29) return "🌨️";         // Heavy snow showers
+    if (c === 30) return React.createElement('span', {}, "🌧️", React.createElement('span', { style: { marginLeft: '2px' } }, "❄️")); // Sleet
+    if (c === 31) return "🌧️";         // Light rain
+    if (c === 32) return "🌧️";         // Heavy rain
+    if (c === 33) return "🌨️";         // Light snow
+    if (c === 34) return "🌨️";         // Heavy snow
+    if (c === 35) return React.createElement('span', {}, "🌧️", React.createElement('span', { style: { marginLeft: '2px' } }, "❄️")); // Sleet/mixed
 
     return "☁️"; // Default
 }
@@ -97,6 +120,17 @@ export const WEATHER_TEXT_BY_CODE_EN = {
     23: { headline: "Thunderstorms",      desc: "Partly cloudy with local thunderstorms and showers possible" },
     24: { headline: "Heavy Storm",        desc: "Cloudy with thunderstorms and heavy showers" },
     25: { headline: "Thunderstorms",      desc: "Mostly cloudy with thunderstorms and showers" },
+    // Hourly pictocodes (26-35)
+    26: { headline: "Light Showers",      desc: "Light rain showers" },
+    27: { headline: "Heavy Showers",      desc: "Heavy rain showers" },
+    28: { headline: "Light Snow Showers", desc: "Light snow showers" },
+    29: { headline: "Heavy Snow Showers", desc: "Heavy snow showers" },
+    30: { headline: "Sleet",              desc: "Sleet or mixed precipitation" },
+    31: { headline: "Light Rain",         desc: "Light rain" },
+    32: { headline: "Heavy Rain",         desc: "Heavy rain" },
+    33: { headline: "Light Snow",         desc: "Light snow" },
+    34: { headline: "Heavy Snow",         desc: "Heavy snow" },
+    35: { headline: "Sleet",              desc: "Sleet or mixed precipitation" },
 };
 
 export const WEATHER_TEXT_BY_CODE_KA = {
@@ -123,6 +157,17 @@ export const WEATHER_TEXT_BY_CODE_KA = {
     23: { headline: "ჭექა-ქუხილი",        desc: "ნაწილობრივ ღრუბლიანი ადგილობრივი ჭექა-ქუხილით და ჰაერის შესაძლებლობით" },
     24: { headline: "ძლიერი შტორმი",      desc: "ღრუბლიანი ჭექა-ქუხილით და ძლიერი ჰაერით" },
     25: { headline: "ჭექა-ქუხილი",        desc: "ძირითადად მოღრუბლული ჭექა-ქუხილით და ჰაერით" },
+    // საათობრივი პიქტოკოდები (26-35)
+    26: { headline: "მსუბუქი ჰაერი",      desc: "მსუბუქი წვიმის ჰაერი" },
+    27: { headline: "ძლიერი ჰაერი",       desc: "ძლიერი წვიმის ჰაერი" },
+    28: { headline: "მსუბუქი თოვლის ჰაერი", desc: "მსუბუქი თოვლის ჰაერი" },
+    29: { headline: "ძლიერი თოვლის ჰაერი", desc: "ძლიერი თოვლის ჰაერი" },
+    30: { headline: "შერეული",           desc: "წვიმა-თოვლი ან შერეული ნალექი" },
+    31: { headline: "მსუბუქი წვიმა",      desc: "მსუბუქი წვიმა" },
+    32: { headline: "ძლიერი წვიმა",       desc: "ძლიერი წვიმა" },
+    33: { headline: "მსუბუქი თოვლი",      desc: "მსუბუქი თოვლი" },
+    34: { headline: "ძლიერი თოვლი",       desc: "ძლიერი თოვლი" },
+    35: { headline: "შერეული",           desc: "წვიმა-თოვლი ან შერეული ნალექი" },
 };
 
 // Default export (ინგლისური)

@@ -196,7 +196,7 @@
 
 /* ერთი ბარათი */
 .stat-item {
-    min-width: 133px;
+    min-width: 140px;
     min-height: 210px;
     display: grid;
     align-content: start;
@@ -205,6 +205,7 @@
     border-radius: 10px;
     background: rgba(255, 255, 255, .06);
     border: 1px solid rgba(255, 255, 255, .12);
+    overflow: visible;
 }
 
 /* Day hours - lighter, warmer tones */
@@ -242,6 +243,13 @@
 /* შიგთავსი */
 .s-icon {
     font-size: 38px;
+    white-space: nowrap;
+    overflow: visible;
+    line-height: 1.2;
+    min-height: 46px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .s-temp-strip {
