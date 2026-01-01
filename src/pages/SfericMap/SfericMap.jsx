@@ -1982,7 +1982,7 @@ const SfericMap = () => {
                 <img src={localBrandLogo} alt="Meteo360" />
             </a>
 
-            {/* Controls Toggle Button */}
+            {/* Controls Toggle Button - Open Drawer */}
             {!controlsDrawerOpen && (
                 <Button
                     type="primary"
@@ -2005,6 +2005,29 @@ const SfericMap = () => {
                 />
             )}
 
+            {/* Controls Toggle Button - Close Drawer */}
+            {controlsDrawerOpen && (
+                <Button
+                    type="primary"
+                    icon={<MdChevronLeft style={{ fontSize: '24px', transform: 'rotate(180deg)' }} />}
+                    onClick={() => setControlsDrawerOpen(false)}
+                    style={{
+                        position: 'absolute',
+                        top: '50%',
+                        right: '360px',
+                        transform: 'translateY(-50%)',
+                        zIndex: 1100,
+                        borderRadius: '8px 0 0 8px',
+                        background: 'rgba(26, 26, 46, 0.9)',
+                        border: '1px solid rgba(255, 255, 255, 0.1)',
+                        backdropFilter: 'blur(10px)',
+                        padding: '12px 8px',
+                        height: 'auto',
+                        minWidth: 'auto'
+                    }}
+                />
+            )}
+
             {/* Controls Drawer */}
             <Drawer
                 title="კონტროლის პანელი"
@@ -2013,7 +2036,7 @@ const SfericMap = () => {
                 open={controlsDrawerOpen}
                 width={360}
                 mask={false}
-                closeIcon={<MdClose style={{ color: '#fff', fontSize: '20px' }} />}
+                closeIcon={null}
                 styles={{
                     body: { padding: 0, background: 'rgba(26, 26, 46, 0.95)' },
                     header: { background: 'rgba(26, 26, 46, 0.95)', borderBottom: '1px solid rgba(255, 255, 255, 0.1)', color: '#fff' }
