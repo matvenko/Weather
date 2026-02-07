@@ -110,9 +110,9 @@
 
 .hourly-wrapper {
     display: flex;
-    justify-content: space-between;
-    align-items: center;
-    border-bottom: 1px solid rgb(255 255 255 / 0.1);
+    flex-direction: column;
+    align-items: flex-start;
+    /*border-bottom: 1px solid rgb(255 255 255 / 0.1);*/
     padding-bottom: 6px;
 }
 
@@ -374,9 +374,11 @@
     display: inline-flex;
     background: rgba(255, 255, 255, .08);
     border: 1px solid rgba(255, 255, 255, .12);
-    border-radius: 999px;
+    border-radius: 5px;
     padding: 4px;
     gap: 4px;
+    width: 100%;
+    margin: 15px 0 20px 0;
 }
 
 .range-toggle button {
@@ -574,7 +576,7 @@
     }
 
     .stat-item {
-        min-width: 125px;
+        min-width: 150px;
         min-height: 200px;
     }
 
@@ -611,7 +613,7 @@
     }
 
     .stat-item {
-        min-width: 120px;
+        min-width: 150px;
         min-height: 195px;
     }
 
