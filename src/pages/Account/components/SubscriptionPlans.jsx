@@ -98,11 +98,11 @@ const SubscriptionPlans = () => {
           <Title level={4} className="current-plan-title">
             {isGeorgian ? 'მიმდინარე პაკეტი' : 'Current Subscription'}
           </Title>
-          <Paragraph>
+          <Paragraph className={"white"}>
             <strong>{isGeorgian ? 'პაკეტი:' : 'Package:'}</strong>{' '}
             {currentPackage.package?.name}
           </Paragraph>
-          <Paragraph>
+          <Paragraph className={"white"}>
             <strong>{isGeorgian ? 'მოქმედია:' : 'Active until:'}</strong>{' '}
             {new Date(currentPackage.endDate).toLocaleDateString(isGeorgian ? 'ka-GE' : 'en-US')}
           </Paragraph>

@@ -51,8 +51,12 @@
 }
 
 .current-plan-title {
-  color: #69b1ff;
+  color: #FFFFFF !important;
   margin-bottom: 16px;
+}
+
+.white {
+  color: #FFFFFF !important;
 }
 
 .current-plan-alert {
