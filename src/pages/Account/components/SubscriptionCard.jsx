@@ -18,7 +18,6 @@ const SubscriptionCard = ({ plan, isCurrentPlan, onSelect, onCancel, hasActiveSu
     <Card
       className={`subscription-card ${plan.recommended ? 'recommended' : ''} ${isCurrentPlan ? 'current-plan' : ''}`}
       hoverable={!isCurrentPlan}
-      style={{ borderColor: plan.color }}
     >
       {plan.recommended && !hasActiveSubscription && (
         <Tag color="gold" className="recommended-tag">
@@ -44,13 +43,11 @@ const SubscriptionCard = ({ plan, isCurrentPlan, onSelect, onCancel, hasActiveSu
             <List.Item className={`feature-item ${feature.included ? 'included' : 'excluded'}`}>
               <Space>
                 {feature.included ? (
-                  <CheckOutlined style={{ color: '#52c41a', fontSize: '16px' }} />
+                  <CheckOutlined className="feature-check-icon" />
                 ) : (
-                  <CloseOutlined style={{ color: '#d9d9d9', fontSize: '16px' }} />
+                  <CloseOutlined className="feature-close-icon" />
                 )}
-                <span style={{ color: feature.included ? '#262626' : '#8c8c8c' }}>
-                  {featureText}
-                </span>
+                <span>{featureText}</span>
               </Space>
             </List.Item>
           );
@@ -64,13 +61,13 @@ const SubscriptionCard = ({ plan, isCurrentPlan, onSelect, onCancel, hasActiveSu
             size="large"
             block
             onClick={() => onSelect && onSelect(plan)}
-            style={{ backgroundColor: plan.color, borderColor: plan.color }}
+            className="buy-plan-btn"
           >
             {t("buy_plan")}
           </Button>
         )}
         {isCurrentPlan && (
-          <Tag color="green" style={{ width: '100%', textAlign: 'center', padding: '8px', fontSize: '14px' }}>
+          <Tag color="green" className="active-package-tag">
             <CheckOutlined /> {t("active_package")}
           </Tag>
         )}

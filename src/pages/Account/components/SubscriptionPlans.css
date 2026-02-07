@@ -20,6 +20,8 @@
   justify-content: center;
   align-items: center;
   min-height: 400px;
+  text-align: center;
+  padding: 50px;
 }
 
 .subscription-cards-row {
@@ -30,7 +32,39 @@
 .subscription-footer {
   margin-top: 48px;
   padding-top: 24px;
-  border-top: 1px solid #f0f0f0;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.subscription-footer-text {
+  text-align: center;
+  margin-top: 32px;
+  color: #C6D0D6;
+}
+
+.current-plan-card {
+  margin-bottom: 32px;
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
+  background: rgba(0, 0, 0, 0.31);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 16px;
+}
+
+.current-plan-title {
+  color: #69b1ff;
+  margin-bottom: 16px;
+}
+
+.current-plan-alert {
+  margin-top: 16px;
+}
+
+.current-plan-cancel-btn {
+  margin-top: 16px;
+}
+
+.cancel-modal-alert {
+  margin-top: 16px;
 }
 
 /* Responsive adjustments */
@@ -52,12 +86,4 @@
   .subscription-cards-row {
     justify-content: center;
   }
-}
-.current-plan-card{
-  margin-bottom: 32px;
-  -webkit-backdrop-filter: blur(12px);
-  backdrop-filter: blur(12px);
-  background: #0000004f;
-  border: 1px solid rgba(255, 255, 255, .14);
-  border-radius: 16px;
 }

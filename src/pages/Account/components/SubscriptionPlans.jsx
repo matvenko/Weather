@@ -79,7 +79,7 @@ const SubscriptionPlans = () => {
   // Show loading state
   if (packagesLoading || currentSubLoading) {
     return (
-      <div style={{ textAlign: 'center', padding: '50px' }}>
+      <div className="subscription-loading">
         <Spin size="large" />
       </div>
     );
@@ -94,16 +94,8 @@ const SubscriptionPlans = () => {
       {currentPackage && parseFloat(currentPackage.package?.price || 0) > 0 && (
         <Card
             className={"current-plan-card"}
-          style={{
-            marginBottom: 32,
-            background: 'linear-gradient(135deg, #e6f7ff 0%, #bae7ff 100%)',
-            borderColor: '#1890ff',
-            borderRadius: '16px',
-            borderWidth: '2px',
-            boxShadow: '0 4px 12px rgba(24, 144, 255, 0.1)'
-          }}
         >
-          <Title level={4} style={{ color: '#0050b3', marginBottom: 16 }}>
+          <Title level={4} className="current-plan-title">
             {isGeorgian ? 'მიმდინარე პაკეტი' : 'Current Subscription'}
           </Title>
           <Paragraph>
@@ -125,7 +117,7 @@ const SubscriptionPlans = () => {
               }
               type="warning"
               showIcon
-              style={{ marginTop: 16 }}
+              className="current-plan-alert"
             />
           )}
 
@@ -133,7 +125,7 @@ const SubscriptionPlans = () => {
             <Button
               danger
               onClick={() => handleCancelSubscription(currentPackage.package)}
-              style={{ marginTop: 16 }}
+              className="current-plan-cancel-btn"
             >
               {isGeorgian ? 'გამოწერის გაუქმება' : 'Cancel Subscription'}
             </Button>
@@ -177,7 +169,7 @@ const SubscriptionPlans = () => {
       </Row>
 
       <div className="subscription-footer">
-        <Paragraph type="secondary" style={{ textAlign: 'center', marginTop: 32 }}>
+        <Paragraph type="secondary" className="subscription-footer-text">
           {isGeorgian
             ? 'ყველა პაკეტი მოიცავს 24/7 მომხმარებელთა მხარდაჭერას'
             : 'All plans include 24/7 customer support'}
@@ -210,7 +202,7 @@ const SubscriptionPlans = () => {
             }
             type="warning"
             showIcon
-            style={{ marginTop: 16 }}
+            className="cancel-modal-alert"
           />
         </div>
       </Modal>
