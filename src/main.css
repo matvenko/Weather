@@ -133,6 +133,15 @@ label { display: inline-block; margin-bottom: 6px; color: #434343; }
     font-weight: 700;
 }
 
+.account-section {
+    -webkit-backdrop-filter: blur(14px) saturate(110%);
+    backdrop-filter: blur(14px) saturate(110%);
+    background: linear-gradient(to bottom right, #ffffff24, #ffffff0f);
+    border: 1px solid var(--stroke);
+    border-radius: 20px;
+}
+
+
 /* Responsive */
 @media (max-width: 768px){
     .app { padding: var(--space-2) 0; }

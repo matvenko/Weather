@@ -93,6 +93,7 @@ const SubscriptionPlans = () => {
       {/* Current Subscription Status */}
       {currentPackage && parseFloat(currentPackage.package?.price || 0) > 0 && (
         <Card
+            className={"current-plan-card"}
           style={{
             marginBottom: 32,
             background: 'linear-gradient(135deg, #e6f7ff 0%, #bae7ff 100%)',

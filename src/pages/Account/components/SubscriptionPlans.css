@@ -53,3 +53,11 @@
     justify-content: center;
   }
 }
+.current-plan-card{
+  margin-bottom: 32px;
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
+  background: #0000004f;
+  border: 1px solid rgba(255, 255, 255, .14);
+  border-radius: 16px;
+}
