@@ -18,6 +18,7 @@ const AboutUsPage = lazy(() => import("./pages/AboutUs/AboutUs.jsx"));
 const AccountPage = lazy(() => import("./pages/Account/AccountOverview.jsx"));
 const MapsPage = lazy(() => import("./pages/WeatherMaps/WeatherMaps.jsx"));
 const SfericMapPage = lazy(() => import("./pages/SfericMap/SfericMap.jsx"));
+const FlowViewPage = lazy(() => import("./pages/FlowView/FlowViewPage.jsx"));
 
 export default function App() {
     return (
@@ -42,6 +43,7 @@ export default function App() {
 
                             <Route path="maps" element={<MapsPage />} />
                             <Route path="sferic-map" element={<SfericMapPage />} />
+                            <Route path="view" element={<FlowViewPage />} />
 
                             {/* Protected */}
                             <Route element={<RequireAuth />}>
