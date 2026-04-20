@@ -1,6 +1,6 @@
 // src/pages/HomePage/utils/weather-icons.js
 import React from "react";
-import { IoIosThunderstorm } from "react-icons/io";
+import { BsCloudLightningFill, BsCloudRainFill } from "react-icons/bs";
 
 /**
  * Helper function to determine if a time is during night (20:00 - 06:00)
@@ -26,33 +26,33 @@ export function iconByCode(code, isNight = false) {
         if (c === 3) return React.createElement('span', {}, "☁️", React.createElement('span', { style: { marginLeft: '2px' } }, "🌙"));
         if (c === 4) return "☁️";           // Overcast (same)
         if (c === 5) return "🌫️";          // Fog (same)
-        if (c === 6) return "🌧️";          // Rain (same)
+        if (c === 6) return React.createElement(BsCloudRainFill, {});          // Rain (same)
         if (c === 7) return "🌦️";          // Showers (same)
-        if (c === 8) return React.createElement(IoIosThunderstorm, {}); // Thunderstorms (same)
+        if (c === 8) return React.createElement(BsCloudLightningFill, {}); // Thunderstorms (same)
         if (c === 9) return "🌨️";          // Snow (same)
         if (c === 10) return "🌨️";         // Snow showers (same)
-        if (c === 11) return React.createElement('span', {}, "🌧️", React.createElement('span', { style: { marginLeft: '2px' } }, "❄️"));
-        if (c === 12) return "🌧️";         // Occasional rain (same)
+        if (c === 11) return React.createElement('span', {}, React.createElement(BsCloudRainFill, {}), React.createElement('span', { style: { marginLeft: '2px' } }, "❄️"));
+        if (c === 12) return React.createElement(BsCloudRainFill, {});         // Occasional rain (same)
         if (c === 13) return "🌨️";         // Occasional snow (same)
-        if (c === 14) return "🌧️";         // Rain (same)
+        if (c === 14) return React.createElement(BsCloudRainFill, {});         // Rain (same)
         if (c === 15) return "🌨️";         // Snow (same)
-        if (c === 16) return "🌧️";         // Occasional rain (same)
+        if (c === 16) return React.createElement(BsCloudRainFill, {});         // Occasional rain (same)
         if (c === 17) return "🌨️";         // Occasional snow (same)
         if (c === 20) return "☁️";          // Mostly cloudy (same)
         if (c === 21 || c === 22 || c === 23 || c === 24 || c === 25) {
-            return React.createElement(IoIosThunderstorm, {}); // Thunderstorms (same)
+            return React.createElement(BsCloudLightningFill, {}); // Thunderstorms (same)
         }
         // Hourly pictocodes (26-35) for night
         if (c === 26) return "🌦️";         // Light rain showers
-        if (c === 27) return "🌧️";         // Heavy rain showers
+        if (c === 27) return React.createElement(BsCloudRainFill, {});         // Heavy rain showers
         if (c === 28) return "🌨️";         // Light snow showers
         if (c === 29) return "🌨️";         // Heavy snow showers
-        if (c === 30) return React.createElement('span', {}, "🌧️", React.createElement('span', { style: { marginLeft: '2px' } }, "❄️")); // Sleet
-        if (c === 31) return "🌧️";         // Light rain
-        if (c === 32) return "🌧️";         // Heavy rain
+        if (c === 30) return React.createElement('span', {}, React.createElement(BsCloudRainFill, {}), React.createElement('span', { style: { marginLeft: '2px' } }, "❄️")); // Sleet
+        if (c === 31) return React.createElement(BsCloudRainFill, {});         // Light rain
+        if (c === 32) return React.createElement(BsCloudRainFill, {});         // Heavy rain
         if (c === 33) return "🌨️";         // Light snow
         if (c === 34) return "🌨️";         // Heavy snow
-        if (c === 35) return React.createElement('span', {}, "🌧️", React.createElement('span', { style: { marginLeft: '2px' } }, "❄️")); // Sleet/mixed
+        if (c === 35) return React.createElement('span', {}, React.createElement(BsCloudRainFill, {}), React.createElement('span', { style: { marginLeft: '2px' } }, "❄️")); // Sleet/mixed
         return "☁️"; // Default night
     }
 
@@ -62,34 +62,34 @@ export function iconByCode(code, isNight = false) {
     if (c === 3) return "⛅";           // Partly cloudy
     if (c === 4) return "☁️";           // Overcast
     if (c === 5) return "🌫️";          // Fog
-    if (c === 6) return "🌧️";          // Rain
+    if (c === 6) return React.createElement(BsCloudRainFill, {});          // Rain
     if (c === 7) return "🌦️";          // Showers
-    if (c === 8) return React.createElement(IoIosThunderstorm, {}); // Thunderstorms
+    if (c === 8) return React.createElement(BsCloudLightningFill, {}); // Thunderstorms
     if (c === 9) return "🌨️";          // Snow
     if (c === 10) return "🌨️";         // Snow showers
-    if (c === 11) return React.createElement('span', {}, "🌧️", React.createElement('span', { style: { marginLeft: '2px' } }, "❄️"));
-    if (c === 12) return "🌧️";         // Occasional rain
+    if (c === 11) return React.createElement('span', {}, React.createElement(BsCloudRainFill, {}), React.createElement('span', { style: { marginLeft: '2px' } }, "❄️"));
+    if (c === 12) return React.createElement(BsCloudRainFill, {});         // Occasional rain
     if (c === 13) return "🌨️";         // Occasional snow
-    if (c === 14) return "🌧️";         // Rain
+    if (c === 14) return React.createElement(BsCloudRainFill, {});         // Rain
     if (c === 15) return "🌨️";         // Snow
-    if (c === 16) return "🌧️";         // Occasional rain
+    if (c === 16) return React.createElement(BsCloudRainFill, {});         // Occasional rain
     if (c === 17) return "🌨️";         // Occasional snow
     if (c === 20) return "☁️";          // Mostly cloudy
     if (c === 21 || c === 22 || c === 23 || c === 24 || c === 25) {
-        return React.createElement(IoIosThunderstorm, {}); // Thunderstorms
+        return React.createElement(BsCloudLightningFill, {}); // Thunderstorms
     }
 
     // Hourly pictocodes (26-35) - additional codes for hourly data
     if (c === 26) return "🌦️";         // Light rain showers
-    if (c === 27) return "🌧️";         // Heavy rain showers
+    if (c === 27) return React.createElement(BsCloudRainFill, {});         // Heavy rain showers
     if (c === 28) return "🌨️";         // Light snow showers
     if (c === 29) return "🌨️";         // Heavy snow showers
-    if (c === 30) return React.createElement('span', {}, "🌧️", React.createElement('span', { style: { marginLeft: '2px' } }, "❄️")); // Sleet
-    if (c === 31) return "🌧️";         // Light rain
-    if (c === 32) return "🌧️";         // Heavy rain
+    if (c === 30) return React.createElement('span', {}, React.createElement(BsCloudRainFill, {}), React.createElement('span', { style: { marginLeft: '2px' } }, "❄️")); // Sleet
+    if (c === 31) return React.createElement(BsCloudRainFill, {});         // Light rain
+    if (c === 32) return React.createElement(BsCloudRainFill, {});         // Heavy rain
     if (c === 33) return "🌨️";         // Light snow
     if (c === 34) return "🌨️";         // Heavy snow
-    if (c === 35) return React.createElement('span', {}, "🌧️", React.createElement('span', { style: { marginLeft: '2px' } }, "❄️")); // Sleet/mixed
+    if (c === 35) return React.createElement('span', {}, React.createElement(BsCloudRainFill, {}), React.createElement('span', { style: { marginLeft: '2px' } }, "❄️")); // Sleet/mixed
 
     return "☁️"; // Default
 }
