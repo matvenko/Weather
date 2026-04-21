@@ -18,6 +18,8 @@ import ForecastHourly from "@src/pages/HomePage/components/ForecastHourly.jsx";
 import {iconByCode, getWeatherText} from "@src/pages/HomePage/utils/weather-icons.js";
 import {getTemperatureColor} from "@src/pages/HomePage/utils/temperature-colors.js";
 import {useTranslation} from "react-i18next";
+import {useDispatch, useSelector} from "react-redux";
+import {selectDailyRange, setDailyRange} from "@src/features/app/appSlice.js";
 
 export default function Forecast({
                                      selectedLocation,
@@ -28,7 +30,9 @@ export default function Forecast({
                                  }) {
     const { ref: dragRef, dragging } = useDragScroll();
     const { i18n } = useTranslation();
-    const [dailyRange, setDailyRange] = useState("7d"); // "7d" | "14d"
+    const dispatch = useDispatch();
+    const dailyRange = useSelector(selectDailyRange);
+    const handleDailyRange = (val) => dispatch(setDailyRange(val));
 
     // Extract arrays from new API response structure for daily data
     const sevenDayData = Array.isArray(dailyData?.["7day"]) ? dailyData["7day"] : [];
@@ -127,7 +131,7 @@ export default function Forecast({
                         setSelectedDay(d);
                     }}
                     dailyRange={dailyRange}
-                    onChangeStep={setDailyRange}
+                    onChangeStep={handleDailyRange}
                     has14DayData={has14DayData}
                     renderLabel={(d) => {
                         const weatherText = getWeatherText(d.pictocode, i18n.language);

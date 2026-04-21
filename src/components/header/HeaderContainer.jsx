@@ -63,7 +63,7 @@ export default function HeaderContainer() {
     const menuItems = useMemo(() => ([
         {key: "/", label: <NavLink to="/">{t("nav.home")}</NavLink>},
         {key: "/maps", label: <NavLink to="/maps">{t("nav.maps")}</NavLink>},
-        {key: "/sferic-map", label: <NavLink to="/sferic-map">Sferic Map</NavLink>},
+        // {key: "/sferic-map", label: <NavLink to="/sferic-map">Sferic Map</NavLink>},
         {key: "/about", label: <NavLink to="/about">{t("nav.about")}</NavLink>},
     ]), [t]);
 

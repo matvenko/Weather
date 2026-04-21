@@ -32,7 +32,8 @@
     min-width: 0;
 }
 
-.ant-menu-dark {
+.ant-menu-dark,
+.ant-menu-dark .ant-menu-sub {
     background: none !important;
 }
 

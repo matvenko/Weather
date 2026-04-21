@@ -1,53 +1,58 @@
-import React, { useState, useMemo } from "react";
+import React, { useState } from "react";
 import { Layout, Menu } from "antd";
+import { useNavigate } from "react-router-dom";
 import {
-    FiCloud, FiCamera, FiMap, FiBarChart2, FiNavigation,
-    FiPackage, FiBook, FiTruck, FiLayers, FiRss,
+    FiMap, FiNavigation, FiTruck, FiLayers,
     FiChevronLeft, FiChevronRight,
+    FiCompass, FiWind, FiAnchor, FiMoon,
 } from "react-icons/fi";
-import {useDispatch, useSelector} from "react-redux";
-import {selectCurrentDeviceViewPort, setBackgroundFile} from "@src/features/app/appSlice.js";
+import { useDispatch, useSelector } from "react-redux";
+import { selectCurrentDeviceViewPort, selectDailyRange } from "@src/features/app/appSlice.js";
+import { MdOutlineLocalGroceryStore } from "react-icons/md";
 
-const rawItems = [
-    { key: "1",  icon: <FiCloud />,      label: "7-Day Weather",      bg: "./Mp4/morning-cloudy.mp4" },
-    { key: "2",  icon: <FiCloud />,      label: "10-Day Weather",     bg: "./Mp4/nightStorm.mp4" },
-    { key: "3",  icon: <FiBarChart2 />,  label: "Weather Today",      bg: "./Mp4/vazi.mp4" },
-    { key: "4",  icon: <FiCamera />,     label: "Webcams",            bg: "./Mp4/cloudy.mp4" },
-    { key: "5",  icon: <FiMap />,        label: "Weather Maps",       bg: "./Mp4/sunny.mp4" },
-    { key: "6",  icon: <FiNavigation />, label: "Forecast",           bg: "./Mp4/night-snow.mp4" },
-    { key: "7",  icon: <FiTruck />,      label: "Outdoor & Sports",   bg: "./Mp4/sea-sunset.mp4" },
-    { key: "8",  icon: <FiNavigation />, label: "Aviation",           bg: "./Mp4/hard-rain.mp4" },
-    { key: "9",  icon: <FiLayers />,     label: "Agriculture",        bg: "./Mp4/village-snow.mp4" },
-    { key: "10", icon: <FiBook />,       label: "History & Climate",  bg: "./Mp4/rainy.mp4" },
-    { key: "11", icon: <FiPackage />,    label: "Products",           bg: "./Mp4/products.mp4" },
-    { key: "12", icon: <FiLayers />,     label: "Widgets",            bg: "./Mp4/mountains-snow.mp4" },
-    { key: "13", icon: <FiRss />,        label: "News",               bg: "./Mp4/day-light-cloudy.mp4" },
+// route map: key → path
+const routeMap = {
+    forecast:    "/",
+    maps:        "/maps",
+    products:    "/products",
+    where2go:    "/outdoor/where2go",
+    snow:        "/outdoor/snow",
+    sea_surf:    "/outdoor/sea-surf",
+    astronomy:   "/outdoor/astronomy",
+    agriculture: null,
+};
+
+const menuItems = [
+    { type: "divider" },
+    { key: "forecast",    icon: <FiNavigation />, label: "Forecast" },
+    { key: "maps",        icon: <FiMap />,         label: "Weather Maps" },
+    { key: "products",    icon: <MdOutlineLocalGroceryStore />, label: "Products" },
+    {
+        key: "outdoor",
+        icon: <FiTruck />,
+        label: "Outdoor & Sports",
+        children: [
+            { key: "where2go",  icon: <FiCompass />, label: "Where to Go" },
+            { key: "snow",      icon: <FiWind />,    label: "Snow" },
+            { key: "sea_surf",  icon: <FiAnchor />,  label: "Sea & Surf" },
+            { key: "astronomy", icon: <FiMoon />,    label: "Astronomy Seeing" },
+        ],
+    },
+    { key: "agriculture", icon: <FiLayers />, label: "Agriculture" },
 ];
 
 export default function SiderNav() {
     const dispatch = useDispatch();
-    const [selectedKey, setSelectedKey] = useState("1"); // საწყისი არჩეული (სურვილისამებრ)
-    const [collapsed, setCollapsed] = useState(false); // collapse მდგომარეობა
+    const navigate = useNavigate();
+    const dailyRange = useSelector(selectDailyRange);
+    const deviceViewPort = useSelector(selectCurrentDeviceViewPort);
+    const [collapsed, setCollapsed] = useState(false);
 
-    // antd-სთვის საჭიროა {key, icon, label}
-    const menuItems = useMemo(
-        () => rawItems.map(({ key, icon, label }) => ({ key, icon, label })),
-        []
-    );
-
-    const handleClick = (e) => {
-        const item = rawItems.find((it) => it.key === e.key);
-        if (item?.bg) {
-            dispatch(setBackgroundFile(item.bg));
-            setSelectedKey(e.key);
-        }
-        // e.domEvent.preventDefault(); // არაა საჭირო, რადგან href არ გვაქვს
-        // ნავიგაცია არ ხდება, რადგან navigate არ გვაქვს
+    const handleClick = ({ key }) => {
+        const route = routeMap[key];
+        if (route) navigate(route);
     };
 
-    const deviceViewPort = useSelector(selectCurrentDeviceViewPort)
-
-    // Custom collapse trigger with "Collapse" text
     const customTrigger = collapsed ? <FiChevronRight /> : <FiChevronLeft />;
 
     return (
@@ -61,7 +66,7 @@ export default function SiderNav() {
             theme="dark"
             width={deviceViewPort === "XXL" ? 300 : 240}
             trigger={
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', height: '48px' }}>
+                <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "8px", height: "48px" }}>
                     {customTrigger}
                     {!collapsed && <span>Collapse</span>}
                 </div>
@@ -70,9 +75,9 @@ export default function SiderNav() {
             <Menu
                 theme="dark"
                 mode="inline"
-                className={"wx-sider-menu"}
+                className="wx-sider-menu"
                 items={menuItems}
-                selectedKeys={[selectedKey]}
+                selectedKeys={[dailyRange]}
                 onClick={handleClick}
             />
         </Layout.Sider>

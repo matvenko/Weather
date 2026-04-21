@@ -11,7 +11,8 @@ const setAppState = () => {
 		mobileDrawer: false,
 		fullscreen: false,
 		deviceViewPort: '',
-		backgroundFile: ''
+		backgroundFile: '',
+		dailyRange: '7d'
 	}
 	let localState = window.localStorage.getItem('settings')
 	return localState ? JSON.parse(localState) : initState
@@ -53,11 +54,14 @@ const appSlice = createSlice({
 		setBackgroundFile: (state, action) => {
 			state.backgroundFile = action.payload
 			saveToLocal(state)
+		},
+		setDailyRange: (state, action) => {
+			state.dailyRange = action.payload
 		}
 	}
 })
 
-export const { setCollapsed, setTheme, setDarkSidebar, setDeviceViewPort, setBackgroundFile } =
+export const { setCollapsed, setTheme, setDarkSidebar, setDeviceViewPort, setBackgroundFile, setDailyRange } =
 	appSlice.actions
 
 export default appSlice.reducer
@@ -67,3 +71,4 @@ export const selectCurrentTheme = state => state.app.theme
 export const selectCurrentState = state => state.app
 export const selectCurrentDeviceViewPort = state => state.app.deviceViewPort
 export const selectCurrentBackgroundFile = (state) => state.app.backgroundFile
+export const selectDailyRange = (state) => state.app.dailyRange

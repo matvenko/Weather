@@ -19,6 +19,11 @@ const AccountPage = lazy(() => import("./pages/Account/AccountOverview.jsx"));
 const MapsPage = lazy(() => import("./pages/WeatherMaps/WeatherMaps.jsx"));
 const SfericMapPage = lazy(() => import("./pages/SfericMap/SfericMap.jsx"));
 const FlowViewPage = lazy(() => import("./pages/FlowView/FlowViewPage.jsx"));
+const ProductsPage = lazy(() => import("./pages/Products/ProductsPage.jsx"));
+const Where2GoPage = lazy(() => import("./pages/OutdoorSports/Where2GoPage.jsx"));
+const SnowPage = lazy(() => import("./pages/OutdoorSports/SnowPage.jsx"));
+const SeaSurfPage = lazy(() => import("./pages/OutdoorSports/SeaSurfPage.jsx"));
+const AstronomyPage = lazy(() => import("./pages/OutdoorSports/AstronomyPage.jsx"));
 
 export default function App() {
     return (
@@ -36,6 +41,11 @@ export default function App() {
                             <Route element={<WeatherLayout />}>
                                 <Route index element={<Homepage />} />
                                 <Route path="about" element={<AboutUsPage />} />
+                                <Route path="products" element={<ProductsPage />} />
+                            <Route path="outdoor/where2go" element={<Where2GoPage />} />
+                            <Route path="outdoor/snow" element={<SnowPage />} />
+                            <Route path="outdoor/sea-surf" element={<SeaSurfPage />} />
+                            <Route path="outdoor/astronomy" element={<AstronomyPage />} />
                                 <Route path="account" element={<AccountPage />} />
                                 <Route path="login" element={<Login />} />
                                 <Route path="register" element={<Registration />} />
@@ -44,6 +54,7 @@ export default function App() {
                             <Route path="maps" element={<MapsPage />} />
                             <Route path="sferic-map" element={<SfericMapPage />} />
                             <Route path="view" element={<FlowViewPage />} />
+
 
                             {/* Protected */}
                             <Route element={<RequireAuth />}>
