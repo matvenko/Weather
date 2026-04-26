@@ -35,47 +35,32 @@ const ForecastHourly = ({
     const {ref: dragRef, dragging} = useDragScroll();
     const {t} = useTranslation();
 
+    const { i18n } = useTranslation();
+
     const temps = useMemo(
         () => (selectedHourly || []).map(h => Number(h.temperature)).filter(Number.isFinite),
         [selectedHourly]
     );
-    const { i18n } = useTranslation();
 
-    // Function to check if the hour matches current time
     const isCurrentHour = (timeStr) => {
         if (!timeStr) return false;
-        const currentHour = new Date().getHours();
-        const cardDate = new Date(timeStr);
-        const cardHour = cardDate.getHours();
         const now = new Date();
-
-        // Check if it's the same day and hour
-        return cardDate.toDateString() === now.toDateString() && cardHour === currentHour;
+        const cardDate = new Date(timeStr);
+        return cardDate.toDateString() === now.toDateString() && cardDate.getHours() === now.getHours();
     };
 
-    // Auto-scroll to current hour card when component loads or data changes
     useEffect(() => {
         if (!selectedHourly || selectedHourly.length === 0) return;
 
-        // Wait a bit for the DOM to render and animations to start
         const timer = setTimeout(() => {
             const currentHourCard = dragRef.current?.querySelector('.is-current-hour');
             if (currentHourCard && dragRef.current) {
-                // Calculate the scroll position to center the card
-                const container = dragRef.current;
-                const cardLeft = currentHourCard.offsetLeft;
-                const cardWidth = currentHourCard.offsetWidth;
-                const containerWidth = container.offsetWidth;
-
-                // Scroll to center the card
-                const scrollTo = cardLeft - (containerWidth / 2) + (cardWidth / 2);
-
-                container.scrollTo({
-                    left: scrollTo,
+                dragRef.current.scrollTo({
+                    left: currentHourCard.offsetLeft - 22,
                     behavior: 'smooth'
                 });
             }
-        }, 300); // Wait 300ms for animations
+        }, 300);
 
         return () => clearTimeout(timer);
     }, [selectedHourly, dragRef]);
