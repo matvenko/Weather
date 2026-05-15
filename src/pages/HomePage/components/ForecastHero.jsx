@@ -2,7 +2,7 @@ import React, {useState} from "react";
 import { motion } from "framer-motion";
 import { fadeUp, floatIcon, heroZoom, stagger } from "@src/ui/motion/variants.js";
 import { fmtDayLong } from "@src/pages/HomePage/utils/homepage-utils.js";
-import { iconByCode } from "@src/pages/HomePage/utils/weather-icons.js";
+import { iconByCode, temperatureAdjustedPictocode } from "@src/pages/HomePage/utils/weather-icons.js";
 import TodayDetails from "@src/pages/HomePage/components/TodayDetails.jsx";
 import SearchByLocation from "@src/pages/HomePage/components/SearchByLocation.jsx";
 import { getTemperatureColor } from "@src/pages/HomePage/utils/temperature-colors.js";
@@ -40,7 +40,7 @@ export default function ForecastHero({
                         <span style={{ color: getTemperatureColor(selectedDay?.temperature_mean) }}>
                             {selectedDay ? Math.round(selectedDay.temperature_mean) : "—"}°
                         </span>
-                        {selectedDay && iconByCode(selectedDay.pictocode)}
+                        {selectedDay && iconByCode(temperatureAdjustedPictocode(selectedDay.pictocode, selectedDay.temperature_mean))}
                     </motion.div>
 
                     {/* დეტალური რიგები ცალკე კომპონენტში */}

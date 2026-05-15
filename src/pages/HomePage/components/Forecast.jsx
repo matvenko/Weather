@@ -15,7 +15,7 @@ import { staggerCol } from "@src/ui/motion/variants.js";
 import ForecastDaily from "@src/pages/HomePage/components/ForecastDaily.jsx";
 import ForecastHero from "@src/pages/HomePage/components/ForecastHero.jsx";
 import ForecastHourly from "@src/pages/HomePage/components/ForecastHourly.jsx";
-import {iconByCode, getWeatherText} from "@src/pages/HomePage/utils/weather-icons.js";
+import {iconByCode, getWeatherText, temperatureAdjustedPictocode} from "@src/pages/HomePage/utils/weather-icons.js";
 import {getTemperatureColor} from "@src/pages/HomePage/utils/temperature-colors.js";
 import {useTranslation} from "react-i18next";
 import {useDispatch, useSelector} from "react-redux";
@@ -134,10 +134,11 @@ export default function Forecast({
                     onChangeStep={handleDailyRange}
                     has14DayData={has14DayData}
                     renderLabel={(d) => {
-                        const weatherText = getWeatherText(d.pictocode, i18n.language);
+                        const pictocode = temperatureAdjustedPictocode(d.pictocode, d.temperature_mean);
+                        const weatherText = getWeatherText(pictocode, i18n.language);
                         return (
                             <>
-                                <span className="ico">{iconByCode(d.pictocode)}</span>
+                                <span className="ico">{iconByCode(pictocode)}</span>
                                 <div className="meta">
                                     <div className="day">{fmtDayLong(d.time)}</div>
                                     <div className="desc">{weatherText.desc}</div>

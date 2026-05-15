@@ -10,7 +10,7 @@ import {
     fmtPrecipMm,
     msToKmh,
 } from "@src/pages/HomePage/utils/homepage-utils.js";
-import {getWeatherText, iconByCode, isNightTime} from "@src/pages/HomePage/utils/weather-icons.js";
+import {getWeatherText, iconByCode, isNightTime, temperatureAdjustedPictocode} from "@src/pages/HomePage/utils/weather-icons.js";
 import {useTranslation} from "react-i18next";
 import {
     WindDirectionIcon,
@@ -83,7 +83,8 @@ const ForecastHourly = ({
             >
                 {(selectedHourly || []).map((h, i) => {
                     const isNight = isNightTime(h.time);
-                    const weatherText = getWeatherText(h.pictocode, i18n.language);
+                    const pictocode = temperatureAdjustedPictocode(h.pictocode, h.temperature);
+                    const weatherText = getWeatherText(pictocode, i18n.language);
                     return (
                         <motion.div
                             key={`${h.time}-${i}`}
@@ -91,7 +92,7 @@ const ForecastHourly = ({
                             variants={fadeUp}
                         >
                             <div className="s-icon" title={weatherText.desc}>
-                                {iconByCode(h.pictocode, isNight)}
+                                {iconByCode(pictocode, isNight)}
                             </div>
 
                         <div className="s-temp-val" style={{
