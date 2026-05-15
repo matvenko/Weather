@@ -296,7 +296,15 @@
     cursor: grab;
     user-select: none;
     -webkit-user-drag: none;
-    touch-action: pan-y; /* ვერტიკალი ბრაუზერს, ჰორიზონტალი ჩვენ */
+    touch-action: pan-y; /* mouse: JS handles horizontal drag */
+}
+
+/* Touch screens: let the browser own all panning → free inertial scroll */
+@media (pointer: coarse) {
+    .drag-scroll {
+        touch-action: pan-x pan-y;
+        cursor: default;
+    }
 }
 
 .drag-scroll.is-dragging {
