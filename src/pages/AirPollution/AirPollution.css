@@ -1,0 +1,280 @@
+.ap-page {
+    padding: 28px 24px;
+    color: var(--text);
+    font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+}
+
+.ap-content {
+    width: min(90vw, 80vw);
+    margin-inline: auto;
+}
+
+.ap-title {
+    font-size: 20px;
+    font-weight: 600;
+    color: var(--text);
+    margin-bottom: 20px;
+    letter-spacing: 0.01em;
+}
+
+/* ── Hero ─────────────────────────────────── */
+.ap-hero {
+    display: flex;
+    align-items: center;
+    gap: 32px;
+    padding: 28px 32px;
+    margin-bottom: 14px;
+    flex-wrap: wrap;
+}
+
+.ap-aqi-circle {
+    width: 128px;
+    height: 128px;
+    border-radius: 50%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.ap-aqi-value {
+    font-size: 44px;
+    font-weight: 700;
+    color: #fff;
+    line-height: 1;
+}
+
+.ap-aqi-label-badge {
+    font-size: 11px;
+    color: rgba(255, 255, 255, 0.8);
+    margin-top: 3px;
+    letter-spacing: 0.06em;
+}
+
+.ap-aqi-desc {
+    font-size: 26px;
+    font-weight: 600;
+    margin-bottom: 6px;
+    line-height: 1.2;
+}
+
+.ap-aqi-type {
+    font-size: 12px;
+    color: var(--muted);
+    margin-top: 4px;
+}
+
+.ap-last-update {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 12px;
+    color: var(--muted);
+    margin-top: 10px;
+}
+
+/* ── AQI Scale ────────────────────────────── */
+.ap-scale-card {
+    padding: 22px 26px 20px;
+    margin-bottom: 14px;
+}
+
+.ap-card-title {
+    font-size: 11px;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    margin-bottom: 16px;
+}
+
+.ap-scale-bar {
+    display: flex;
+    border-radius: 6px;
+    overflow: visible;
+    height: 10px;
+    gap: 2px;
+    margin-bottom: 10px;
+    position: relative;
+}
+
+.ap-scale-segment {
+    flex: 1;
+    border-radius: 4px;
+    position: relative;
+    transition: opacity 0.25s;
+}
+
+.ap-scale-segment.active::after {
+    content: '';
+    position: absolute;
+    bottom: -8px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 0;
+    height: 0;
+    border-left: 5px solid transparent;
+    border-right: 5px solid transparent;
+    border-bottom: 6px solid rgba(255,255,255,0.7);
+}
+
+.ap-scale-labels {
+    display: flex;
+    margin-top: 14px;
+}
+
+.ap-scale-seg-label {
+    flex: 1;
+    font-size: 10px;
+    color: var(--muted);
+    text-align: center;
+    line-height: 1.4;
+    transition: color 0.2s;
+}
+
+.ap-scale-seg-label.active {
+    color: var(--text);
+    font-weight: 600;
+}
+
+/* ── Mid grid ─────────────────────────────── */
+.ap-mid-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+    margin-bottom: 14px;
+}
+
+@media (max-width: 680px) {
+    .ap-mid-grid { grid-template-columns: 1fr; }
+}
+
+/* ── Health card ──────────────────────────── */
+.ap-health-card {
+    padding: 22px 24px;
+}
+
+.ap-health-summary {
+    font-size: 13px;
+    color: var(--text);
+    line-height: 1.65;
+    margin-bottom: 16px;
+    opacity: 0.9;
+}
+
+.ap-health-items {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.ap-health-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 13px;
+    color: var(--text);
+}
+
+.ap-health-icon {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.ap-health-icon.ok { background: rgba(0,196,106,.18); color: #00c46a; }
+.ap-health-icon.no { background: rgba(229,57,53,.18);  color: #e53935; }
+
+/* ── Outdoor card ─────────────────────────── */
+.ap-outdoor-card {
+    padding: 22px 24px;
+}
+
+.ap-outdoor-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 18px 14px;
+}
+
+.ap-outdoor-item {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+}
+
+.ap-outdoor-icon-label {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 10px;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    margin-bottom: 2px;
+}
+
+.ap-outdoor-val {
+    font-size: 22px;
+    font-weight: 600;
+    color: var(--text);
+    line-height: 1;
+}
+
+.ap-outdoor-sub {
+    font-size: 11px;
+    color: var(--muted);
+    margin-top: 2px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+/* ── PM section ───────────────────────────── */
+.ap-section-label {
+    font-size: 11px;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    margin: 6px 0 12px;
+}
+
+.ap-metrics {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+    gap: 12px;
+}
+
+.ap-metric-card {
+    padding: 18px 20px;
+}
+
+.ap-metric-label {
+    font-size: 10px;
+    color: var(--muted);
+    margin-bottom: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+}
+
+.ap-metric-value {
+    font-size: 26px;
+    font-weight: 600;
+    color: var(--text);
+    line-height: 1;
+}
+
+.ap-metric-unit {
+    font-size: 12px;
+    color: var(--muted);
+    margin-left: 4px;
+}
+
+.ap-metric-sub {
+    font-size: 11px;
+    color: var(--muted);
+    margin-top: 6px;
+}

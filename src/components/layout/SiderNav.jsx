@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import {
     FiMap, FiNavigation, FiTruck, FiLayers,
     FiChevronLeft, FiChevronRight,
-    FiCompass, FiWind, FiAnchor, FiMoon,
+    FiCompass, FiWind, FiAnchor, FiMoon, FiActivity,
 } from "react-icons/fi";
 import { useDispatch, useSelector } from "react-redux";
 import { selectCurrentDeviceViewPort, selectDailyRange } from "@src/features/app/appSlice.js";
@@ -15,11 +15,12 @@ const routeMap = {
     forecast:    "/",
     maps:        "/maps",
     products:    "/products",
-    where2go:    "/outdoor/where2go",
-    snow:        "/outdoor/snow",
-    sea_surf:    "/outdoor/sea-surf",
-    astronomy:   "/outdoor/astronomy",
-    agriculture: null,
+    where2go:       "/outdoor/where2go",
+    snow:           "/outdoor/snow",
+    sea_surf:       "/outdoor/sea-surf",
+    astronomy:      "/outdoor/astronomy",
+    agriculture:    null,
+    air_pollution:  "/air-pollution",
 };
 
 const menuItems = [
@@ -38,7 +39,8 @@ const menuItems = [
             { key: "astronomy", icon: <FiMoon />,    label: "Astronomy Seeing" },
         ],
     },
-    { key: "agriculture", icon: <FiLayers />, label: "Agriculture" },
+    { key: "agriculture",   icon: <FiLayers />,   label: "Agriculture" },
+    { key: "air_pollution", icon: <FiActivity />, label: "Air Pollution" },
 ];
 
 export default function SiderNav() {

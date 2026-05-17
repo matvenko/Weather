@@ -12,10 +12,11 @@ const MobileNavigationDrawer = ({ open, onClose, isUserAuthorized, onLogout }) =
     const location = useLocation();
 
     const menuItems = useMemo(() => ([
-        { key: "/",           label: <NavLink to="/">{t("nav.home")}</NavLink> },
-        { key: "/maps",       label: <NavLink to="/maps">{t("nav.maps")}</NavLink> },
+        { key: "/",              label: <NavLink to="/">{t("nav.home")}</NavLink> },
+        { key: "/maps",          label: <NavLink to="/maps">{t("nav.maps")}</NavLink> },
         // { key: "/sferic-map", label: <NavLink to="/sferic-map">Sferic Map</NavLink> },
-        { key: "/about",      label: <NavLink to="/about">{t("nav.about")}</NavLink> },
+        { key: "/about",         label: <NavLink to="/about">{t("nav.about")}</NavLink> },
+        { key: "/air-pollution", label: <NavLink to="/air-pollution">{t("nav.air_pollution")}</NavLink> },
     ]), [t]);
 
     const selectedKeys = useMemo(() => {
@@ -31,7 +32,7 @@ const MobileNavigationDrawer = ({ open, onClose, isUserAuthorized, onLogout }) =
 
     return (
         <Drawer
-            placement="left"
+            placement="right"
             width={280}
             open={open}
             onClose={onClose}

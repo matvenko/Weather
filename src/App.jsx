@@ -24,6 +24,7 @@ const Where2GoPage = lazy(() => import("./pages/OutdoorSports/Where2GoPage.jsx")
 const SnowPage = lazy(() => import("./pages/OutdoorSports/SnowPage.jsx"));
 const SeaSurfPage = lazy(() => import("./pages/OutdoorSports/SeaSurfPage.jsx"));
 const AstronomyPage = lazy(() => import("./pages/OutdoorSports/AstronomyPage.jsx"));
+const AirPollutionPage = lazy(() => import("./pages/AirPollution/AirPollutionPage.jsx"));
 
 export default function App() {
     return (
@@ -46,6 +47,7 @@ export default function App() {
                             <Route path="outdoor/snow" element={<SnowPage />} />
                             <Route path="outdoor/sea-surf" element={<SeaSurfPage />} />
                             <Route path="outdoor/astronomy" element={<AstronomyPage />} />
+                            <Route path="air-pollution" element={<AirPollutionPage />} />
                                 <Route path="account" element={<AccountPage />} />
                                 <Route path="login" element={<Login />} />
                                 <Route path="register" element={<Registration />} />

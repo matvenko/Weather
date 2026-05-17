@@ -65,6 +65,7 @@ export default function HeaderContainer() {
         {key: "/maps", label: <NavLink to="/maps">{t("nav.maps")}</NavLink>},
         // {key: "/sferic-map", label: <NavLink to="/sferic-map">Sferic Map</NavLink>},
         {key: "/about", label: <NavLink to="/about">{t("nav.about")}</NavLink>},
+        {key: "/air-pollution", label: <NavLink to="/air-pollution">{t("nav.air_pollution")}</NavLink>},
     ]), [t]);
 
     // Highlight by first segment

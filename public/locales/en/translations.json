@@ -4,7 +4,8 @@
     "about": "About",
     "maps": "Maps",
     "service": "Service",
-    "contact": "Contact"
+    "contact": "Contact",
+    "air_pollution": "Air Pollution"
   },
   "auth": {
     "login": "Log in",
